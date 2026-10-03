@@ -38,6 +38,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/alerts/{alert_id}/acknowledgements": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Acknowledge */
+        post: operations["acknowledge_api_alerts__alert_id__acknowledgements_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/assessments/{assessment_id}": {
         parameters: {
             query?: never;
@@ -348,10 +365,22 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** AlertAcknowledgementResponse */
+        AlertAcknowledgementResponse: {
+            /** Actor */
+            actor: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
         /** AlertResponse */
         AlertResponse: {
             /** Acknowledged By */
             acknowledged_by: string | null;
+            /** Acknowledgements */
+            acknowledgements: components["schemas"]["AlertAcknowledgementResponse"][];
             /** Assessment Id */
             assessment_id: string | null;
             /** Component Id */
@@ -658,6 +687,40 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AlertResponse"][];
+                };
+            };
+        };
+    };
+    acknowledge_api_alerts__alert_id__acknowledgements_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-demo-user"?: string;
+                "x-demo-role"?: string;
+            };
+            path: {
+                alert_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AlertResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

@@ -53,7 +53,14 @@ export const isAlert: Validator<Alert> = (value): value is Alert =>
   string(value.reason) &&
   string(value.policy_version) &&
   nullableString(value.assessment_id) &&
-  nullableString(value.acknowledged_by);
+  nullableString(value.acknowledged_by) &&
+  Array.isArray(value.acknowledgements) &&
+  value.acknowledgements.every(
+    (acknowledgement) =>
+      record(acknowledgement) &&
+      string(acknowledgement.actor) &&
+      string(acknowledgement.created_at),
+  );
 
 export const isInventoryPart: Validator<InventoryPart> = (value): value is InventoryPart =>
   record(value) &&

@@ -1,6 +1,25 @@
 {
   "components": {
     "schemas": {
+      "AlertAcknowledgementResponse": {
+        "properties": {
+          "actor": {
+            "title": "Actor",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "actor",
+          "created_at"
+        ],
+        "title": "AlertAcknowledgementResponse",
+        "type": "object"
+      },
       "AlertResponse": {
         "properties": {
           "acknowledged_by": {
@@ -13,6 +32,13 @@
               }
             ],
             "title": "Acknowledged By"
+          },
+          "acknowledgements": {
+            "items": {
+              "$ref": "#/components/schemas/AlertAcknowledgementResponse"
+            },
+            "title": "Acknowledgements",
+            "type": "array"
           },
           "assessment_id": {
             "anyOf": [
@@ -53,7 +79,8 @@
           "reason",
           "policy_version",
           "assessment_id",
-          "acknowledged_by"
+          "acknowledged_by",
+          "acknowledgements"
         ],
         "title": "AlertResponse",
         "type": "object"
@@ -852,6 +879,68 @@
           }
         },
         "summary": "List Alerts",
+        "tags": [
+          "alerts"
+        ]
+      }
+    },
+    "/api/alerts/{alert_id}/acknowledgements": {
+      "post": {
+        "operationId": "acknowledge_api_alerts__alert_id__acknowledgements_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "alert_id",
+            "required": true,
+            "schema": {
+              "title": "Alert Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-demo-user",
+            "required": false,
+            "schema": {
+              "default": "demo-planner",
+              "title": "X-Demo-User",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-demo-role",
+            "required": false,
+            "schema": {
+              "default": "planner",
+              "title": "X-Demo-Role",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AlertResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Acknowledge",
         "tags": [
           "alerts"
         ]

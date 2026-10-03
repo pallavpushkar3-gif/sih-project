@@ -22,3 +22,9 @@ def require_planner(actor: Actor) -> Actor:
     if actor.role not in {"planner", "supervisor"}:
         raise HTTPException(403, "Planner or supervisor role required")
     return actor
+
+
+def require_engineer(actor: Actor) -> Actor:
+    if actor.role not in {"engineer", "supervisor"}:
+        raise HTTPException(403, "Engineer or supervisor role required")
+    return actor

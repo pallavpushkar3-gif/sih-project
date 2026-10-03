@@ -23,7 +23,7 @@ Authenticate every protected command/query and check operation plus record scope
 
 For the single-origin browser demonstrator, prefer a maintained server-side session/auth library with opaque session cookies. Configure HttpOnly, appropriate Secure/SameSite, expiry and CSRF protection for state-changing requests. Define local development exceptions explicitly. Do not write a custom cryptographic scheme or put session secrets in fixtures.
 
-The current local-only build reads `X-Demo-User` and `X-Demo-Role` headers and labels the session authentication mode accordingly. This is test/demo identity injection, not deployable authentication. Planning, approval, scenario-run, durable-job submission and cancellation mutations enforce the planner/supervisor role on the server; tests verify viewer denial leaves plans, runs and jobs unchanged.
+The current local-only build reads `X-Demo-User` and `X-Demo-Role` headers and labels the session authentication mode accordingly. This is test/demo identity injection, not deployable authentication. Planning, approval, scenario-run, durable-job submission and cancellation mutations enforce the planner/supervisor role on the server. Alert acknowledgement enforces the engineer/supervisor role and records a separate idempotent review row without changing alert state. Tests verify viewer denial leaves plans, runs, jobs and acknowledgements unchanged.
 
 ## Audit
 

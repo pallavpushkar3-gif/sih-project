@@ -1,5 +1,5 @@
 from .access import User
-from .assessments import Alert, Assessment
+from .assessments import Alert, AlertAcknowledgement, Assessment
 from .audit import AuditEvent
 from .inventory import Part, Reservation
 from .jobs import Job, OutboxEvent
@@ -10,6 +10,7 @@ from .scenarios import Scenario, SimulationRun
 __all__ = [
     "Aircraft",
     "Alert",
+    "AlertAcknowledgement",
     "Assessment",
     "AuditEvent",
     "Component",

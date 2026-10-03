@@ -70,6 +70,11 @@ class AssessmentDetailResponse(AssessmentSummaryResponse):
     explanation: ExplanationStateResponse
 
 
+class AlertAcknowledgementResponse(BaseModel):
+    actor: str
+    created_at: datetime
+
+
 class AlertResponse(BaseModel):
     id: str
     component_id: str
@@ -78,6 +83,7 @@ class AlertResponse(BaseModel):
     policy_version: str
     assessment_id: str | None
     acknowledged_by: str | None
+    acknowledgements: list[AlertAcknowledgementResponse]
 
 
 class InventoryPartResponse(BaseModel):
