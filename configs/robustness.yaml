@@ -1,0 +1,28 @@
+version: validation-v1
+status: validation_only_final_test_frozen
+dataset: NASA_CMAPSS_FD001_validation_split
+seed: 26249
+imputation: fit_partition_feature_median_no_missingness_indicator
+eligibility:
+  maximum_missing_fraction_per_window: 0.10
+  maximum_contiguous_missing_cycles_per_feature: 5
+interventions:
+  - name: clean
+    kind: clean
+  - name: random_sensor_missingness_3_percent
+    kind: random_missing
+    rate: 0.03
+  - name: sensor_11_outage_8_cycles
+    kind: contiguous_outage
+    feature: sensor_11
+    length_cycles: 8
+  - name: sensor_noise_quarter_fit_std
+    kind: sensor_noise
+    scale: 0.25
+  - name: fit_range_clipped_setting_shift_half_fit_std
+    kind: regime_shift
+    scale: 0.50
+acceptance_budgets:
+  maximum_mae_degradation_cycles: null
+  minimum_interval_coverage: null
+  maximum_withholding_rate: null

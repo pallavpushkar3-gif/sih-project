@@ -1,4 +1,4 @@
-.PHONY: setup web-check backend-check backend-integration science-check science-train science-calibrate sequence-check sequence-train alert-evaluation planner-benchmark simulation-reference test e2e services-up services-down migrate seed dev
+.PHONY: setup web-check backend-check backend-integration science-check science-train science-calibrate science-robustness sequence-check sequence-train alert-evaluation planner-benchmark simulation-reference test e2e services-up services-down migrate seed dev
 
 setup:
 	corepack enable
@@ -30,6 +30,10 @@ science-train:
 science-calibrate:
 	docker build --target science -t fleet-maintenance-science backend
 	docker run --rm -v "$(CURDIR):/workspace" -w /workspace -e PYTHONPATH=/workspace/backend/src fleet-maintenance-science python scripts/calibrate_model.py
+
+science-robustness:
+	docker build --target science -t fleet-maintenance-science backend
+	docker run --rm -v "$(CURDIR):/workspace" -w /workspace -e PYTHONPATH=/workspace/backend/src fleet-maintenance-science python scripts/evaluate_robustness.py --output artifacts/evaluations/robustness-validation-v1.json
 
 sequence-check:
 	docker build --target sequence -t fleet-maintenance-sequence backend

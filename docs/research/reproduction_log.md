@@ -35,6 +35,16 @@ Literature has been reviewed at the depths recorded in `literature_review.md`. T
 - Calibration diagnostic: residual quantile 30.5477 cycles; calibration-sample coverage 1.0; mean clipped interval width 56.6156 cycles. Calibration artifact SHA-256 `e169a563b9ca355be5dd14b2678854231b4dd5c471ae666407594d7f4ea8f971`.
 - Limitation: coverage on the same calibration scores is a construction diagnostic, not an independent empirical coverage estimate. Final coverage/width acceptance remains blocked until budgets and the final cutoff protocol are frozen; no individual-engine failure probability is implied.
 
+## 2026-10-04 — FD001 validation-v1 robustness interventions
+
+- State: completed-with-results on the 15 validation engines; final test frozen and acceptance budgets unresolved.
+- Configuration: `configs/robustness.yaml`, SHA-256 `69112a9ee2a9c0dbcc70656c5dceb61aab4aee427dfcb8417c8e7e39a4a432ee`; seed 26249; the selected validation-v1 baseline and its separately fitted calibration quantile were reused without retraining.
+- Protocol: one unchanged seeded cutoff per validation engine. Imputation uses per-feature medians from fit engines only and retains a missing-value mask in the intervention result; the selected model has no missingness-indicator features. A snapshot is withheld above 10% missing values or more than five consecutive missing cycles for any feature. Noise is 0.25 fit-standard-deviation on sensor columns. The setting shift is 0.5 fit-standard-deviation clipped to each setting's fit range; this is a sensitivity case, not proof of supported joint-regime detection.
+- Command: `make science-robustness`.
+- Results: clean MAE/RMSE were 9.4223/12.6115 cycles. Three-percent random sensor missingness with fit-median imputation produced MAE 10.4909 (degradation 1.0686) and RMSE 13.7087, with 0/15 withheld. An eight-cycle `sensor_11` outage exceeded the five-cycle policy and withheld 15/15, so no numerical error/coverage was reported. Quarter-standard-deviation sensor noise produced MAE 9.1242 and RMSE 10.3357; the range-clipped setting shift produced MAE 9.5553 and RMSE 12.1230. The improvement under one noise draw is retained as observed rather than generalized. Eligible cases showed empirical interval coverage 1.0 on 15 samples, with mean clipped widths between 47.07 and 48.88 cycles.
+- Artifact: ignored JSON SHA-256 `6b21434450e92afaddf9d7cef746c2bd611f7241a13aa11d250bcbfc467a772f`; each result also records the deterministic missing-mask SHA-256 and missing/imputed count.
+- Limitation: fifteen validation engines and one intervention seed are insufficient for a robustness or coverage guarantee. Missingness-indicator and advanced-imputation comparators were not implemented, final budgets remain null, and the official test partition was not inspected; AC-F08-04 is therefore not claimed as accepted.
+
 ## 2026-10-04 — Planner reference comparison
 
 - State: completed-with-results on two deterministic demonstration instances; not a workload performance acceptance test.
