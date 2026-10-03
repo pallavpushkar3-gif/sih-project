@@ -1,7 +1,10 @@
+from datetime import UTC, datetime
+
 import pytest
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
+from fleet_maintenance.api.routes.events import encode_event, published_after
 from fleet_maintenance.persistence.models import OutboxEvent, Plan, SimulationRun
 from fleet_maintenance.services.jobs import (
     JobConflict,
@@ -89,3 +92,21 @@ def test_job_effect_records_are_idempotent(isolated_session: Session):
     assert repeated_run.id == first_run.id
     assert isolated_session.get(Plan, first_plan.id) is not None
     assert isolated_session.get(SimulationRun, first_run.id) is not None
+
+
+def test_event_replay_uses_published_cursor_order(isolated_session: Session):
+    submit_job(isolated_session, "planning", {})
+    event = isolated_session.scalar(select(OutboxEvent).order_by(OutboxEvent.id.desc()))
+    assert event is not None
+    assert event.payload["state"] == "queued"
+    assert event.payload["attempt"] == 0
+    event.published_at = datetime.now(UTC)
+    isolated_session.commit()
+    factory = lambda: Session(isolated_session.bind, expire_on_commit=False)  # noqa: E731
+
+    rows = published_after(event.id - 1, session_factory=factory)
+    assert [row.id for row in rows] == [event.id]
+    encoded = encode_event(rows[0])
+    assert f"id: {event.id}\n" in encoded
+    assert "event: job.queued\n" in encoded
+    assert published_after(event.id, session_factory=factory) == []

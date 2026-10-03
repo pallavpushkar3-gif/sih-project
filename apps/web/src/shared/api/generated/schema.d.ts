@@ -174,6 +174,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/jobs/planning": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Submit Planning */
+        post: operations["submit_planning_api_jobs_planning_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/jobs/simulation/{scenario_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Submit Simulation */
+        post: operations["submit_simulation_api_jobs_simulation__scenario_id__post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/jobs/{job_id}": {
         parameters: {
             query?: never;
@@ -578,10 +612,9 @@ export type $defs = Record<string, never>;
 export interface operations {
     session_api_access_session_get: {
         parameters: {
-            query?: {
-                x_demo_user?: string;
-            };
+            query?: never;
             header?: {
+                "x-demo-user"?: string;
                 "x-demo-role"?: string;
             };
             path?: never;
@@ -694,7 +727,11 @@ export interface operations {
     events_api_events_get: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                "Last-Event-ID"?: string | null;
+                "x-demo-user"?: string;
+                "x-demo-role"?: string;
+            };
             path?: never;
             cookie?: never;
         };
@@ -707,6 +744,15 @@ export interface operations {
                 };
                 content: {
                     "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };
@@ -811,6 +857,72 @@ export interface operations {
             };
         };
     };
+    submit_planning_api_jobs_planning_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-demo-user"?: string;
+                "x-demo-role"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    submit_simulation_api_jobs_simulation__scenario_id__post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-demo-user"?: string;
+                "x-demo-role"?: string;
+            };
+            path: {
+                scenario_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     job_api_jobs__job_id__get: {
         parameters: {
             query?: never;
@@ -845,7 +957,10 @@ export interface operations {
     cancel_api_jobs__job_id__cancellation_post: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                "x-demo-user"?: string;
+                "x-demo-role"?: string;
+            };
             path: {
                 job_id: string;
             };
@@ -895,10 +1010,9 @@ export interface operations {
     };
     create_proposal_api_plans_proposals_post: {
         parameters: {
-            query?: {
-                x_demo_user?: string;
-            };
+            query?: never;
             header?: {
+                "x-demo-user"?: string;
                 "x-demo-role"?: string;
             };
             path?: never;
@@ -928,10 +1042,9 @@ export interface operations {
     };
     approve_api_plans__plan_id__approve_post: {
         parameters: {
-            query?: {
-                x_demo_user?: string;
-            };
+            query?: never;
             header?: {
+                "x-demo-user"?: string;
                 "x-demo-role"?: string;
             };
             path: {
@@ -1004,7 +1117,10 @@ export interface operations {
     run_api_scenarios__scenario_id__runs_post: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                "x-demo-user"?: string;
+                "x-demo-role"?: string;
+            };
             path: {
                 scenario_id: string;
             };

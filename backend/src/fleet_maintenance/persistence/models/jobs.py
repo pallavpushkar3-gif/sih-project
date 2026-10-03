@@ -22,4 +22,5 @@ class OutboxEvent(Base):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     topic: Mapped[str] = mapped_column(String(80))
     payload: Mapped[dict[str, object]] = mapped_column(JSON)
+    created_at: Mapped[datetime] = mapped_column(default=lambda: datetime.now(UTC))
     published_at: Mapped[datetime | None] = mapped_column(nullable=True)

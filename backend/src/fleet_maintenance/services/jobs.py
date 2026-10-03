@@ -26,7 +26,13 @@ def _event(session: Session, job: Job, event_type: str) -> None:
 
 
 def submit_job(session: Session, kind: str, input_payload: dict[str, object]) -> Job:
-    job = Job(id=f"job-{uuid.uuid4().hex}", kind=kind, input_payload=input_payload)
+    job = Job(
+        id=f"job-{uuid.uuid4().hex}",
+        kind=kind,
+        state="queued",
+        attempt=0,
+        input_payload=input_payload,
+    )
     session.add(job)
     _event(session, job, "job.queued")
     session.commit()

@@ -784,12 +784,12 @@
         "operationId": "session_api_access_session_get",
         "parameters": [
           {
-            "in": "query",
-            "name": "x_demo_user",
+            "in": "header",
+            "name": "x-demo-user",
             "required": false,
             "schema": {
               "default": "demo-planner",
-              "title": "X Demo User",
+              "title": "X-Demo-User",
               "type": "string"
             }
           },
@@ -944,6 +944,44 @@
     "/api/events": {
       "get": {
         "operationId": "events_api_events_get",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Last-Event-ID",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Last-Event-Id"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-demo-user",
+            "required": false,
+            "schema": {
+              "default": "demo-planner",
+              "title": "X-Demo-User",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-demo-role",
+            "required": false,
+            "schema": {
+              "default": "planner",
+              "title": "X-Demo-Role",
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "content": {
@@ -952,6 +990,16 @@
               }
             },
             "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
           }
         },
         "summary": "Events",
@@ -1077,6 +1125,121 @@
         ]
       }
     },
+    "/api/jobs/planning": {
+      "post": {
+        "operationId": "submit_planning_api_jobs_planning_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-demo-user",
+            "required": false,
+            "schema": {
+              "default": "demo-planner",
+              "title": "X-Demo-User",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-demo-role",
+            "required": false,
+            "schema": {
+              "default": "planner",
+              "title": "X-Demo-Role",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Submit Planning",
+        "tags": [
+          "jobs"
+        ]
+      }
+    },
+    "/api/jobs/simulation/{scenario_id}": {
+      "post": {
+        "operationId": "submit_simulation_api_jobs_simulation__scenario_id__post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "scenario_id",
+            "required": true,
+            "schema": {
+              "title": "Scenario Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-demo-user",
+            "required": false,
+            "schema": {
+              "default": "demo-planner",
+              "title": "X-Demo-User",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-demo-role",
+            "required": false,
+            "schema": {
+              "default": "planner",
+              "title": "X-Demo-Role",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Submit Simulation",
+        "tags": [
+          "jobs"
+        ]
+      }
+    },
     "/api/jobs/{job_id}": {
       "get": {
         "operationId": "job_api_jobs__job_id__get",
@@ -1129,6 +1292,26 @@
             "required": true,
             "schema": {
               "title": "Job Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-demo-user",
+            "required": false,
+            "schema": {
+              "default": "demo-planner",
+              "title": "X-Demo-User",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-demo-role",
+            "required": false,
+            "schema": {
+              "default": "planner",
+              "title": "X-Demo-Role",
               "type": "string"
             }
           }
@@ -1191,12 +1374,12 @@
         "operationId": "create_proposal_api_plans_proposals_post",
         "parameters": [
           {
-            "in": "query",
-            "name": "x_demo_user",
+            "in": "header",
+            "name": "x-demo-user",
             "required": false,
             "schema": {
               "default": "demo-planner",
-              "title": "X Demo User",
+              "title": "X-Demo-User",
               "type": "string"
             }
           },
@@ -1253,12 +1436,12 @@
             }
           },
           {
-            "in": "query",
-            "name": "x_demo_user",
+            "in": "header",
+            "name": "x-demo-user",
             "required": false,
             "schema": {
               "default": "demo-planner",
-              "title": "X Demo User",
+              "title": "X-Demo-User",
               "type": "string"
             }
           },
@@ -1361,6 +1544,26 @@
             "required": true,
             "schema": {
               "title": "Scenario Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-demo-user",
+            "required": false,
+            "schema": {
+              "default": "demo-planner",
+              "title": "X-Demo-User",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-demo-role",
+            "required": false,
+            "schema": {
+              "default": "planner",
+              "title": "X-Demo-Role",
               "type": "string"
             }
           }

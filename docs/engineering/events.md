@@ -1,16 +1,18 @@
 # Application Events
 
+Status: PostgreSQL-backed job-event replay implemented for the local demonstrator; retention-gap resync, record scoping and non-job material event families remain pending.
+
 ## Purpose
 
 SSE provides one-way progress/material updates. PostgreSQL/job/result retrieval remains authoritative; event delivery is not proof of completion.
 
 ## Event Envelope
 
-Define `event_id`, `type`, `occurred_at`, relevant record/job identity and version, correlation ID and a small payload. Use stable event names for assessment availability, alert change, proposal availability, plan commitment, inventory change and job state/progress. Final names are generated into shared contracts once implemented.
+The implemented job envelope contains `event_id`, `type`, `occurred_at` and the bounded outbox payload with job identity, kind, state and attempt. Stable names currently include queued, running, requeued, cancellation-requested, cancelled, failed and succeeded job states. Assessment, alert, plan and inventory event families remain to be added.
 
 ## Delivery and Access
 
-Authorize subscriptions and filter records by the same access rules as ordinary retrieval. Replay with `Last-Event-ID` or the implemented equivalent. Deduplicate client processing by ID/version. Define bounded retention; if the cursor cannot be resumed, emit a resync indication and refetch authoritative state. Do not stream unauthorized provenance or private payloads.
+The local demonstration subscription resolves the same injected demo actor as ordinary routes. It replays confirmed outbox rows after integer `Last-Event-ID`; the browser relies on native EventSource cursor handling and invalidates authoritative job/plan/run queries. Bounded retention and retention-gap resync are not yet implemented. Do not stream unauthorized provenance or private payloads.
 
 ## Progress
 
