@@ -9,8 +9,15 @@ from fleet_maintenance.science.simulation.replications import run_scenario
 
 
 def run_saved_scenario(
-    session: Session, scenario_id: str, policy: str = "configured"
+    session: Session,
+    scenario_id: str,
+    policy: str = "configured",
+    run_id: str | None = None,
 ) -> SimulationRun:
+    if run_id is not None:
+        existing = session.get(SimulationRun, run_id)
+        if existing is not None:
+            return existing
     scenario = session.get(Scenario, scenario_id)
     if scenario is None:
         raise LookupError(scenario_id)
@@ -49,7 +56,7 @@ def run_saved_scenario(
     )
     result = run_scenario(source)
     record = SimulationRun(
-        id=f"sim-{uuid.uuid4().hex[:10]}",
+        id=run_id or f"sim-{uuid.uuid4().hex[:10]}",
         scenario_id=scenario.id,
         policy=policy,
         seed=result.seed,

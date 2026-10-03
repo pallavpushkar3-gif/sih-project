@@ -65,6 +65,18 @@ services:
     volumes:
       - artifact-data:/var/lib/fleet-maintenance/artifacts
 
+  outbox:
+    build:
+      context: ./backend
+      target: runtime
+    environment:
+      FLEET_DATABASE_URL: postgresql+psycopg://fleet:fleet@postgres:5432/fleet
+      FLEET_BROKER_URL: amqp://fleet:fleet@rabbitmq:5672//
+    command: ["python", "-m", "fleet_maintenance.workers.outbox_dispatcher"]
+    depends_on:
+      api: { condition: service_healthy }
+      rabbitmq: { condition: service_healthy }
+
   web:
     build:
       context: .

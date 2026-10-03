@@ -11,7 +11,7 @@ The repository currently provides:
 - PostgreSQL-backed proposal approval with current-input checks, row locking, reservations and audit records;
 - an OR-Tools CP-SAT planner with independent checks for windows, capacity, fixed work, precedence and aggregate stock;
 - deterministic SimPy reference scenarios with explicit aircraft-time availability, queue wait and horizon handling;
-- Celery/RabbitMQ process wiring and job-state primitives; and
+- Celery/RabbitMQ durable job execution with PostgreSQL outbox dispatch, attempt claiming, cancellation and stale-result rejection; and
 - unit, verification, API and browser workflow checks.
 
 A reproducible, local-only NASA C-MAPSS FD001 research pipeline now validates and partitions engines, compares an engineered gradient-boosting baseline with a CPU LSTM under a common validation protocol, and calibrates the selected baseline on separate engines. Bulk data and artifacts remain ignored and prediction remains deliberately unavailable in the running demo until serving/evidence integration and final acceptance decisions are complete. The unresolved scientific budgets in `docs/research/evaluation_protocol.md` prevent a supported final RUL-quality claim.

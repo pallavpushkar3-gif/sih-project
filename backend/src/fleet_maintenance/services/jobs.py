@@ -64,6 +64,20 @@ def accept_result(
     return job
 
 
+def fail_attempt(session: Session, job_id: str, attempt: int, code: str) -> Job:
+    job = session.scalar(select(Job).where(Job.id == job_id).with_for_update())
+    if job is None:
+        raise LookupError(job_id)
+    if job.state not in {"running", "cancellation_requested"} or job.attempt != attempt:
+        raise JobConflict("The failure belongs to a stale or ineligible attempt.")
+    job.result_payload = {"error": code}
+    job.state = "failed"
+    _event(session, job, "job.failed")
+    session.commit()
+    session.refresh(job)
+    return job
+
+
 def request_cancellation(session: Session, job_id: str) -> Job:
     job = session.scalar(select(Job).where(Job.id == job_id).with_for_update())
     if job is None:

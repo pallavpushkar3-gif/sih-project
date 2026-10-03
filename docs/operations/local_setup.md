@@ -10,7 +10,7 @@ Use Node 24 with pnpm 12.8.1 and Docker Compose. Backend containers use Python 3
 
 1. Run `make setup` to install the frozen web lock and build the Python 3.12 backend test image.
 2. Review `.env.example`; copy it to the ignored `.env` only when overriding local defaults.
-3. Run `make dev`. Compose starts PostgreSQL and RabbitMQ, applies Alembic migrations, seeds labelled fixtures, and starts the API, worker and web proxy.
+3. Run `make dev`. Compose starts PostgreSQL and RabbitMQ, applies Alembic migrations, seeds labelled fixtures, and starts the API, outbox dispatcher, worker and web proxy.
 4. Check `http://localhost:8000/api/health/ready` and open `http://localhost:8080`.
 5. Run `make web-check`, `make backend-check`, and `make e2e` as appropriate.
 

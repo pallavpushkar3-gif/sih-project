@@ -55,6 +55,14 @@ Literature has been reviewed at the depths recorded in `literature_review.md`. T
 - Artifact: ignored JSON SHA-256 `012b91d9961c822edbda6fb0fc563cc06b7d1ea1193c790ffaadf582a91f807b`.
 - Limitation: the change is a capacity sensitivity, not a learned policy benefit. Synthetic events/logistics and the tiny deterministic case cannot support an operational-readiness or general improvement claim.
 
+## 2026-10-04 — Durable job and outbox integration checks
+
+- State: completed-with-results for transactional lifecycle cases; full broker/process fault injection remains incomplete.
+- Environment: Docker Desktop; Python 3.12.15; PostgreSQL 17; RabbitMQ 4 service available on the Compose network.
+- Command: backend integration suite in `fleet-maintenance-test` against `postgresql+psycopg://fleet:fleet@postgres:5432/fleet`.
+- Results: 9 integration tests passed. Covered stale results after recovery, cancellation/result races, bounded failure recording, publication marking only after a successful publisher call, deterministic job-effect idempotency, API contracts, stock reservation concurrency and stale plan approval.
+- Limitation: the publisher test uses an injected publisher failure and PostgreSQL transaction rollback. A live kill/restart matrix for API, dispatcher, worker and broker processes has not yet been completed; broker availability alone is not evidence for every recovery case in `docs/engineering/job_lifecycle.md`.
+
 ## Entry Template
 
 For each attempted reproduction, record: date/owner; paper/method/source; reading depth; code/data licence and acquisition; source revision/environment; dataset/split/target/transforms; configuration/seeds; exact commands; artifact hashes; baseline/results; deviations from paper; failures; and what conclusion is supported.

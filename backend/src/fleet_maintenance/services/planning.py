@@ -18,7 +18,11 @@ def current_input_version(tasks: list[MaintenanceTask], parts: list[Part]) -> st
     return hashlib.sha256(json.dumps(payload, sort_keys=True).encode()).hexdigest()[:20]
 
 
-def propose_plan(session: Session) -> Plan:
+def propose_plan(session: Session, plan_id: str | None = None) -> Plan:
+    if plan_id is not None:
+        existing = session.get(Plan, plan_id)
+        if existing is not None:
+            return existing
     tasks = list(
         session.scalars(select(MaintenanceTask).where(MaintenanceTask.status == "open")).all()
     )
@@ -43,7 +47,7 @@ def propose_plan(session: Session) -> Plan:
     )
     result = solve(source)
     plan = Plan(
-        id=f"plan-{uuid.uuid4().hex[:10]}",
+        id=plan_id or f"plan-{uuid.uuid4().hex[:10]}",
         status="proposed" if result.status in {"optimal", "feasible"} else result.status,
         solver_status=result.status,
         input_version=current_input_version(tasks, parts),
