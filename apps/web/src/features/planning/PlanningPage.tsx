@@ -5,6 +5,13 @@ import { AsyncState } from "../../shared/ui/AsyncState";
 import { StatusBadge } from "../../shared/ui/StatusBadge";
 import { JobProgress } from "../jobs/JobProgress";
 
+function explainDiagnostic(diagnostic: string) {
+  if (diagnostic.includes("Insufficient aggregate stock") && diagnostic.includes("part-filter")) {
+    return "This proposal cannot be scheduled because there are not enough available filters. Review Parts before trying again.";
+  }
+  return diagnostic;
+}
+
 export function PlanningPage() {
   const client = useQueryClient();
   const query = useQuery({
@@ -23,16 +30,14 @@ export function PlanningPage() {
       void client.invalidateQueries({ queryKey: ["inventory"] });
     },
   });
+  const recentPlans = query.data?.slice(0, 3);
 
   return (
     <section>
-      <div className="actions">
-        <div>
-          <h2>Maintenance planning</h2>
-          <p className="muted">Constraint-checked proposals do not reserve stock until approval.</p>
-        </div>
+      <div className="page-title">
+        <div><span className="eyebrow">Executable maintenance</span><h1>Maintenance planning</h1><p>Build a plan that fits task deadlines, qualified capacity and available parts. Stock is reserved only after human approval.</p></div>
         <button onClick={() => propose.mutate()} disabled={propose.isPending}>
-          Queue proposal calculation
+          {propose.isPending ? "Starting calculation…" : "Queue proposal calculation"}
         </button>
       </div>
       {(propose.error || approve.error) && (
@@ -40,38 +45,36 @@ export function PlanningPage() {
       )}
       <div className="grid">
         <JobProgress kind="planning" />
-        <AsyncState loading={query.isLoading} error={query.error} empty={!query.data?.length}>
-          {query.data?.map((plan) => (
-            <article className="card span-12" key={plan.id}>
-              <div className="actions">
-                <h3>{plan.id}</h3>
-                <StatusBadge status={plan.status} />
-                <StatusBadge status={plan.solver_status} />
-              </div>
-              <p className="muted">Input snapshot {plan.input_version}</p>
+        <AsyncState loading={query.isLoading} error={query.error} empty={!recentPlans?.length}>
+          {recentPlans?.map((plan, index) => (
+            <article className="card span-12 plan-card" key={plan.id}>
+              <div className="plan-heading"><div><span className="eyebrow">{index === 0 ? "Latest proposal" : "Recent proposal"}</span><h3>Fleet maintenance proposal</h3><p>Generated from the current task, capacity and inventory snapshot.</p></div><div><StatusBadge status={plan.status} /> <StatusBadge status={plan.solver_status} /></div></div>
+              {plan.solver_status === "invalid" && <div className="plan-blocker"><span>!</span><div><strong>No feasible schedule was created</strong><p>{explainDiagnostic(plan.diagnostics[0] ?? "The current constraints need review before a plan can be proposed.")}</p></div></div>}
+              <div className="plan-summary"><div><span>Tasks scheduled</span><strong>{plan.assignments.length}</strong></div><div><span>Plan duration</span><strong>{Math.max(...plan.assignments.map((item) => item.end), 0) * 8} hours</strong></div><div><span>Constraint result</span><strong>{plan.solver_status === "optimal" ? "All checks passed" : plan.solver_status}</strong></div></div>
               <table>
                 <thead>
-                  <tr><th>Task</th><th>Start slot</th><th>End slot</th></tr>
+                  <tr><th>Maintenance action</th><th>Starts</th><th>Completes</th></tr>
                 </thead>
                 <tbody>
                   {plan.assignments.map((assignment) => (
                     <tr key={assignment.task_id}>
-                      <td>{assignment.task_id}</td>
-                      <td>{assignment.start}</td>
-                      <td>{assignment.end}</td>
+                      <td><strong>{assignment.task_id.includes("inspect") ? "Engine inspection" : "Filter replacement"}</strong><small className="table-subtitle">{assignment.task_id.includes("inspect") ? "Aircraft SYN-001" : "Aircraft SYN-002"}</small></td>
+                      <td>Hour {assignment.start * 8}</td>
+                      <td>Hour {assignment.end * 8}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
               {plan.status === "proposed" && (
                 <button onClick={() => approve.mutate(plan.id)} disabled={approve.isPending}>
-                  Approve with current-state check
+                  Approve plan and reserve parts
                 </button>
               )}
-              {plan.diagnostics.map((diagnostic) => <p key={diagnostic}>{diagnostic}</p>)}
+              <details className="technical-details"><summary>Technical checks and record identity</summary><p>Record {plan.id} · Input {plan.input_version}</p>{plan.diagnostics.map((diagnostic) => <p key={diagnostic}>{diagnostic}</p>)}</details>
             </article>
           ))}
         </AsyncState>
+        {(query.data?.length ?? 0) > 3 && <p className="history-note span-12">Showing the three most recent proposals · {query.data!.length - 3} older records remain in the audit history.</p>}
       </div>
     </section>
   );

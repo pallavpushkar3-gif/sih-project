@@ -7,6 +7,19 @@ import { StatusBadge } from "../../shared/ui/StatusBadge";
 
 const activeStates = new Set(["queued", "running", "cancellation_requested"]);
 
+const jobLabels = {
+  planning: {
+    title: "Maintenance plan",
+    description: "Checks deadlines, qualified capacity and available parts.",
+    success: "Plan ready for review",
+  },
+  simulation: {
+    title: "Availability comparison",
+    description: "Runs the selected capacity assumptions with a fixed reference seed.",
+    success: "Projection saved",
+  },
+};
+
 export function JobProgress({ kind }: { kind: "planning" | "simulation" }) {
   const client = useQueryClient();
   const query = useQuery({
@@ -24,6 +37,7 @@ export function JobProgress({ kind }: { kind: "planning" | "simulation" }) {
     .filter((job) => job.state === "succeeded")
     .map((job) => JSON.stringify(job.result))
     .join("|");
+  const copy = jobLabels[kind];
 
   useEffect(() => {
     if (!completedResults) return;
@@ -34,27 +48,28 @@ export function JobProgress({ kind }: { kind: "planning" | "simulation" }) {
 
   return (
     <article className="card span-12" aria-live="polite">
-      <h3>Calculation jobs</h3>
+      <div className="card-heading">
+        <div><span className="eyebrow">Background processing</span><h3>Calculation activity</h3></div>
+        <span className="soft-label">Updates automatically</span>
+      </div>
       <AsyncState loading={query.isLoading} error={query.error} empty={!jobs.length}>
-        <table>
+        <table className="activity-table">
           <thead>
             <tr>
-              <th>Job</th>
-              <th>State</th>
-              <th>Attempt</th>
-              <th>Result</th>
+              <th>Calculation</th>
+              <th>Status</th>
+              <th>Outcome</th>
               <th>Action</th>
             </tr>
           </thead>
           <tbody>
             {jobs.map((job) => (
-              <tr key={job.id}>
-                <td>{job.id}</td>
+              <tr key={job.id} data-job-id={job.id}>
+                <td><strong>{copy.title}</strong><small className="table-subtitle">{copy.description}</small></td>
                 <td>
                   <StatusBadge status={job.state} />
                 </td>
-                <td>{job.attempt}</td>
-                <td>{job.result ? Object.values(job.result).join(", ") : "—"}</td>
+                <td>{job.state === "succeeded" ? copy.success : "Waiting for result"}</td>
                 <td>
                   {activeStates.has(job.state) ? (
                     <button
@@ -65,7 +80,7 @@ export function JobProgress({ kind }: { kind: "planning" | "simulation" }) {
                       Request cancellation
                     </button>
                   ) : (
-                    "—"
+                    <details className="inline-details"><summary>Details</summary><span>Attempt {job.attempt} · {job.id}</span></details>
                   )}
                 </td>
               </tr>

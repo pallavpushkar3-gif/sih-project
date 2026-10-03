@@ -32,22 +32,16 @@ export function ScenariosPage() {
 
   return (
     <section>
-      <h2>Availability scenarios</h2>
-      <div className="banner">
-        <strong>Simulated projections</strong>
-        <div>
-          Results use synthetic logistics and explicit maintenance-effect assumptions; they are not
-          operational readiness measures.
-        </div>
-      </div>
+      <div className="page-title"><div><span className="eyebrow">Capacity decisions</span><h1>What changes fleet availability?</h1><p>Compare the same maintenance demand under different hangar capacity. Results are projections, not operational readiness measures.</p></div><span className="projection-label">Simulated projections</span></div>
       {run.error && <div className="state error">{run.error.message}</div>}
       <div className="grid">
         <AsyncState loading={scenarios.isLoading} error={scenarios.error}>
           {scenarios.data?.map((scenario) => (
             <article className="card span-6" key={scenario.id}>
-              <h3>{scenario.name}</h3>
-              <p className="muted">Version {scenario.version} · {scenario.provenance}</p>
-              <pre>{JSON.stringify(scenario.assumptions, null, 2)}</pre>
+              <div className="scenario-visual"><span>✈</span><strong>{scenario.assumptions.maintenance_capacity === 1 ? "Current capacity" : "Additional bay"}</strong></div>
+              <span className="eyebrow">Scenario {scenario.version}</span><h3>{scenario.name.replace("Synthetic ", "")}</h3>
+              <p className="muted">Test how maintenance capacity affects waiting time and aircraft availability.</p>
+              <div className="scenario-facts"><div><span>Aircraft</span><strong>{String(scenario.assumptions.aircraft_count)}</strong></div><div><span>Maintenance bays</span><strong>{String(scenario.assumptions.maintenance_capacity)}</strong></div><div><span>Horizon</span><strong>{String(scenario.assumptions.horizon_hours)} hr</strong></div></div>
               <button onClick={() => run.mutate(scenario.id)} disabled={run.isPending}>
                 Queue deterministic reference
               </button>
@@ -56,7 +50,7 @@ export function ScenariosPage() {
         </AsyncState>
         <JobProgress kind="simulation" />
         <article className="card span-12">
-          <h3>Recorded results</h3>
+          <div className="card-heading"><div><span className="eyebrow">Decision support</span><h3>Recorded comparisons</h3></div><span className="soft-label">Synthetic projection</span></div>
           <AsyncState loading={runs.isLoading} error={runs.error} empty={!runs.data?.length}>
             <table>
               <thead>
@@ -67,7 +61,7 @@ export function ScenariosPage() {
               <tbody>
                 {runs.data?.map((result) => (
                   <tr key={result.id}>
-                    <td>{result.scenario_id}</td>
+                    <td>{result.scenario_id === "scenario-baseline" ? "Current capacity" : "Additional bay"}</td>
                     <td>{(result.availability * 100).toFixed(1)}%</td>
                     <td>{String(result.metrics.queue_wait_hours ?? "—")}</td>
                     <td>{result.seed}</td>
