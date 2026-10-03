@@ -61,7 +61,8 @@ Literature has been reviewed at the depths recorded in `literature_review.md`. T
 - Environment: Docker Desktop; Python 3.12.15; PostgreSQL 17; RabbitMQ 4 service available on the Compose network.
 - Command: backend integration suite in `fleet-maintenance-test` against `postgresql+psycopg://fleet:fleet@postgres:5432/fleet`.
 - Results: 11 integration tests passed. Covered stale results after recovery, cancellation/result races, bounded failure recording, publication marking only after a successful publisher call, deterministic job-effect idempotency, confirmed-event cursor replay/encoding, API contracts, stock reservation concurrency, stale plan approval and viewer denial without plan/run/job state changes. A live local submission traversed API → PostgreSQL outbox → RabbitMQ → Celery attempt 1 → persisted succeeded result, and an SSE connection replayed its three confirmed state events by ID.
-- Limitation: the publisher test uses an injected publisher failure and PostgreSQL transaction rollback. A live kill/restart matrix for API, dispatcher, worker and broker processes has not yet been completed; broker availability alone is not evidence for every recovery case in `docs/engineering/job_lifecycle.md`.
+- Live worker-loss case: worker was stopped, planning job `job-9074e40045564ba18af4d4f79a118792` was submitted and remained authoritative `queued` at attempt 0, then the worker was restarted and the same job reached `succeeded` at attempt 1 with deterministic result `plan-for-job-9074e40045564ba18af4d4f79a118792`.
+- Limitation: the publisher test uses an injected publisher failure and PostgreSQL transaction rollback. API/dispatcher/broker kill points and worker loss during active calculation have not all been exercised; this is not evidence for every recovery case in `docs/engineering/job_lifecycle.md`.
 
 ## Entry Template
 
