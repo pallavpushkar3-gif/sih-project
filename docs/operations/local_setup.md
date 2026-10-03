@@ -1,10 +1,10 @@
 # Local Setup
 
-Status: implemented local demonstrator procedure; scientific dataset/model setup remains pending.
+Status: implemented local demonstrator and validation-only scientific procedure; final evaluation and prediction serving remain pending.
 
 ## Required Environment
 
-Use Node 24 with pnpm 12.8.1 and Docker Compose. Backend containers use Python 3.12 as declared in `backend/pyproject.toml` and `backend/Dockerfile`; the host Python is not used by the documented checks. GPU access is not required for the current functional demonstrator.
+Use Node 24 with pnpm 12.8.1 and Docker Compose. Backend containers use Python 3.12 as declared in `backend/pyproject.toml` and `backend/Dockerfile`; the host Python is not used by the documented checks. GPU access is not required. The sequence target installs the official PyTorch 2.8 CPU wheel separately so ordinary checks do not pull CUDA packages.
 
 ## Setup Sequence
 
@@ -16,7 +16,14 @@ Use Node 24 with pnpm 12.8.1 and Docker Compose. Backend containers use Python 3
 
 `make services-down` stops containers without deleting named volumes. Do not add `-v` as routine troubleshooting because it destroys persisted local PostgreSQL/artifact state.
 
-The current `scripts/fetch_dataset.py`, training and calibration entry points are placeholders. There is no authorized, hashed C-MAPSS artifact or evaluated model in the workspace. Prediction setup therefore remains blocked and must not be represented as completed by running the functional demo.
+## Validation-only prediction research
+
+1. Run `python scripts/fetch_dataset.py` from a compatible Python environment, or use the documented container approach, to acquire the allowlisted official NASA archive. The command verifies the archive layout and records hashes; existing mismatched files are not silently replaced.
+2. Run `scripts/prepare_dataset.py` with `PYTHONPATH=backend/src` in Python 3.12 to validate FD001 and create the ignored engine-split manifest.
+3. Run `make science-check` and `make sequence-check`.
+4. Run `make science-train`, `make sequence-train`, then `make science-calibrate`.
+
+The commands read the frozen YAML configurations and store their hashes with the ignored artifacts. They use only the supplied FD001 training histories for model selection/calibration. The official test histories and RUL labels remain reserved. The comparison is validation evidence, not a final performance or operational claim, and learned artifacts are not wired into the running demo.
 
 ## Commands and Troubleshooting
 

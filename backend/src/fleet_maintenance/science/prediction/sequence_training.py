@@ -3,99 +3,120 @@ import json
 from dataclasses import dataclass
 from pathlib import Path
 
-import joblib  # type: ignore[import-untyped]
 import numpy as np
+import torch
 from numpy.typing import NDArray
 
-from fleet_maintenance.science.data.features import (
-    build_snapshot_dataset,
-    snapshot_feature_names,
-)
+from fleet_maintenance.science.data.features import build_sequence_dataset
 from fleet_maintenance.science.data.loaders import CmapssTable
-from fleet_maintenance.science.data.preprocessing import Standardizer
 from fleet_maintenance.science.data.splitting import EngineSplit
-from fleet_maintenance.science.prediction.baselines import GradientBoostingRul
 from fleet_maintenance.science.prediction.evaluation import RegressionMetrics, regression_metrics
+from fleet_maintenance.science.prediction.sequence import SequenceRul
 
 
 @dataclass(frozen=True)
-class BaselineTrainingResult:
+class SequenceTrainingResult:
     validation: RegressionMetrics
     artifact_manifest: dict[str, object]
-
-
-def _rows(values: NDArray[np.float64], names: tuple[str, ...]) -> list[dict[str, float]]:
-    return [dict(zip(names, row, strict=True)) for row in values.tolist()]
 
 
 def _hash(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def train_baseline(
+def _fit_transform(
+    values: NDArray[np.float64],
+) -> tuple[NDArray[np.float64], NDArray[np.float64]]:
+    mean = values.reshape(-1, values.shape[2]).mean(axis=0)
+    scale = values.reshape(-1, values.shape[2]).std(axis=0)
+    scale[scale == 0] = 1.0
+    return mean, scale
+
+
+def train_sequence(
     table: CmapssTable,
     split: EngineSplit,
     artifact_dir: Path,
     *,
     target_cap: int = 125,
-    minimum_history: int = 30,
     window: int = 30,
     seed: int = 26249,
+    hidden_size: int = 32,
+    epochs: int = 8,
+    batch_size: int = 128,
+    learning_rate: float = 0.001,
     provenance: dict[str, str] | None = None,
-) -> BaselineTrainingResult:
-    fit = build_snapshot_dataset(
+) -> SequenceTrainingResult:
+    fit = build_sequence_dataset(
         table,
         split.fit,
-        minimum_history=minimum_history,
         window=window,
         target_cap=target_cap,
         sampling="all",
         seed=seed,
     )
-    validation = build_snapshot_dataset(
+    validation = build_sequence_dataset(
         table,
         split.validation,
-        minimum_history=minimum_history,
         window=window,
         target_cap=target_cap,
         sampling="one_seeded_cutoff_per_engine",
         seed=seed,
     )
-    names = snapshot_feature_names(table.feature_names)
-    standardizer = Standardizer.fit(_rows(fit.values, names), names)
-    fit_values = standardizer.transform(_rows(fit.values, names))
-    validation_values = standardizer.transform(_rows(validation.values, names))
-    model = GradientBoostingRul.fit(fit_values, fit.targets, seed)
+    mean, scale = _fit_transform(fit.values)
+    fit_values = (fit.values - mean) / scale
+    validation_values = (validation.values - mean) / scale
+    model = SequenceRul.fit(
+        fit_values,
+        fit.targets,
+        seed=seed,
+        hidden_size=hidden_size,
+        epochs=epochs,
+        batch_size=batch_size,
+        learning_rate=learning_rate,
+    )
     predictions = model.predict(validation_values)
     metrics = regression_metrics(validation.targets, predictions)
 
     artifact_dir.mkdir(parents=True, exist_ok=True)
-    model_path = artifact_dir / "model.joblib"
+    model_path = artifact_dir / "model.pt"
     transform_path = artifact_dir / "standardizer.json"
-    joblib.dump(model, model_path)
+    torch.save(
+        {
+            "state_dict": model.model.state_dict(),
+            "feature_count": fit.values.shape[2],
+            "hidden_size": hidden_size,
+        },
+        model_path,
+    )
     transform_path.write_text(
         json.dumps(
-            {"features": names, "mean": standardizer.mean, "scale": standardizer.scale},
+            {"features": table.feature_names, "mean": mean.tolist(), "scale": scale.tolist()},
             indent=2,
         )
         + "\n"
     )
     manifest: dict[str, object] = {
-        "model": "gradient_boosting_regressor",
+        "model": "lstm_sequence_regressor",
         "version": "validation-v1",
         "dataset": "NASA_CMAPSS_FD001",
         "target": {"unit": "cycles", "cap": target_cap},
-        "minimum_history_cycles": minimum_history,
-        "feature_window_cycles": window,
-        "feature_order": list(names),
+        "sequence_window_cycles": window,
+        "feature_order": list(table.feature_names),
         "fit_engines": list(split.fit),
         "validation_engines": list(split.validation),
         "calibration_engines": list(split.calibration),
         "validation_cutoffs": validation.cutoffs.tolist(),
         "validation_metrics": metrics.as_dict(),
+        "training": {
+            "hidden_size": hidden_size,
+            "epochs": epochs,
+            "batch_size": batch_size,
+            "learning_rate": learning_rate,
+        },
         "seed": seed,
         "artifacts": {
-            "model.joblib": _hash(model_path),
+            "model.pt": _hash(model_path),
             "standardizer.json": _hash(transform_path),
         },
         "final_test_evaluated": False,
@@ -104,4 +125,4 @@ def train_baseline(
     (artifact_dir / "manifest.json").write_text(
         json.dumps(manifest, indent=2, sort_keys=True) + "\n"
     )
-    return BaselineTrainingResult(metrics, manifest)
+    return SequenceTrainingResult(metrics, manifest)

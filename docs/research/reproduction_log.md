@@ -2,7 +2,7 @@
 
 ## Current Status
 
-Literature has been reviewed at the depths recorded in `literature_review.md`. No paper code/result has been reproduced, no model trained and no performance check is claimed here.
+Literature has been reviewed at the depths recorded in `literature_review.md`. The validation-v1 entries below are local method adaptations, not reproductions of a paper's published numbers. Final FD001 test evaluation has not been performed.
 
 ## 2026-10-04 — Functional reference checks (not a model reproduction)
 
@@ -13,6 +13,27 @@ Literature has been reviewed at the depths recorded in `literature_review.md`. N
 - Commands exercised: locked pnpm install; web lint/type/build; Docker Compose PostgreSQL/RabbitMQ/API startup; three Playwright flows; backend test-image build and initial Ruff/mypy invocation.
 - Observed result before the subsequent fixes in this workspace: web lint/type/build passed; all three Playwright flows passed from the moved repository path; the initial mypy run found 14 typing errors; Vitest incorrectly collected Playwright suites and failed before tests. These configuration/type defects were retained and corrected rather than reported as passing.
 - Supported conclusion: the basic synthetic UI/API workflows can execute from the new path, and the earlier unreadable-file/Vite-500 failures were not reproduced. This does not support a predictive-quality, uncertainty, alert-budget, concurrency, job-recovery or fleet-improvement claim.
+
+## 2026-10-04 — FD001 validation-v1 candidate comparison
+
+- State: completed-with-results; final test frozen.
+- Source revision: local work based on commit `f838b5d` plus the scientific changes represented by this entry.
+- Environment: Docker Desktop on Apple Silicon; Python 3.12.15; NumPy 2.5.3; scikit-learn 1.9.1; PyTorch 2.8.0 CPU.
+- Data: official NASA PCoE C-MAPSS archive, simulated FD001. Training-file SHA-256 `963b5e22825b34d8b21c69e1aeb4af3e647050eb672ee8834ba4b5d91d2de0f8`; processed manifest SHA-256 `d150c02afc2695a15bcd1b5dd12947c805d45b0f94b9e32ddf9024aa8fb524f8`. The NASA portal did not specify a license.
+- Protocol: 70 fit, 15 validation and 15 calibration engines; seed 26249; 30-cycle minimum/window; RUL capped at 125 cycles. Validation samples one seeded cutoff per engine. Scaling was fit on fit engines only. The official 100-engine test partition and RUL labels were not loaded by training/calibration commands.
+- Commands: `make science-check`; `make sequence-check`; `make science-train`; `make sequence-train`; `make science-calibrate` (equivalent Docker commands were executed directly during implementation).
+- Engineered gradient boosting (`configs/prediction_baseline.yaml`, SHA-256 `756261cd25496719a46d1eb6999b01e385a3ccca89b8e050b6241b5f3c0e8c38`): validation count 15, MAE 9.4223 cycles, RMSE 12.6115 cycles, defined asymmetric score 44.4076. Model SHA-256 `fb9d4e08671378e56f49c7c7c31fc4384049cfdc7244b845bd7e7890e67d39bc`; transform SHA-256 `6ea346227fa7ec22bcd49f036980d3f25b073ec5e95f5b4e84e69b4897a26f13`; ignored manifest SHA-256 `ef2aa78d03f167f8b400b19e3d036e17b964fe0b2b22dae3a3bd904311747ed5`.
+- LSTM comparator (`configs/prediction_sequence.yaml`, SHA-256 `c0f73f6533873c9428bfad5760af1cbf7460f039457eb4c47dd598676085fbb2`): validation count 15, MAE 60.4816 cycles, RMSE 68.6574 cycles, asymmetric score 8731.9399. Model SHA-256 `0e954c7c22987da7f12d3ebdf14910aa9f2d9f33bb83cd9164ab2dc033b0217c`; transform SHA-256 `c7725b7faac59562b6b55ed1672ffe7a9931df59a6af1a35c10fb2c5aa9100e3`; ignored manifest SHA-256 `f0afc1a3f02c22107009fc445cfc725103f3b44578c721d1cc6ac49ac4af1fe9`.
+- Decision: retain gradient boosting as validation-v1 because it was better on every registered prediction metric. The LSTM result is retained as an unfavorable result and was not tuned after comparison.
+- Supported conclusion: the pipeline can execute a leakage-separated, common-protocol validation comparison and replay saved transforms/models. Fifteen validation engines are too few for a broad quality claim, and no frozen acceptance budget or final-test result exists.
+
+## 2026-10-04 — FD001 validation-v1 split-conformal calibration
+
+- State: completed-with-diagnostic; final test frozen.
+- Selected model: validation-v1 gradient boosting above. Configuration SHA-256 `072e2cfa60c97e780d428cd65dece021de1195f2101d53b730431f076d203975`.
+- Protocol: one seeded cutoff from each of 15 calibration engines; symmetric absolute-residual split conformal; nominal coverage 0.90; finite-sample higher order statistic.
+- Calibration diagnostic: residual quantile 30.5477 cycles; calibration-sample coverage 1.0; mean clipped interval width 56.6156 cycles. Calibration artifact SHA-256 `e169a563b9ca355be5dd14b2678854231b4dd5c471ae666407594d7f4ea8f971`.
+- Limitation: coverage on the same calibration scores is a construction diagnostic, not an independent empirical coverage estimate. Final coverage/width acceptance remains blocked until budgets and the final cutoff protocol are frozen; no individual-engine failure probability is implied.
 
 ## Entry Template
 

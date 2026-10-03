@@ -19,10 +19,24 @@ COPY migrations ./migrations
 EXPOSE 8000
 
 FROM base AS test-dependencies
-RUN python -m pip install ".[dev]"
+RUN python -m pip install ".[science,dev]"
 
 FROM test-dependencies AS test
 COPY src ./src
 COPY tests ./tests
 RUN python -m pip install --no-deps "."
 CMD ["python", "-m", "pytest"]
+
+FROM base AS science-dependencies
+RUN python -m pip install ".[science,dev]"
+
+FROM science-dependencies AS science
+COPY src ./src
+RUN python -m pip install --no-deps "."
+
+FROM science-dependencies AS sequence-dependencies
+RUN python -m pip install "torch==2.8.0" --index-url https://download.pytorch.org/whl/cpu
+
+FROM sequence-dependencies AS sequence
+COPY src ./src
+RUN python -m pip install --no-deps "."

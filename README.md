@@ -14,7 +14,7 @@ The repository currently provides:
 - Celery/RabbitMQ process wiring and job-state primitives; and
 - unit, verification, API and browser workflow checks.
 
-Prediction remains deliberately unavailable in the running demo. No evaluated C-MAPSS dataset/model/calibration artifact is installed, and the unresolved scientific budgets in `docs/research/evaluation_protocol.md` prevent a supported RUL-quality claim. The UI exposes that blocked state without substituting a synthetic estimate.
+A reproducible, local-only NASA C-MAPSS FD001 research pipeline now validates and partitions engines, compares an engineered gradient-boosting baseline with a CPU LSTM under a common validation protocol, and calibrates the selected baseline on separate engines. Bulk data and artifacts remain ignored and prediction remains deliberately unavailable in the running demo until serving/evidence integration and final acceptance decisions are complete. The unresolved scientific budgets in `docs/research/evaluation_protocol.md` prevent a supported final RUL-quality claim.
 
 ## Prerequisites
 
@@ -41,11 +41,15 @@ make web-check
 make backend-check
 make backend-integration
 make e2e
+make science-check
+make sequence-check
 ```
 
 `make web-check` runs ESLint, TypeScript, the production build and Vitest. `make backend-check` builds the Python 3.12 test image, then runs Ruff, mypy, and the unit/verification suites. `make backend-integration` runs the integration tests against PostgreSQL, including the concurrent stock-reservation race. `make e2e` starts PostgreSQL, RabbitMQ and the API before running Playwright in Chrome.
 
 PostgreSQL-specific reservation races and broker/process fault injection require the integration environment described in `docs/operations/local_setup.md`; SQLite results must not be used as evidence for those criteria.
+
+After acquiring and preparing FD001 as documented in `docs/operations/local_setup.md`, `make science-train`, `make sequence-train`, and `make science-calibrate` reproduce the validation-only comparison. These commands do not inspect the official final test labels.
 
 ## Data and claims
 

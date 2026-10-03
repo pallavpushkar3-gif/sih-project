@@ -1,6 +1,11 @@
-version: proposed-v1
-status: blocked-pending-dataset-acquisition
+version: validation-v1
+status: validation_only_final_test_frozen
 dataset: NASA_CMAPSS_FD001
 model: gradient_boosting_regressor
 target_unit: cycles
+target_cap_cycles: 125
+minimum_history_cycles: 30
+feature_window_cycles: 30
+validation_sampling: one_seeded_cutoff_per_engine
 split_seed: 26249
+model_seed: 26249

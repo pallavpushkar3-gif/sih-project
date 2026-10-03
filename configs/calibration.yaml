@@ -1,5 +1,9 @@
-version: proposed-v1
-status: blocked-pending-dataset-acquisition
+version: validation-v1
+status: validation_only_final_test_frozen
 method: split_conformal
-nominal_coverage: null
-sampling_unit: engine_final_cutoff
+nominal_coverage: 0.9
+sampling_unit: one_seeded_cutoff_per_engine
+cutoff_seed: 26249
+minimum_history_cycles: 30
+feature_window_cycles: 30
+target_cap_cycles: 125

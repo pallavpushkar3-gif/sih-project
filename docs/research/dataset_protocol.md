@@ -1,22 +1,22 @@
 # Dataset Protocol
 
-Status: proposed reproducible protocol; acquisition and partition manifests pending. Freeze choices before evaluation.
+Status: FD001 acquisition, identity, split and target protocol frozen for validation-v1; final test remains uninspected by model-selection code.
 
 ## Source and Initial Support
 
-Initial candidate: NASA C-MAPSS. Authority: https://data.nasa.gov/dataset/cmapss-jet-engine-simulated-data. Treat histories as simulated. Start reproduction on FD001; expanding to FD002/FD003/FD004 requires separately declared/evaluated support. FD001 is an implementation starting point, not a completed support claim.
+Initial candidate: NASA C-MAPSS. Authority: https://data.nasa.gov/dataset/cmapss-jet-engine-simulated-data. Treat histories as simulated. Validation-v1 uses FD001 only; expanding to FD002/FD003/FD004 requires separately declared/evaluated support. FD001 acquisition is not by itself a completed prediction-support claim.
 
 ## Acquisition and Identity
 
-Record source/version/acquisition time, actual file hashes and usage terms. Namespace engine IDs with dataset, subset and train/test source partition. Preserve raw bytes. Validate column schema, engine identity, cycle ordering, duplicate rows, finite values and operating-setting/sensor metadata.
+The official NASA PCoE archive was acquired on 2026-10-04 using `scripts/fetch_dataset.py`. Actual hashes are recorded in `data/sources.yaml` and the ignored local `data/raw/cmapss/manifest.json`. The NASA portal lists the license as not specified. Engine identities are namespaced by dataset, subset and source partition. The loader validates the 26-column schema, integer identities/cycles, consecutive per-engine ordering and finite values.
 
 ## Partition Proposal
 
-For FD001's supplied training engines, deterministically allocate 70% fit, 15% validation and 15% calibration by engine, using a recorded seed and actual ID manifest. Keep the supplied test partition/labels for final evaluation. Percentages are proposed experimental design choices and must be finalized before training. All windows of one engine stay in its partition.
+FD001's 100 supplied training engines are deterministically allocated 70% fit, 15% validation and 15% calibration by engine using seed 26249. The exact identities are retained in the ignored processed manifest. The supplied 100-engine test partition and RUL labels are reserved for final evaluation and are not loaded by model-selection commands. All windows of one engine stay in its partition.
 
 ## Transformations and Targets
 
-Derive training RUL from permitted run-to-failure histories. Decide/record whether a piecewise cap is used, its value and rationale before final evaluation. Fit sensor selection/scaling/operating-condition handling on fit data only. Compare model candidates under the same target/splits. Choose history/window settings with validation data; do not tune against final labels.
+Derive training RUL from permitted run-to-failure histories and cap the modelling target at 125 cycles for validation-v1. This is a modelling convention for early-life saturation, not a physical life limit. Require 30 observed cycles; engineered and sequence candidates use a 30-cycle history. Fit feature selection/scaling on fit engines only. Candidate validation and calibration sample one cutoff per held-out engine with seed 26249; final supplied test labels remain unavailable to tuning code.
 
 ## Calibration Caveat
 

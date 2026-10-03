@@ -24,9 +24,16 @@ dependencies = [
 
 [project.optional-dependencies]
 science = [
-  "mlflow>=3.3,<4",
-  "scikit-learn>=1.7,<2",
-  "torch>=2.8,<3",
+  "joblib>=1.5,<2",
+  "scikit-learn>=1.7,<2"
+]
+sequence = [
+  "torch>=2.8,<2.9"
+]
+tracking = [
+  "mlflow>=3.3,<4"
+]
+boosting = [
   "xgboost>=3.0,<4"
 ]
 dev = [
