@@ -2,11 +2,11 @@ import { expect, test } from "@playwright/test";
 
 test("evidence remains honest before planning", async ({ page }) => {
   await page.goto("/fleet");
-  await expect(page.getByRole("heading", { name: /Keep every aircraft ready/ })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Airbus A320" })).toBeVisible();
   await page.getByRole("link", { name: "SYN-001" }).click();
   await expect(page.getByText("Prediction is intentionally unavailable", { exact: true })).toBeVisible();
   await expect(page.getByText(/validated model has not been approved/)).toBeVisible();
-  await page.getByRole("link", { name: "Work plan", exact: true }).click();
+  await page.getByRole("navigation").getByRole("link", { name: /Planning/ }).click();
   await expect(page.getByRole("heading", { name: "Maintenance planning" })).toBeVisible();
   const submitted = page.waitForResponse(
     (response) =>

@@ -1,1 +1,4 @@
-// Placeholder for the ScenarioComparison feature interface.
+import type { SimulationRun } from "../../shared/api/client";
+import { AsyncState } from "../../shared/ui/AsyncState";
+
+export function ScenarioComparison({runs,loading,error}:{runs?:SimulationRun[];loading:boolean;error:Error|null}){const recent=runs?.slice(0,6);return <article className="card span-12"><div className="card-heading"><div><span className="eyebrow">Decision support</span><h3>Recorded comparisons</h3></div><span className="soft-label">Synthetic projection</span></div><AsyncState loading={loading} error={error} empty={!recent?.length}><table><thead><tr><th>Scenario</th><th>Availability</th><th>Queue wait</th><th>Seed</th><th>Evidence label</th></tr></thead><tbody>{recent?.map((result)=><tr key={result.id}><td>{result.scenario_id==="scenario-baseline"?"Current capacity":"Additional maintenance bay"}</td><td><strong>{(result.availability*100).toFixed(1)}%</strong></td><td>{String(result.metrics.queue_wait_hours??"—")}</td><td>{result.seed}</td><td>{String(result.metrics.label)}</td></tr>)}</tbody></table></AsyncState></article>;}

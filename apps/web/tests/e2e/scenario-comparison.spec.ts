@@ -8,7 +8,7 @@ test("scenario run is labelled as a simulated projection", async ({ page }) => {
       response.url().includes("/api/jobs/simulation/") &&
       response.request().method() === "POST",
   );
-  await page.getByRole("button", { name: "Queue deterministic reference" }).first().click();
+  await page.getByRole("button", { name: "Run comparison" }).first().click();
   const job = (await (await submitted).json()) as { id: string };
   await expect(page.getByRole("heading", { name: "Calculation activity" })).toBeVisible();
   const jobRow = page.locator(`[data-job-id="${job.id}"]`);

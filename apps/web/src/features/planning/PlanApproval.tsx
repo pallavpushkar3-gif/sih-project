@@ -1,1 +1,3 @@
-// Placeholder for the PlanApproval feature interface.
+import type { Plan } from "../../shared/api/client";
+
+export function PlanApproval({plan,pending,onApprove}:{plan:Plan;pending:boolean;onApprove:(id:string)=>void}){if(plan.status!=="proposed")return <div className="approval-state"><span>Plan status</span><strong>{plan.status}</strong><small>{plan.approved_by?`Committed by ${plan.approved_by}`:"No approval action available"}</small></div>;return <div className="approval-console"><div><span>Approval</span><strong>Current stock and commitments will be checked again.</strong><small>A proposal alone reserves nothing.</small></div><button onClick={()=>onApprove(plan.id)} disabled={pending}>{pending?"Committing…":"Approve plan and reserve parts"}</button></div>;}

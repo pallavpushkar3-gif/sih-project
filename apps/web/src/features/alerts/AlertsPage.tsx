@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { api, arrayOf, isAlert, type Alert } from "../../shared/api/client";
 import { AsyncState } from "../../shared/ui/AsyncState";
 import { StatusBadge } from "../../shared/ui/StatusBadge";
+import { AlertHistory } from "./AlertHistory";
 
 export function AlertsPage() {
   const client = useQueryClient();
@@ -15,7 +16,8 @@ export function AlertsPage() {
   const open = query.data?.filter((alert) => !alert.acknowledgements.length).length ?? 0;
   return (
     <section>
-      <div className="page-title"><div><span className="eyebrow">Technical attention</span><h1>Review what needs action</h1><p>Every alert explains why it exists, what remains protected, and whether a reviewer has seen it.</p></div><div className="title-stat"><strong>{open}</strong><span>Awaiting review</span></div></div>
+      <div className="page-title"><div><span className="eyebrow">Alerts</span><h1>Review what needs action</h1><p>Each alert explains the evidence, the protected maintenance action, and whether a technical reviewer has seen it.</p></div><div className="title-stat"><strong>{open}</strong><span>Awaiting review</span></div></div>
+      <div className="signal-briefing"><div><span className="signal-pulse" /><div><small>Current issue</small><strong>Engine evidence unavailable</strong></div></div><div><small>Protected action</small><strong>Mandatory inspection remains open</strong></div><div><small>Next step</small><strong>Inspect evidence and record review</strong></div></div>
       {acknowledge.error && <div className="state error">{acknowledge.error.message}</div>}
       <AsyncState loading={query.isLoading} error={query.error} empty={!query.data?.length}>
         <div className="attention-list">
@@ -28,6 +30,7 @@ export function AlertsPage() {
                 <h2>Health estimate needs technical review</h2>
                 <p>{alert.reason}</p>
                 <div className="why-box"><strong>Why this matters</strong><span>No life estimate is shown because the evidence is not approved. The mandatory inspection remains on the work plan.</span></div>
+                <AlertHistory alert={alert} />
                 <div className="attention-footer"><div><span>Policy</span><strong>{alert.policy_version}</strong></div><div><span>Review status</span><strong>{reviewed ? `Reviewed by ${alert.acknowledgements.map((item) => item.actor).join(", ")}` : "Awaiting technical review"}</strong></div></div>
               </div>
               <div className="attention-actions"><Link className="button ghost-light" to="/components/cmp-eng-01">View evidence</Link><button className="secondary" onClick={() => acknowledge.mutate(alert.id)} disabled={acknowledge.isPending || reviewed}>{reviewed ? "Review recorded" : "Record technical review"}</button></div>

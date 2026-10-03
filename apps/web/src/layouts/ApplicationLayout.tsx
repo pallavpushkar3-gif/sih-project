@@ -1,11 +1,11 @@
 import { NavLink, Outlet } from "react-router-dom";
 
 const links = [
-  ["/fleet", "Fleet", "aircraft"],
-  ["/alerts", "Attention", "attention"],
-  ["/planning", "Work plan", "schedule"],
-  ["/inventory", "Parts", "parts"],
-  ["/scenarios", "What-if", "compare"],
+  ["/fleet", "Fleet", "Aircraft overview", "aircraft"],
+  ["/alerts", "Alerts", "Review evidence", "attention"],
+  ["/planning", "Planning", "Schedule work", "schedule"],
+  ["/inventory", "Inventory", "Parts and logistics", "parts"],
+  ["/scenarios", "Scenarios", "Compare outcomes", "compare"],
 ] as const;
 
 function NavIcon({ name }: { name: string }) {
@@ -25,17 +25,17 @@ export function ApplicationLayout() {
       <aside className="sidebar">
         <div className="brand">
           <span className="brand-mark"><span>F</span></span>
-          <div><strong>FlightDeck</strong><small>Maintenance intelligence</small></div>
+          <div><strong>FlightDeck</strong><small>Fleet maintenance</small></div>
         </div>
         <div className="nav-label">Workspace</div>
         <nav aria-label="Primary">
-          {links.map(([to, label, icon]) => (
-            <NavLink key={to} to={to}><NavIcon name={icon} /><span>{label}</span></NavLink>
+          {links.map(([to, label, description, icon]) => (
+            <NavLink key={to} to={to}><NavIcon name={icon} /><span><b>{label}</b><small>{description}</small></span></NavLink>
           ))}
         </nav>
         <div className="sidebar-card">
           <span className="live-dot" />
-          <div><strong>Local demonstrator</strong><span>All systems available</span></div>
+          <div><strong>Local demonstrator</strong><span>All services connected</span></div>
         </div>
         <div className="scope-note">
           <strong>Evidence boundary</strong>
@@ -44,9 +44,9 @@ export function ApplicationLayout() {
       </aside>
       <main>
         <header className="topbar">
-          <div className="breadcrumbs"><span>Operations</span><i>/</i><strong>PS 26249</strong></div>
+          <div className="breadcrumbs"><strong>PS 26249</strong><i>/</i><span>Fleet maintenance</span><em>DEMO</em></div>
           <div className="topbar-actions">
-            <span className="status-pill"><span className="live-dot" /> System online</span>
+            <span className="status-pill"><span className="live-dot" /> Systems online</span>
             <span className="avatar">DP</span>
           </div>
         </header>
