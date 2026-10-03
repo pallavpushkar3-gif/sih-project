@@ -12,7 +12,7 @@ The implemented job envelope contains `event_id`, `type`, `occurred_at` and the 
 
 ## Delivery and Access
 
-The local demonstration subscription resolves the same injected demo actor as ordinary routes. It replays confirmed outbox rows after integer `Last-Event-ID`; the browser relies on native EventSource cursor handling and invalidates authoritative job/plan/run queries. Bounded retention and retention-gap resync are not yet implemented. Do not stream unauthorized provenance or private payloads.
+The local demonstration subscription resolves the same injected demo actor as ordinary routes. It replays confirmed outbox rows after integer `Last-Event-ID`; the browser relies on native EventSource cursor handling and invalidates authoritative job/plan/run queries. Planning and scenario screens submit durable jobs and display authoritative attempts/results; a two-second job-query poll is a fallback when stream delivery is delayed. Bounded retention and retention-gap resync are not yet implemented. Do not stream unauthorized provenance or private payloads.
 
 ## Progress
 

@@ -23,7 +23,10 @@ def serialize(item: Job) -> dict[str, object]:
 
 @router.get("", response_model=list[JobResponse])
 def jobs(session: Session = Depends(get_session)) -> list[dict[str, object]]:
-    return [serialize(item) for item in session.scalars(select(Job)).all()]
+    return [
+        serialize(item)
+        for item in session.scalars(select(Job).order_by(Job.created_at.desc())).all()
+    ]
 
 
 @router.get("/{job_id}", response_model=JobResponse)

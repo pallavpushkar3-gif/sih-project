@@ -45,7 +45,7 @@ make science-check
 make sequence-check
 ```
 
-`make web-check` runs ESLint, TypeScript, the production build and Vitest. `make backend-check` builds the Python 3.12 test image, then runs Ruff, mypy, and the unit/verification suites. `make backend-integration` runs the integration tests against PostgreSQL, including the concurrent stock-reservation race. `make e2e` starts PostgreSQL, RabbitMQ and the API before running Playwright in Chrome.
+`make web-check` runs ESLint, TypeScript, the production build and Vitest. `make backend-check` builds the Python 3.12 test image, then runs Ruff, mypy, and the unit/verification suites. `make backend-integration` runs the integration tests against PostgreSQL, including the concurrent stock-reservation race. `make e2e` starts PostgreSQL, RabbitMQ, the API, outbox dispatcher and worker before running Playwright in Chrome.
 
 PostgreSQL-specific reservation races and broker/process fault injection require the integration environment described in `docs/operations/local_setup.md`; SQLite results must not be used as evidence for those criteria.
 

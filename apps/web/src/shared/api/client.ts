@@ -104,6 +104,16 @@ export const isSimulationRun: Validator<SimulationRun> = (value): value is Simul
   value.availability <= 1 &&
   record(value.metrics);
 
+export const isJob: Validator<Job> = (value): value is Job =>
+  record(value) &&
+  string(value.id) &&
+  string(value.kind) &&
+  string(value.state) &&
+  finiteNumber(value.attempt) &&
+  Number.isInteger(value.attempt) &&
+  value.attempt >= 0 &&
+  (value.result === null || record(value.result));
+
 export const isComponentDetail: Validator<ComponentDetail> = (
   value,
 ): value is ComponentDetail =>

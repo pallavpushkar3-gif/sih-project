@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { arrayOf, isFleetItem, isSimulationRun } from "./client";
+import { arrayOf, isFleetItem, isJob, isSimulationRun } from "./client";
 
 describe("API runtime validators", () => {
   it("accepts a valid fleet collection", () => {
@@ -28,5 +28,14 @@ describe("API runtime validators", () => {
       metrics: {},
     };
     expect(isSimulationRun(payload)).toBe(false);
+  });
+
+  it("validates authoritative job states and attempts", () => {
+    expect(
+      isJob({ id: "job-1", kind: "planning", state: "queued", attempt: 0, result: null }),
+    ).toBe(true);
+    expect(
+      isJob({ id: "job-2", kind: "planning", state: "running", attempt: -1, result: null }),
+    ).toBe(false);
   });
 });

@@ -58,7 +58,7 @@ simulation-reference:
 test: web-check backend-check
 
 e2e: services-up
-	docker compose up -d --build api
+	docker compose up -d --build api worker outbox
 	pnpm --filter @fleet-maintenance/web test:e2e
 
 services-up:
