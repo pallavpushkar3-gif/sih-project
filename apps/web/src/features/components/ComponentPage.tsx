@@ -22,7 +22,7 @@ export function ComponentPage() {
     backgroundColor: "transparent",
     grid: { left: 45, right: 18, top: 25, bottom: 40 },
     tooltip: { trigger: "axis" as const },
-    textStyle: { color: "#8295ab", fontFamily: "Inter" },
+    textStyle: { color: "#929ba7", fontFamily: "Helvetica Neue, Arial, sans-serif" },
     xAxis: { type: "category" as const, data: data?.observations.map((item) => item.cycle), name: "Operating cycle", axisLine: { lineStyle: { color: "#31445c" } }, axisLabel: { color: "#8295ab" } },
     yAxis: { type: "value" as const, name: data?.observations[0]?.unit, splitLine: { lineStyle: { color: "#1b2a3d" } }, axisLabel: { color: "#8295ab" } },
     series: [{ type: "line" as const, data: data?.observations.map((item) => item.value), smooth: true, symbolSize: 7, areaStyle: { color: "rgba(82,217,255,.09)" }, lineStyle: { color: "#59c9dc", width: 3 }, itemStyle: { color: "#59c9dc" } }],
