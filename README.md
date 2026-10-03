@@ -51,6 +51,9 @@ PostgreSQL-specific reservation races and broker/process fault injection require
 
 After acquiring and preparing FD001 as documented in `docs/operations/local_setup.md`, `make science-train`, `make sequence-train`, and `make science-calibrate` reproduce the validation-only comparison. These commands do not inspect the official final test labels.
 
+`make planner-benchmark` compares CP-SAT with the transparent earliest-deadline baseline on the configured deterministic reference instances and writes an ignored result manifest.
+`make simulation-reference` runs the matched, explicitly synthetic capacity scenarios and retains per-run metrics without fabricating variability for the single deterministic replication.
+
 ## Data and claims
 
 - Fleet, tasks, stock, durations, capacities and scenario assumptions are synthetic demonstration inputs.

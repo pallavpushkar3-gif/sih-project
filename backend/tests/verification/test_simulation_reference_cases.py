@@ -1,4 +1,6 @@
 from fleet_maintenance.science.simulation.environment import ScenarioInput
+from fleet_maintenance.science.simulation.metrics import summarize
+from fleet_maintenance.science.simulation.policies import compare
 from fleet_maintenance.science.simulation.replications import run_scenario
 
 
@@ -30,3 +32,19 @@ def test_reference_contract_rejects_more_events_than_aircraft():
 
     with pytest.raises(ValueError, match="at most one event per aircraft"):
         run_scenario(ScenarioInput(10, 1, 1, ((1, 1), (4, 1))))
+
+
+def test_single_deterministic_run_has_no_fabricated_variability():
+    summary = summarize((run_scenario(ScenarioInput(10, 1, 1, ((2, 3),))),))
+    assert summary.replications == 1
+    assert summary.availability_standard_deviation is None
+
+
+def test_comparison_rejects_mismatched_events():
+    import pytest
+
+    baseline_input = ScenarioInput(10, 1, 1, ((2, 3),))
+    candidate_input = ScenarioInput(10, 1, 1, ((3, 3),))
+    summary = summarize((run_scenario(baseline_input),))
+    with pytest.raises(ValueError, match="events differ"):
+        compare(baseline_input, summary, candidate_input, summary)

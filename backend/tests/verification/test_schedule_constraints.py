@@ -1,3 +1,4 @@
+from fleet_maintenance.science.scheduling.baselines import earliest_deadline_first
 from fleet_maintenance.science.scheduling.constraints import validate_result
 from fleet_maintenance.science.scheduling.formulation import PlanningInput, TaskInput
 from fleet_maintenance.science.scheduling.solver import solve
@@ -60,3 +61,34 @@ def test_empty_task_set_is_a_valid_empty_schedule():
     assert result.status == "optimal"
     assert result.assignments == ()
     assert result.objective == 0.0
+
+
+def test_earliest_deadline_baseline_produces_checked_schedule():
+    source = PlanningInput(
+        10,
+        (
+            TaskInput("a", 2, 0, 6, "engine"),
+            TaskInput("b", 2, 0, 8, "engine", predecessors=("a",)),
+        ),
+        {"engine": 1},
+        {},
+    )
+    result = earliest_deadline_first(source)
+    assert result.status == "feasible"
+    assert result.objective == 4.0
+    assert validate_result(source, result) == []
+
+
+def test_earliest_deadline_baseline_keeps_fixed_commitment():
+    source = PlanningInput(
+        8,
+        (
+            TaskInput("fixed", 2, 0, 6, "engine", fixed_start=2),
+            TaskInput("other", 2, 0, 8, "engine"),
+        ),
+        {"engine": 1},
+        {},
+    )
+    result = earliest_deadline_first(source)
+    assert validate_result(source, result) == []
+    assert {item.task_id: item.start for item in result.assignments}["fixed"] == 2

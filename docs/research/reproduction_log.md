@@ -35,6 +35,26 @@ Literature has been reviewed at the depths recorded in `literature_review.md`. T
 - Calibration diagnostic: residual quantile 30.5477 cycles; calibration-sample coverage 1.0; mean clipped interval width 56.6156 cycles. Calibration artifact SHA-256 `e169a563b9ca355be5dd14b2678854231b4dd5c471ae666407594d7f4ea8f971`.
 - Limitation: coverage on the same calibration scores is a construction diagnostic, not an independent empirical coverage estimate. Final coverage/width acceptance remains blocked until budgets and the final cutoff protocol are frozen; no individual-engine failure probability is implied.
 
+## 2026-10-04 — Planner reference comparison
+
+- State: completed-with-results on two deterministic demonstration instances; not a workload performance acceptance test.
+- Environment: Docker Desktop on Apple Silicon; Python 3.12.15; OR-Tools 9.15.6755.
+- Configuration: `configs/scheduling.yaml`, SHA-256 `59f9ce39906263f223a5527a0d387b293b4333ff2ec61febd2d7947c09f4e01f`; 14 eight-hour slots, five-second CP-SAT limit, minimize makespan.
+- Command: `make planner-benchmark` (the equivalent Docker command was executed directly).
+- Results: CP-SAT returned independently checked optimal schedules with makespan 6 on both the serial-work and parallel-capacity instances. The deterministic earliest-deadline list scheduler returned independently checked feasible schedules with the same makespan on both. Five observed CP-SAT calls were 2.86–4.74 ms; baseline calls were 0.018–0.052 ms on this machine.
+- Artifact: ignored JSON SHA-256 `b090b0ff9ac009f764e88691f887a42aae10b1bce0ceedb4b67dc4bd6490df5c`.
+- Limitation: two tiny reference cases establish basic comparison wiring and constraint conformance only. They do not establish the unresolved planner quality/runtime budget or represent operational workload sizes.
+
+## 2026-10-04 — Matched simulation reference comparison
+
+- State: completed-with-results on one deterministic synthetic scenario pair; not an operational fleet projection.
+- Configuration: `configs/simulation.yaml`, SHA-256 `efd4de82cacd2fd0e7edbac6e2cf68dbcd579a2e1054cac871dc40214dbbd3c4`; 24-hour horizon; availability defined as available aircraft-hours divided by total aircraft-hours; seed 26249; one deterministic replication.
+- Command: `make simulation-reference` (the equivalent Docker command was executed directly).
+- Common inputs: two synthetic aircraft and maintenance events `(2 h, 3 h)` and `(4 h, 2 h)`. Baseline capacity was one; candidate capacity was two.
+- Results: baseline availability 0.875, downtime 6 aircraft-hours and queue wait 1 hour; candidate availability 0.895833, downtime 5 aircraft-hours and queue wait 0 hours. The artifact reports a scenario-specific availability delta of 0.020833 and no standard deviation because one deterministic run does not support variability.
+- Artifact: ignored JSON SHA-256 `012b91d9961c822edbda6fb0fc563cc06b7d1ea1193c790ffaadf582a91f807b`.
+- Limitation: the change is a capacity sensitivity, not a learned policy benefit. Synthetic events/logistics and the tiny deterministic case cannot support an operational-readiness or general improvement claim.
+
 ## Entry Template
 
 For each attempted reproduction, record: date/owner; paper/method/source; reading depth; code/data licence and acquisition; source revision/environment; dataset/split/target/transforms; configuration/seeds; exact commands; artifact hashes; baseline/results; deviations from paper; failures; and what conclusion is supported.
