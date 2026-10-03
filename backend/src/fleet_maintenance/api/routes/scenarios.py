@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from fleet_maintenance.api.dependencies import Actor, current_actor, require_planner
 from fleet_maintenance.domain.contracts.api import ScenarioResponse, SimulationRunResponse
 from fleet_maintenance.persistence.database import get_session
 from fleet_maintenance.persistence.models import Scenario, SimulationRun
@@ -25,7 +26,12 @@ def scenarios(session: Session = Depends(get_session)) -> list[dict[str, object]
 
 
 @router.post("/{scenario_id}/runs", response_model=SimulationRunResponse)
-def run(scenario_id: str, session: Session = Depends(get_session)) -> dict[str, object]:
+def run(
+    scenario_id: str,
+    session: Session = Depends(get_session),
+    actor: Actor = Depends(current_actor),
+) -> dict[str, object]:
+    require_planner(actor)
     try:
         r = run_saved_scenario(session, scenario_id)
     except LookupError:

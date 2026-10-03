@@ -10,7 +10,8 @@ class Actor:
 
 
 def current_actor(
-    x_demo_user: str = "demo-planner", x_demo_role: str = Header(default="planner")
+    x_demo_user: str = Header(default="demo-planner"),
+    x_demo_role: str = Header(default="planner"),
 ) -> Actor:
     if x_demo_role not in {"viewer", "planner", "engineer", "logistics", "supervisor"}:
         raise HTTPException(403, "Unknown demonstration role")

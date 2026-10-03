@@ -55,7 +55,12 @@ def submit_simulation(
 
 
 @router.post("/{job_id}/cancellation", response_model=JobResponse)
-def cancel(job_id: str, session: Session = Depends(get_session)) -> dict[str, object]:
+def cancel(
+    job_id: str,
+    session: Session = Depends(get_session),
+    actor: Actor = Depends(current_actor),
+) -> dict[str, object]:
+    require_planner(actor)
     try:
         item = request_cancellation(session, job_id)
     except LookupError:
