@@ -55,6 +55,16 @@ Literature has been reviewed at the depths recorded in `literature_review.md`. T
 - Artifact: ignored JSON SHA-256 `012b91d9961c822edbda6fb0fc563cc06b7d1ea1193c790ffaadf582a91f807b`.
 - Limitation: the change is a capacity sensitivity, not a learned policy benefit. Synthetic events/logistics and the tiny deterministic case cannot support an operational-readiness or general improvement claim.
 
+## 2026-10-04 — Alert-policy validation comparison
+
+- State: completed-with-results on five fixed synthetic validation histories; acceptance budgets remain unfrozen.
+- Configuration: `configs/alert_policy.yaml`, SHA-256 `0da42c53f0393934db876a641d4eb3d95e0e073eced37e346040b8791c3632a8`; 45-cycle inclusive detection window, actionable-episode false-alert unit and post-deduplication state-transition recommendation-change unit.
+- Command: `make alert-evaluation`.
+- Common inputs: four histories with reference events and one without; the histories include threshold jitter, steady deterioration, a transient false alert, repeated delivery, a withheld observation and a deliberately missed event.
+- Results: both the single-threshold baseline and hysteresis candidate detected three of four reference events, missed one, produced one false-alert episode and had 45-cycle mean warning lead among detected events. Hysteresis produced 7 recommendation changes versus 12 for the threshold baseline. Repeated identical delivery was deduplicated; conflicting repeats and new out-of-order observations are rejected by verification cases.
+- Artifact: ignored JSON SHA-256 `86b70caea0c72dcba253003130cfbdf3d50298f842923d12144485d4abca7e87`.
+- Limitation: these deliberately small synthetic histories verify definitions and comparison wiring only. No frozen miss/false-alert/lead-time/change budgets or representative held-out operational histories exist, so AC-F04-04 is not claimed as accepted.
+
 ## 2026-10-04 — Durable job and outbox integration checks
 
 - State: completed-with-results for transactional lifecycle cases; full broker/process fault injection remains incomplete.

@@ -53,6 +53,7 @@ After acquiring and preparing FD001 as documented in `docs/operations/local_setu
 
 `make planner-benchmark` compares CP-SAT with the transparent earliest-deadline baseline on the configured deterministic reference instances and writes an ignored result manifest.
 `make simulation-reference` runs the matched, explicitly synthetic capacity scenarios and retains per-run metrics without fabricating variability for the single deterministic replication.
+`make alert-evaluation` compares the configured hysteresis policy with a no-hysteresis threshold baseline on fixed synthetic validation histories. Its report remains non-accepting while alert budgets are unset.
 
 ## Data and claims
 

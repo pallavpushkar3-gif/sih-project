@@ -5,3 +5,14 @@ warning_cycles: 45
 critical_cycles: 20
 clear_margin_cycles: 8
 withheld_behavior: retain_active_or_mark_data_unavailable
+evaluation:
+  dataset: fixed_synthetic_validation_histories_v1
+  warning_horizon_cycles: 45
+  detection_window: inclusive_from_event_minus_warning_horizon_through_event
+  false_alert_counting_unit: actionable_episode_starting_before_detection_window_or_without_event
+  recommendation_change_unit: alert_state_transition_after_deduplication
+  budgets:
+    maximum_missed_events: null
+    maximum_false_alert_episodes: null
+    maximum_recommendation_changes: null
+    minimum_mean_warning_lead_cycles: null

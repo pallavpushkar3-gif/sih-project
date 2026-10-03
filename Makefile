@@ -1,4 +1,4 @@
-.PHONY: setup web-check backend-check backend-integration science-check science-train science-calibrate sequence-check sequence-train planner-benchmark simulation-reference test e2e services-up services-down migrate seed dev
+.PHONY: setup web-check backend-check backend-integration science-check science-train science-calibrate sequence-check sequence-train alert-evaluation planner-benchmark simulation-reference test e2e services-up services-down migrate seed dev
 
 setup:
 	corepack enable
@@ -38,6 +38,10 @@ sequence-check:
 sequence-train:
 	docker build --target sequence -t fleet-maintenance-sequence backend
 	docker run --rm -v "$(CURDIR):/workspace" -w /workspace -e PYTHONPATH=/workspace/backend/src fleet-maintenance-sequence python scripts/train_model.py --candidate sequence
+
+alert-evaluation:
+	docker build --target test -t fleet-maintenance-test backend
+	docker run --rm -v "$(CURDIR):/workspace" -w /workspace -e PYTHONPATH=/workspace/backend/src fleet-maintenance-test python scripts/evaluate_alert_policy.py --output artifacts/evaluations/alert-policy-demo-v1.json
 
 planner-benchmark:
 	docker build --target test -t fleet-maintenance-test backend
