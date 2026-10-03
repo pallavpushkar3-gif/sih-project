@@ -1,0 +1,6 @@
+version: proposed-v1
+status: blocked-pending-dataset-acquisition
+dataset: NASA_CMAPSS_FD001
+model: recurrent_sequence_candidate
+target_unit: cycles
+split_seed: 26249

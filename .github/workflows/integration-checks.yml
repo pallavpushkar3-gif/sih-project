@@ -1,0 +1,27 @@
+name: Integration checks
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 12.8.1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps chrome
+      - run: docker compose up -d --build postgres rabbitmq api
+      - run: docker build --target test -t fleet-maintenance-test backend
+      - run: docker run --rm --network fleet-maintenance_default -e FLEET_DATABASE_URL=postgresql+psycopg://fleet:fleet@postgres:5432/fleet fleet-maintenance-test python -m pytest tests/integration
+      - run: pnpm --filter @fleet-maintenance/web test:e2e
+      - if: always()
+        run: docker compose logs api postgres rabbitmq

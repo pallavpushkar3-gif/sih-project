@@ -1,0 +1,15 @@
+.git
+.DS_Store
+**/.DS_Store
+**/node_modules
+**/dist
+**/.venv
+**/__pycache__
+**/.pytest_cache
+**/.ruff_cache
+**/test-results
+data/raw
+data/processed
+data/splits
+artifacts
+backend/artifacts

@@ -1,0 +1,63 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "fleet-maintenance"
+version = "0.1.0"
+description = "Aircraft predictive-maintenance and fleet-availability demonstrator"
+requires-python = ">=3.12,<3.14"
+dependencies = [
+  "alembic>=1.16,<2",
+  "celery>=5.5,<6",
+  "fastapi>=0.142,<1",
+  "numpy>=2.2,<3",
+  "orjson>=3.10,<4",
+  "ortools>=9.14,<10",
+  "psycopg[binary]>=3.2,<4",
+  "pydantic-settings>=2.10,<3",
+  "pyyaml>=6.0,<7",
+  "simpy>=4.1,<5",
+  "sqlalchemy>=2.0,<3",
+  "uvicorn[standard]>=0.35,<1"
+]
+
+[project.optional-dependencies]
+science = [
+  "mlflow>=3.3,<4",
+  "scikit-learn>=1.7,<2",
+  "torch>=2.8,<3",
+  "xgboost>=3.0,<4"
+]
+dev = [
+  "httpx>=0.28,<1",
+  "mypy>=1.17,<2",
+  "pytest>=8.4,<9",
+  "pytest-asyncio>=1.1,<2",
+  "pytest-cov>=6.2,<7",
+  "ruff>=0.12,<1"
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/fleet_maintenance"]
+
+[tool.pytest.ini_options]
+addopts = "-ra --strict-markers"
+testpaths = ["tests"]
+markers = [
+  "integration: requires PostgreSQL and/or RabbitMQ",
+  "science: optional scientific dependency checks"
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+ignore = ["B008"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+packages = ["fleet_maintenance"]

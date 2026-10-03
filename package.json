@@ -1,0 +1,13 @@
+{
+  "name": "fleet-maintenance-workspace",
+  "private": true,
+  "packageManager": "pnpm@12.8.1",
+  "scripts": {
+    "dev": "pnpm --filter @fleet-maintenance/web dev",
+    "build": "pnpm --filter @fleet-maintenance/web build",
+    "lint": "pnpm --filter @fleet-maintenance/web lint",
+    "typecheck": "pnpm --filter @fleet-maintenance/web typecheck",
+    "test:web": "pnpm --filter @fleet-maintenance/web test",
+    "generate:client": "node scripts/generate_web_client.mjs"
+  }
+}

@@ -1,0 +1,67 @@
+import uuid
+from typing import cast
+
+from sqlalchemy.orm import Session
+
+from fleet_maintenance.persistence.models import Scenario, SimulationRun
+from fleet_maintenance.science.simulation.environment import ScenarioInput
+from fleet_maintenance.science.simulation.replications import run_scenario
+
+
+def run_saved_scenario(
+    session: Session, scenario_id: str, policy: str = "configured"
+) -> SimulationRun:
+    scenario = session.get(Scenario, scenario_id)
+    if scenario is None:
+        raise LookupError(scenario_id)
+    values = scenario.assumptions
+    horizon = values.get("horizon_hours")
+    aircraft_count = values.get("aircraft_count")
+    capacity = values.get("maintenance_capacity")
+    events = values.get("maintenance_events")
+    if not isinstance(horizon, (int, float)) or isinstance(horizon, bool):
+        raise ValueError("Scenario horizon_hours must be numeric.")
+    if not isinstance(aircraft_count, int) or isinstance(aircraft_count, bool):
+        raise ValueError("Scenario aircraft_count must be an integer.")
+    if not isinstance(capacity, int) or isinstance(capacity, bool):
+        raise ValueError("Scenario maintenance_capacity must be an integer.")
+    if not isinstance(events, list):
+        raise ValueError("Scenario maintenance_events must be a list.")
+    event_rows = cast(list[object], events)
+    parsed_events: list[tuple[float, float]] = []
+    for event in event_rows:
+        if not isinstance(event, list) or len(event) != 2:
+            raise ValueError("Each maintenance event must contain arrival and duration.")
+        arrival, duration = event
+        if (
+            isinstance(arrival, bool)
+            or not isinstance(arrival, (int, float))
+            or isinstance(duration, bool)
+            or not isinstance(duration, (int, float))
+        ):
+            raise ValueError("Maintenance event values must be numeric.")
+        parsed_events.append((float(arrival), float(duration)))
+    source = ScenarioInput(
+        float(horizon),
+        aircraft_count,
+        capacity,
+        tuple(parsed_events),
+    )
+    result = run_scenario(source)
+    record = SimulationRun(
+        id=f"sim-{uuid.uuid4().hex[:10]}",
+        scenario_id=scenario.id,
+        policy=policy,
+        seed=result.seed,
+        availability=result.availability,
+        metrics={
+            "downtime_aircraft_hours": result.downtime_aircraft_hours,
+            "queue_wait_hours": result.queue_wait_hours,
+            "completed_events": result.completed_events,
+            "label": "simulated projection",
+        },
+    )
+    session.add(record)
+    session.commit()
+    session.refresh(record)
+    return record

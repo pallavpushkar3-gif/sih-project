@@ -1,0 +1,12 @@
+version: demo-v1
+status: demonstration-only
+time_unit: slot
+horizon_slots: 14
+slot_duration_hours: 8
+solver_time_limit_seconds: 5
+objective: minimize_makespan
+hard_constraints:
+  - task_windows
+  - skill_capacity
+  - part_stock
+  - fixed_commitments

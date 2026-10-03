@@ -1,0 +1,44 @@
+# Environment files
+.DS_Store
+**/.DS_Store
+.env
+.env.*
+!.env.example
+
+# Frontend dependencies and build output
+node_modules/
+apps/web/node_modules/
+apps/web/dist/
+*.tsbuildinfo
+
+# Python caches, environments, and tool caches
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.tox/
+.nox/
+
+# Test coverage and browser-test output
+.coverage
+.coverage.*
+htmlcov/
+coverage/
+playwright-report/
+test-results/
+
+# Local logs and runtime state
+*.log
+logs/
+*.pid
+*.sqlite
+*.sqlite3
+
+# Bulk and generated project data
+data/raw/**
+data/processed/**
+data/splits/**
+artifacts/**

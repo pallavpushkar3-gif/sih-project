@@ -1,0 +1,7 @@
+version: demo-v1
+status: synthetic-assumptions
+time_unit: hour
+default_horizon_hours: 24
+default_seed: 26249
+availability_definition: available_aircraft_hours_over_total_aircraft_hours
+replications: 1

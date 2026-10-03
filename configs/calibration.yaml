@@ -1,0 +1,5 @@
+version: proposed-v1
+status: blocked-pending-dataset-acquisition
+method: split_conformal
+nominal_coverage: null
+sampling_unit: engine_final_cutoff

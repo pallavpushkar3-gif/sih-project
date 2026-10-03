@@ -1,0 +1,6 @@
+version: proposed-v1
+status: blocked-pending-dataset-acquisition
+dataset: NASA_CMAPSS_FD001
+model: gradient_boosting_regressor
+target_unit: cycles
+split_seed: 26249

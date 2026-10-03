@@ -1,0 +1,7 @@
+version: demo-v1
+status: demonstration-only
+unit: cycles
+warning_cycles: 45
+critical_cycles: 20
+clear_margin_cycles: 8
+withheld_behavior: retain_active_or_mark_data_unavailable

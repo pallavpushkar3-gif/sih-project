@@ -1,0 +1,8 @@
+sources:
+  - id: nasa-cmapss
+    subset: FD001
+    url: https://data.nasa.gov/dataset/cmapss-jet-engine-simulated-data
+    status: not_acquired
+    simulated: true
+    sha256: null
+    usage_review: pending
