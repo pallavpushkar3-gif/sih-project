@@ -1,1 +1,75 @@
-# Placeholder for the access module's intended responsibility.
+"""Opaque server-side sessions; credentials use maintained Argon2 password hashing."""
+
+import hashlib
+import secrets
+from datetime import UTC, datetime, timedelta
+
+from fastapi import HTTPException, Request
+from pwdlib import PasswordHash
+from sqlalchemy import select
+from sqlalchemy.orm import Session
+
+from fleet_maintenance.persistence.models import LoginSession, User
+from fleet_maintenance.settings import get_settings
+
+passwords = PasswordHash.recommended()
+_DUMMY_HASH = passwords.hash(secrets.token_urlsafe(32))
+COOKIE_NAME = "fleet_session"
+
+
+def utc(value: datetime) -> datetime:
+    return value.replace(tzinfo=UTC) if value.tzinfo is None else value
+
+
+def token_hash(token: str) -> str:
+    return hashlib.sha256(token.encode()).hexdigest()
+
+
+def login(session: Session, user_id: str, password: str) -> tuple[str, LoginSession]:
+    user = session.scalar(select(User).where(User.id == user_id).with_for_update())
+    now = datetime.now(UTC)
+    valid = passwords.verify(
+        password, user.password_hash if user and user.password_hash else _DUMMY_HASH
+    )
+    if user is None or user.disabled or (user.locked_until and utc(user.locked_until) > now):
+        raise HTTPException(401, "Invalid credentials or unavailable account")
+    if not valid or not user.password_hash:
+        user.failed_logins += 1
+        if user.failed_logins >= 5:
+            user.locked_until = now + timedelta(minutes=15)
+        session.commit()
+        raise HTTPException(401, "Invalid credentials or unavailable account")
+    user.failed_logins = 0
+    user.locked_until = None
+    token = secrets.token_urlsafe(48)
+    record = LoginSession(
+        token_hash=token_hash(token),
+        user_id=user.id,
+        csrf_token=secrets.token_urlsafe(32),
+        expires_at=now + timedelta(hours=get_settings().session_hours),
+    )
+    session.add(record)
+    session.commit()
+    return token, record
+
+
+def session_record(session: Session, request: Request) -> LoginSession:
+    token = request.cookies.get(COOKIE_NAME, "")
+    record = session.get(LoginSession, token_hash(token)) if token else None
+    if record is None or utc(record.expires_at) <= datetime.now(UTC):
+        raise HTTPException(401, "Authentication required")
+    return record
+
+
+def authenticate_session(session: Session, request: Request) -> User:
+    record = session_record(session, request)
+    user = session.get(User, record.user_id)
+    if user is None or user.disabled:
+        raise HTTPException(401, "Authentication required")
+    if request.method not in {"GET", "HEAD", "OPTIONS"}:
+        supplied = request.headers.get("x-csrf-token", "")
+        if not secrets.compare_digest(supplied, record.csrf_token):
+            raise HTTPException(403, "Valid CSRF token required")
+        if request.headers.get("origin") not in get_settings().allowed_origins:
+            raise HTTPException(403, "Allowed request origin required")
+    return user

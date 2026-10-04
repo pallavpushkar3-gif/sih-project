@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import cast
 
 import numpy as np
 import torch
@@ -15,7 +16,7 @@ class RulLstm(nn.Module):
 
     def forward(self, values: Tensor) -> Tensor:
         encoded, _ = self.lstm(values)
-        return self.output(encoded[:, -1, :]).squeeze(-1)
+        return cast(Tensor, self.output(encoded[:, -1, :]).squeeze(-1))
 
 
 @dataclass
@@ -60,4 +61,4 @@ class SequenceRul:
         with torch.no_grad():
             values = torch.from_numpy(features.astype(np.float32))
             predictions = self.model(values).numpy().astype(np.float64)
-        return np.maximum(predictions, 0.0)
+        return cast(NDArray[np.float64], np.maximum(predictions, 0.0))

@@ -19,12 +19,8 @@ def test_acknowledgement_is_idempotent_and_does_not_resolve_alert(
     headers = {"X-Demo-Role": "engineer", "X-Demo-User": "demo-engineer"}
     try:
         with TestClient(app) as client:
-            first = client.post(
-                "/api/alerts/alert-quality-01/acknowledgements", headers=headers
-            )
-            repeated = client.post(
-                "/api/alerts/alert-quality-01/acknowledgements", headers=headers
-            )
+            first = client.post("/api/alerts/alert-quality-01/acknowledgements", headers=headers)
+            repeated = client.post("/api/alerts/alert-quality-01/acknowledgements", headers=headers)
     finally:
         app.dependency_overrides.pop(get_session, None)
 

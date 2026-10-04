@@ -35,9 +35,7 @@ class RobustnessMetrics:
 def _subset(dataset: SnapshotDataset, eligible: NDArray[np.bool_]) -> SnapshotDataset:
     return SnapshotDataset(
         tuple(
-            identity
-            for identity, keep in zip(dataset.engine_ids, eligible, strict=True)
-            if keep
+            identity for identity, keep in zip(dataset.engine_ids, eligible, strict=True) if keep
         ),
         dataset.cutoffs[eligible],
         dataset.values[eligible],

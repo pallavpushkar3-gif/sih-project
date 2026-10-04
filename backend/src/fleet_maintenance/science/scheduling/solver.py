@@ -6,6 +6,7 @@ from fleet_maintenance.science.scheduling.formulation import (
     PlanningInput,
     PlanningResult,
 )
+from fleet_maintenance.science.scheduling.grouping import groups
 
 
 def solve(source: PlanningInput, time_limit_seconds: float = 5.0) -> PlanningResult:
@@ -30,12 +31,27 @@ def solve(source: PlanningInput, time_limit_seconds: float = 5.0) -> PlanningRes
         )
         if task.fixed_start is not None:
             model.add(starts[task.id] == task.fixed_start)
+    for task in source.tasks:
         for predecessor_id in task.predecessors:
             model.add(starts[task.id] >= ends[predecessor_id])
+    for tasks in groups(source).values():
+        for previous, current in zip(tasks, tasks[1:], strict=False):
+            model.add(starts[current.id] == ends[previous.id])
     for skill, capacity in source.skill_capacity.items():
         skill_intervals = [intervals[t.id] for t in source.tasks if t.skill == skill]
         if skill_intervals:
             model.add_cumulative(skill_intervals, [1] * len(skill_intervals), capacity)
+    for part_id in {task.part_id for task in source.tasks if task.part_id}:
+        stock = source.part_stock.get(part_id, 0)
+        arrivals = [a for a in source.part_arrivals if a.part_id == part_id]
+        part_tasks = [t for t in source.tasks if t.part_id == part_id and t.part_quantity]
+        # Simultaneous arrivals are available at task start; consumption is counted once.
+        model.add_reservoir_constraint(
+            [0] + [a.slot for a in arrivals] + [starts[t.id] for t in part_tasks],
+            [stock] + [a.quantity for a in arrivals] + [-t.part_quantity for t in part_tasks],
+            0,
+            stock + sum(a.quantity for a in arrivals),
+        )
     makespan = model.new_int_var(0, source.horizon, "makespan")
     model.add_max_equality(makespan, list(ends.values()))
     model.minimize(makespan)

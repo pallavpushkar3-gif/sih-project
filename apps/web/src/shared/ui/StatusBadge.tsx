@@ -1,1 +1,4 @@
-export function StatusBadge({status}:{status:string}){return <span className={`badge badge-${status.replaceAll("_","-")}`}>{status.replaceAll("_"," ")}</span>}
+const labels: Record<string, string> = { available: "Available research estimate", data_unavailable: "Evidence unavailable", unavailable: "Unavailable", proposed: "Awaiting approval", optimal: "Optimal schedule", feasible: "Feasible schedule", monitoring: "Monitoring", cancellation_requested: "Cancellation requested", eligible: "Eligible", qualified: "Qualified estimate", approved: "Approved", failed: "Failed", queued: "Queued", running: "Running", succeeded: "Completed", normal: "Normal", warning: "Warning", critical: "Critical", withheld: "Withheld", invalid: "Invalid input", unknown: "No conclusion", cancelled: "Cancelled", infeasible: "Infeasible" };
+export function StatusBadge({ status }: { status: string }) {
+  return <span className={`badge badge-${status.replaceAll("_", "-")}`}><i aria-hidden="true"/>{labels[status] ?? status.replaceAll("_", " ")}</span>;
+}

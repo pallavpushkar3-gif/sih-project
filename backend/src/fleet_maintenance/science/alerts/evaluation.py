@@ -99,9 +99,7 @@ def evaluate_history(
                 and window_start <= observation.cycle <= history.reference_event_cycle
             ):
                 actionable_cycles.append(observation.cycle)
-            if not actionable and (
-                window_start is None or observation.cycle < window_start
-            ):
+            if not actionable and (window_start is None or observation.cycle < window_start):
                 false_alert_episodes += 1
         state = next_state
         actionable = next_actionable

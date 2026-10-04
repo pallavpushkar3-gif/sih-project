@@ -7,6 +7,7 @@ class ScenarioInput:
     aircraft_count: int
     maintenance_capacity: int
     maintenance_events: tuple[tuple[float, float], ...]
+    part_available_hours: float = 0.0
 
 
 @dataclass(frozen=True)
@@ -16,3 +17,4 @@ class SimulationResult:
     queue_wait_hours: float
     completed_events: int
     seed: int
+    part_wait_hours: float = 0.0

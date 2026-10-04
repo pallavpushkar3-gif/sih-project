@@ -180,3 +180,9 @@ Required functional criteria must pass, evaluation decisions must be frozen, and
 Acceptance may support statements about tested records, supported simulated engine predictions, constraint-checked proposals and scenario-specific simulation outcomes.
 
 It does not establish real military fleet improvements, regulatory certification, whole-aircraft diagnosis, guaranteed failure prevention or airworthiness clearance. Competition presentation and documentation must stay within the evidence actually retained.
+
+## Aircraft inspection redesign acceptance
+
+Verify actual rendered screens, not rewritten specifications alone. Required checks: mapped annotation/list parity; aircraft/component identity reconciliation and delayed-response protection; renderer/model/no-WebGL fallback retaining evidence/actions; history units/cutoff/table alternatives; actual interval metadata and unavailable explanation states; exact-plan approval and stale conflict; versioned supply assumptions preserving prior outcomes; honest job/result status. Capture 1440×900, 1366×768, tablet and mobile, keyboard, reduced-motion and 200% zoom. Record source revision/check scope, actual screenshots, device/browser and asset/orbit measurements in UI verification.
+
+Proposed initial budgets are ≤10 MB compressed model and ≤2K textures, and median orbit frame interval ≤33 ms on the recorded demonstration device. A measured pass on one device is not a cross-device guarantee. Participant comprehension of aircraft/component/evidence/proposal remains to be evaluated. Original public HTTPS, independent complete-history alert evaluation and operator-approved costs/targets remain blocked where prerequisites are absent; this redesign cannot close those gates.

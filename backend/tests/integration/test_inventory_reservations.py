@@ -6,6 +6,7 @@ import pytest
 from sqlalchemy import create_engine, delete, func, select
 from sqlalchemy.orm import Session, sessionmaker
 
+from fleet_maintenance.api.routes.inventory import inventory
 from fleet_maintenance.persistence.models import (
     Aircraft,
     AuditEvent,
@@ -14,6 +15,7 @@ from fleet_maintenance.persistence.models import (
     Part,
     Plan,
     Reservation,
+    WorkRecord,
 )
 from fleet_maintenance.services.approvals import ApprovalConflict, approve_plan
 from fleet_maintenance.services.planning import current_input_version, propose_plan
@@ -24,21 +26,33 @@ def test_approval_reserves_exact_stock_once(isolated_session: Session):
     before = {part.id: part.on_hand for part in isolated_session.scalars(select(Part)).all()}
 
     approve_plan(isolated_session, plan.id, "demo-supervisor")
-    after_first = {
-        part.id: part.on_hand for part in isolated_session.scalars(select(Part)).all()
-    }
+    after_first = {part.id: part.on_hand for part in isolated_session.scalars(select(Part)).all()}
     reservation_count = isolated_session.scalar(select(func.count(Reservation.id)))
 
     approve_plan(isolated_session, plan.id, "demo-supervisor")
-    after_retry = {
-        part.id: part.on_hand for part in isolated_session.scalars(select(Part)).all()
-    }
+    after_retry = {part.id: part.on_hand for part in isolated_session.scalars(select(Part)).all()}
 
     assert before["part-kit"] - after_first["part-kit"] == 1
     assert before["part-filter"] - after_first["part-filter"] == 1
     assert reservation_count == 2
     assert after_retry == after_first
     assert isolated_session.scalar(select(func.count(Reservation.id))) == 2
+
+
+def test_inventory_reports_physical_stock_and_free_stock_after_approval(
+    isolated_session: Session,
+):
+    before = {item["id"]: item for item in inventory(isolated_session)}
+    plan = propose_plan(isolated_session)
+    approve_plan(isolated_session, plan.id, "demo-supervisor")
+    after = {item["id"]: item for item in inventory(isolated_session)}
+
+    for part_id in ("part-kit", "part-filter"):
+        assert after[part_id]["on_hand"] == before[part_id]["on_hand"]
+        assert after[part_id]["reserved"] == 1
+        part = isolated_session.get(Part, part_id)
+        assert part is not None
+        assert after[part_id]["on_hand"] - after[part_id]["reserved"] == part.on_hand
 
 
 @pytest.mark.integration
@@ -135,6 +149,7 @@ def test_postgres_concurrent_approvals_cannot_double_reserve_stock():
             assert count == 1
     finally:
         with sessions.begin() as session:
+            session.execute(delete(WorkRecord).where(WorkRecord.plan_id.in_(plan_ids)))
             session.execute(delete(Reservation).where(Reservation.plan_id.in_(plan_ids)))
             session.execute(delete(AuditEvent).where(AuditEvent.subject_id.in_(plan_ids)))
             session.execute(delete(Plan).where(Plan.id.in_(plan_ids)))

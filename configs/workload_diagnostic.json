@@ -1,0 +1,12 @@
+{
+  "version": "local-workload-diagnostic-v1",
+  "status": "diagnostic_no_frozen_performance_acceptance",
+  "concurrent_readers": 5,
+  "requests_per_reader": 40,
+  "timeout_seconds": 5,
+  "maximum_job_wait_seconds": 45,
+  "read_paths": ["/health/ready", "/fleet", "/components/cmp-eng-01", "/inventory", "/jobs"],
+  "job_paths": ["/jobs/planning", "/jobs/simulation/scenario-baseline"],
+  "input_boundary": "Existing labelled synthetic workspace; not an operational workload or large-fleet benchmark",
+  "acceptance": "diagnostic_only"
+}

@@ -32,9 +32,7 @@ def test_contiguous_outage_is_imputed_but_withheld_and_fit_rows_are_unchanged() 
         window=5,
         maximum_missing_fraction=0.5,
         maximum_contiguous_missing_cycles=2,
-        spec=InterventionSpec(
-            "outage", "contiguous_outage", length_cycles=3, feature="sensor_1"
-        ),
+        spec=InterventionSpec("outage", "contiguous_outage", length_cycles=3, feature="sensor_1"),
         seed=7,
     )
 

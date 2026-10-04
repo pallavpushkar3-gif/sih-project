@@ -325,3 +325,11 @@ The principal demonstration must be able to:
 10. Retrieve the associated records and manifests explaining what was measured, estimated or assumed.
 
 Do not invent fixed prediction accuracy or availability gains in the demo. Use actual evaluated results and label scripted fixtures. Acceptance criteria will define pass/fail evidence for this specification.
+
+## Aircraft inspection presentation and supply what-if
+
+The Fleet entry offers an illustrative aircraft with only API-verified mapped engine selection. Spatial/list selection and retained URL context lead to actual assessment/history/quality, input/model provenance and component task/stock context. No physical installation verification, unmodelled component assessment or validated airframe twin is inferred. Keep scientific/permission/job/approval contracts authoritative.
+
+`GET /api/components/{id}/maintenance` exposes read-only task requirements and currently free part stock, with an explicit 8-hour slot unit. It does not reserve inventory or infer repair tasks from a prediction. A new scenario revision may set `part_available_hours`: a global synthetic common supply-ready time measured from scenario origin, nonnegative and strictly before the horizon. Events wait for supply before requesting a maintenance bay. Retained metrics separate part wait from bay queue wait, while grounded time includes both. Defaults preserve prior supply-ready-at-zero behavior. Parent scenarios and saved outcomes stay immutable; compare runs only under matching retained demand, fleet count and horizon. This research assumption is not an inventory lead-time forecast or approved maintenance cost.
+
+The exact selected proposal has a Reservations & work history panel backed by `/plans/{id}/commitment`. It shows actual retained part commitment quantities/statuses and task/work identities, versions, consumed units, outcome notes and recorded timestamps. It remains read-only; work-outcome mutations keep their existing supervisor-only version contract. Proposed plans explicitly have no commitment. This closes the presentation path from approval to retained history without inferring stock from a plan assignment.

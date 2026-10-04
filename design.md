@@ -257,3 +257,7 @@ Validate the substantive risks identified in acceptance criteria: engine leakage
 Performance claims require specified workload/hardware and measured results. Architectural diagrams describe the intended system, not evidence that it is deployed or tested.
 
 Detailed decisions belong in `docs/decisions/`. Record an architecture change with its reason, alternatives, contract/data implications and validation requirements. Preserve this document as the high-level map and link to detailed specifications rather than duplicating their complete contents.
+
+## Aircraft inspection presentation update — 2026-10-04
+
+The entry workspace now uses a licensed local illustrative aircraft GLB through React Three Fiber/Drei and a compact neutral shell. Fleet register and existing decision screens remain available. Spatial engine selection opens authoritative evidence; quantitative history, sensitivity and planning remain 2D. The shared simulation includes explicit synthetic common part-availability time on immutable scenario revisions. This browser redesign changes neither FD001 qualification nor deployment/operational-validation boundaries. See ADR 0004 and `docs/design/3d_viewer.md` / `asset_register.md`.

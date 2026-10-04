@@ -1,23 +1,25 @@
-# Design System
+# Design system
 
-## Visual Direction
+Aircraft inspection uses generous neutral space, a compact 64px header and five destinations: Fleet, Alerts, Planning, Inventory and Scenarios. The product name remains Aircraft maintenance / PS 26249. The existing backend records drive component identity, quality, evidence, task constraints, proposals, stock and outcomes.
 
-A clear technical workspace emphasizing evidence and decision status. Avoid decorative effects competing with plots or warnings. Typography, spacing and contrast serve dense records and sustained reading.
+## Semantic palette
 
-## Proposed Tokens
+| Token | Value | Purpose |
+|---|---|---|
+| bg-page / bg-surface / bg-stage | #F4F5F7 / #FFFFFF / #E9EDF1 | Workspace, panels, model studio |
+| text-primary / text-secondary / text-muted | #18212B / #46515F / #596574 | Hierarchical readable text |
+| border-subtle / border-control | #D8DEE6 / #7A8796 | Grouping and interactive boundaries |
+| accent / accent-hover / accent-soft | #2457C5 / #1D46A0 / #EAF0FF | Actions and selection |
+| success / success-soft | #176344 / #EAF5EE | Recorded successful status |
+| warning / warning-soft | #8A4B0F / #FFF3DF | Attention with explicit reason |
+| danger / danger-soft | #A52A32 / #FCECEE | Errors/conflicts |
+| unknown / unknown-soft | #596574 / #EDF0F3 | Unavailable/not assessed |
+| focus | #2457C5 | Visible keyboard focus |
 
-Use semantic CSS variables for background, surface, text, muted text, border, focus, accent, warning, error and success. Choose light/dark values through contrast checks rather than assuming a palette is accessible. A 4px spacing base with 8/12/16/24/32px steps is a proposed layout convention, not a performance requirement.
+`tokens.css` owns these values. Charts and the aircraft renderer read the CSS variables through `semanticColor`. Status carries readable text as well as visual marking; unknown is never green. Colours do not establish a physical fault cause or aircraft clearance.
 
-Use a readable sans-serif UI font and tabular numerals for quantities. Sizes should retain legibility at browser zoom. Define chart colours consistently; status also requires text/icon meaning.
+Inter is served locally with its OFL notice. Body 15/24, navigation/buttons 14/20, metadata 13/20, main heading 28/36 semibold, aircraft identity 36/44, section 20/28, panel 16/24 and assessment 32/40. Quantities use tabular numerals. Controls target at least 44px. Desktop gutters 32px, gaps 24px, panel padding 16px, panel radius 16px and control radius 10px.
 
-## Components
+At desktop sizes the inspection model/evidence form a roughly 2:1 split with a minimum 340px evidence panel. Below 1200px they stack; below 768px gutters are 16px and the scene is 300px high. Supporting fleet selection and related decision links remain readable. Tables scroll inside their containers rather than widening the page. Dense quantitative evidence stays in 2D ECharts with tables/text alternatives. Reduced-motion preference disables nonessential transitions, and the camera is immediate in all modes.
 
-Shared controls include buttons, dialogs, status badges, asynchronous states, form fields and chart wrappers. Use Radix foundations for focus/keyboard behaviour; complete labels, errors and contrast in application code. Avoid feature-specific business rules in generic controls.
-
-## Chart Language
-
-Show axis units, cutoff/context, legends and a clear distinction between observations, estimates and intervals. Match labels to available metadata. Do not display a confidence band without its actual evaluated meaning.
-
-## Review
-
-Review tables, forms, charts and timeline views with realistic data and error states. Final tokens and screenshots become implementation artifacts after UI work; this file does not claim a completed visual design.
+The single estimate uses a dot and whisker plus numerical interval endpoints. Interval level is shown only when actual assessment calibration metadata supplies it. A historical cutoff marker separates observed sensor values from unobserved future histories; no density curve, future sensor reconstruction or failure probability is fabricated. Sensitivities retain the server's reference/method/version and noncausal limitations.

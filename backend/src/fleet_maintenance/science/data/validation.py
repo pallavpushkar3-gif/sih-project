@@ -16,11 +16,7 @@ def validate_history(rows: list[dict[str, object]]) -> list[QualityFinding]:
     raw_cycles = [row["cycle"] for row in rows if "cycle" in row]
     cycles: list[int] = []
     for value in raw_cycles:
-        if (
-            isinstance(value, bool)
-            or not isinstance(value, (int, float))
-            or int(value) != value
-        ):
+        if isinstance(value, bool) or not isinstance(value, (int, float)) or int(value) != value:
             findings.append(QualityFinding("invalid_cycle", "error", "A cycle index is invalid."))
             continue
         cycles.append(int(value))

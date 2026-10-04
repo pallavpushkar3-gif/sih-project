@@ -14,6 +14,18 @@ def _fits(
     start: int,
     assignments: dict[str, Assignment],
 ) -> bool:
+    if task.part_id:
+        candidates = {**assignments, task.id: Assignment(task.id, start, start + task.duration)}
+        part_tasks = [t for t in source.tasks if t.part_id == task.part_id and t.id in candidates]
+        for slot in {candidates[t.id].start for t in part_tasks}:
+            supplied = source.part_stock.get(task.part_id, 0) + sum(
+                a.quantity
+                for a in source.part_arrivals
+                if a.part_id == task.part_id and a.slot <= slot
+            )
+            used = sum(t.part_quantity for t in part_tasks if candidates[t.id].start <= slot)
+            if used > supplied:
+                return False
     capacity = source.skill_capacity[task.skill]
     relevant = [
         item

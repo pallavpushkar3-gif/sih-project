@@ -44,3 +44,41 @@ Approval/revision/correction submits the expected record version. Use an idempot
 ## Generated Client
 
 Export OpenAPI from implemented code and generate the TypeScript client through the configured tool. Check regeneration in CI once implemented. Do not maintain a contradictory handwritten schema or invent executable routes before implementation.
+
+## Implemented inventory quantity semantics
+
+`GET /api/inventory` returns physical on-hand stock including active reserved units, and `reserved` separately. Free stock is `on_hand - reserved`. The existing persisted `Part.on_hand` counter stores free stock because approval decrements it when creating a reservation. The response reconstructs physical on-hand by adding active reservations; clients must subtract reservations exactly once. This correction changes no reservation transaction or schema.
+
+## Implemented contract (2026-10-04)
+
+The implemented prefix is `/api`, not the proposed `/api/v1`. FastAPI OpenAPI and the generated schema in apps/web/src/shared/api/generated are authoritative. Collections are currently bounded by stored demonstrator fixtures rather than generally paginated; pagination remains a scale limitation. Error responses use FastAPI detail plus request correlation headers, not the proposed complete stable-code envelope.
+
+- `/access/session`: GET identity, POST credentials, DELETE logout.
+- `/workspace/fixtures`: administrator-only atomic import of labelled synthetic aircraft/components/parts/tasks. Source-version replay is idempotent; conflicting payloads/identities are rejected and existing records are never overwritten.
+- `/components/{id}/imports`: engineer/supervisor immutable FD001 full-history import; consecutive cycles starting at one, exactly 24 finite-or-missing features. Correction references the current previous import and preserves engine identity. Supported identities include dataset/subset/source partition.
+- `/models/registrations`: administrator-only registration of an installed relative artifact directory with manifest/model/transform/calibration hashes. Executable deserialization occurs only after verification; registration does not qualify a scientific release.
+- `/jobs/assessment`: immutable import/model identifiers and cutoff cycle; `/jobs/planning` and `/jobs/simulation/{scenario_id}` queue calculations. Retrieve `/jobs/{id}` independently of events; cancellation is POST `/jobs/{id}/cancellation`.
+- `/assessments/{id}` retains historical evidence/cutoff/explanation availability. Component current views withhold stale estimates after imports change. `/alerts` gives current alerts; `/alerts/history/{component_id}` retains history. Acknowledgement is a separate review record.
+- `/plans`: proposals retain input snapshots, objectives/bounds and parent revisions. POST `/{id}/approve` rechecks current inputs, resources and stock under locks; repeated approval is idempotent. Rejection/revisions retain previous results.
+- `/work`: GET approved work and POST `/{id}/outcome` with action, expected version and notes. Completion requires started work, consumes reserved parts, and preserves history. Cancellation releases unstarted reservations only. Started work cannot be cancelled through this endpoint.
+- `/inventory/{part_id}/adjustments`: version-checked quantity delta, reason and idempotency key; free-stock conflicts reject without partial changes. Inventory GET exposes physical on-hand and reservations separately.
+- `/scenarios/{id}/revisions`: creates a distinct synthetic scenario with parent provenance and expected-version validation. Runs retain actual scenario assumptions/version and metric units.
+
+Planning uses fourteen eight-hour slots, one engine-qualified crew and one bay in the current workspace service. Explicit compatible grouping keeps durations additive and contiguous; no grounding savings or useful-life benefit is inferred. Numerical RUL is in cycles; timestamps are stored with UTC timezone semantics. See production_readiness.md for evidence and unaccepted scope items.
+
+
+`GET /api/jobs/{job_id}/attempts` returns durable attempt numbers, worker identities, states, UTC start/lease/finish timestamps and bounded outcome codes. History begins at the attempt-history migration; absence of earlier records is not proof that no earlier attempt ran. Assessment explanation metadata now includes method/version/reference and an explicit available/unavailable state; unavailable sensitivity does not remove a valid prediction.
+
+## Expected delivery records
+
+`GET /api/inventory/arrivals` exposes versioned synthetic expected/received/cancelled deliveries with eight-hour arrival slots. Logistics/supervisor may `POST /api/inventory/arrivals` with client identity, part/version, positive quantity, horizon slot and reason. Identical command retries retain one record. `POST /api/inventory/arrivals/{id}/outcome` records receipt or cancellation with expected version and reason; repeated terminal outcomes cannot credit stock twice. Receipt changes physical stock; cancellation does not. Part/arrival version and audit changes are transactional.
+
+Expected deliveries enter immutable planning snapshots and cumulative time-dependent availability checks. A conditional proposal may wait for delivery; approval still requires received physical stock. Receipt, cancellation or correction invalidates the old source hash and requires a fresh proposal. Expected supply cannot authorize consumption before receipt.
+
+## Inspection task context and synthetic scenario supply time
+
+`GET /components/{component_id}/maintenance` is an authenticated read returning `component_id`, `slot_duration_hours=8` and task rows with identity/title/status/mandatory/deadline/duration/required_skill, part identity/required quantity/current free quantity and task version. Missing component is 404. Free quantity uses the internal unreserved stock value; physical on-hand and reserved quantities remain separately defined by Inventory. No mutation or prediction-to-task inference occurs.
+
+`POST /scenarios/{scenario_id}/revisions` accepts optional finite `part_available_hours` (default 0), ≥0 and strictly before `horizon_hours`. Existing planner/supervisor permission and expected parent version apply. A new scenario identity retains the assumptions and parent ID. The common synthetic supply time delays events before bay acquisition. Saved run metrics include `part_wait_hours` separately from `queue_wait_hours`; grounded aircraft-hours include both waits and service time. A supply revision never mutates physical deliveries/reservations. Existing zero-time/default scenarios retain their prior behavior. OpenAPI/browser declarations are generated from the implemented FastAPI schema.
+
+`GET /plans/{plan_id}/commitment` returns authenticated read-only retained reservation and work rows for the exact plan identity. Reservation rows contain part/quantity/status; work rows contain task/status/version, consumed quantity, notes and recorded start/completion timestamps. Empty proposals imply no committed rows, not successful approval. Unknown plan is 404. Reading history creates no reservation, stock change or work outcome. The Planning history panel refreshes after successful approval; mismatched history identity is withheld.

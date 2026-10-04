@@ -17,6 +17,8 @@ class Assessment(Base):
     model_version: Mapped[str | None] = mapped_column(String(80), nullable=True)
     input_version: Mapped[str] = mapped_column(String(120))
     quality_findings: Mapped[list[dict[str, str]]] = mapped_column(JSON, default=list)
+    evidence: Mapped[dict[str, object]] = mapped_column(JSON, default=dict, server_default="{}")
+    cutoff_cycle: Mapped[int | None] = mapped_column(nullable=True)
     created_at: Mapped[datetime] = mapped_column(default=lambda: datetime.now(UTC))
 
 
@@ -33,9 +35,7 @@ class Alert(Base):
 
 class AlertAcknowledgement(Base):
     __tablename__ = "alert_acknowledgements"
-    __table_args__ = (
-        UniqueConstraint("alert_id", "actor", name="uq_alert_acknowledgement_actor"),
-    )
+    __table_args__ = (UniqueConstraint("alert_id", "actor", name="uq_alert_acknowledgement_actor"),)
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     alert_id: Mapped[str] = mapped_column(ForeignKey("alerts.id"), index=True)
     actor: Mapped[str] = mapped_column(String(64))

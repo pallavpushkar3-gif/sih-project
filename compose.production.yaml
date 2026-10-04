@@ -1,0 +1,40 @@
+# Use with compose.yaml behind an HTTPS reverse proxy; no service is published publicly here.
+services:
+  postgres:
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: ${FLEET_POSTGRES_PASSWORD:?Set a unique PostgreSQL password}
+    ports: !reset []
+  rabbitmq:
+    restart: unless-stopped
+    environment:
+      RABBITMQ_DEFAULT_PASS: ${FLEET_RABBITMQ_PASSWORD:?Set a unique broker password}
+    ports: !reset []
+  api:
+    restart: unless-stopped
+    environment: &release_environment
+      FLEET_ENVIRONMENT: production
+      FLEET_AUTHENTICATION_MODE: session
+      FLEET_SECURE_COOKIES: "true"
+      FLEET_AUTO_CREATE_SCHEMA: "false"
+      FLEET_AUTO_SEED_DEMO: "false"
+      FLEET_ALLOWED_ORIGINS: ${FLEET_ALLOWED_ORIGINS:?Set a JSON list containing the workspace HTTPS origin}
+      FLEET_DATABASE_URL: ${FLEET_RELEASE_DATABASE_URL:?Set the PostgreSQL connection URL}
+      FLEET_BROKER_URL: ${FLEET_RELEASE_BROKER_URL:?Set the RabbitMQ connection URL}
+      FLEET_ARTIFACT_ROOT: /var/lib/fleet-maintenance/artifacts
+    ports: !reset []
+    security_opt: ["no-new-privileges:true"]
+    cap_drop: [ALL]
+  worker:
+    restart: unless-stopped
+    environment: *release_environment
+    security_opt: ["no-new-privileges:true"]
+    cap_drop: [ALL]
+  outbox:
+    restart: unless-stopped
+    environment: *release_environment
+    security_opt: ["no-new-privileges:true"]
+    cap_drop: [ALL]
+  web:
+    restart: unless-stopped
+    ports: !reset []

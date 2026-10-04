@@ -25,11 +25,20 @@ class CalibrationResult:
 
 
 def conformal_quantile(residuals: NDArray[np.float64], nominal_coverage: float) -> float:
-    if residuals.ndim != 1 or not residuals.size or (residuals < 0).any():
+    if (
+        residuals.ndim != 1
+        or not residuals.size
+        or not np.isfinite(residuals).all()
+        or (residuals < 0).any()
+    ):
         raise ValueError("Residuals must be a nonempty one-dimensional nonnegative array.")
     if not 0.0 < nominal_coverage < 1.0:
         raise ValueError("Nominal coverage must be between zero and one.")
-    rank = min(len(residuals), math.ceil((len(residuals) + 1) * nominal_coverage))
+    rank = math.ceil((len(residuals) + 1) * nominal_coverage)
+    if rank > len(residuals):
+        raise ValueError(
+            "Not enough independent calibration samples for a finite interval at this level"
+        )
     return float(np.sort(residuals)[rank - 1])
 
 

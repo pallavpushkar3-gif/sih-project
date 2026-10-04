@@ -1,6 +1,6 @@
 # Application Events
 
-Status: PostgreSQL-backed job-event replay implemented for the local demonstrator; retention-gap resync, record scoping and non-job material event families remain pending.
+Status: PostgreSQL-backed job-event replay implemented for the local demonstrator; retention-gap resync and confirmed-prefix ordering are implemented; automatic retention, record scoping and non-job material event families remain pending.
 
 ## Purpose
 
@@ -12,7 +12,7 @@ The implemented job envelope contains `event_id`, `type`, `occurred_at` and the 
 
 ## Delivery and Access
 
-The local demonstration subscription resolves the same injected demo actor as ordinary routes. It replays confirmed outbox rows after integer `Last-Event-ID`; the browser relies on native EventSource cursor handling and invalidates authoritative job/plan/run queries. Planning and scenario screens submit durable jobs and display authoritative attempts/results; a two-second job-query poll is a fallback when stream delivery is delayed. Bounded retention and retention-gap resync are not yet implemented. Do not stream unauthorized provenance or private payloads.
+Subscriptions use the same authenticated actor as ordinary routes; production sessions are revalidated every fifteen seconds and an expired/disabled session receives `auth.required` before closure. Explicit demo mode remains available only outside production. It replays confirmed outbox rows after integer `Last-Event-ID`; the browser relies on native EventSource cursor handling and invalidates authoritative job/plan/run/inventory/arrival/alert queries. Planning and scenario screens submit durable jobs and display authoritative attempts/results; a two-second job-query poll is a fallback when stream delivery is delayed. Confirmed-prefix replay stops at the first pending event so parallel publication cannot skip lower IDs. Cursors before retained history, above current history or against empty history receive `resync`; browsers refetch authoritative state. Automatic bounded-retention pruning remains unimplemented. Do not stream unauthorized provenance or private payloads.
 
 ## Progress
 

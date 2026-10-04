@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 
 @dataclass(frozen=True)
@@ -12,6 +12,15 @@ class TaskInput:
     part_quantity: int = 0
     fixed_start: int | None = None
     predecessors: tuple[str, ...] = ()
+    component_id: str | None = None
+    group_id: str | None = None
+
+
+@dataclass(frozen=True)
+class PartArrivalInput:
+    part_id: str
+    slot: int
+    quantity: int
 
 
 @dataclass(frozen=True)
@@ -20,6 +29,7 @@ class PlanningInput:
     tasks: tuple[TaskInput, ...]
     skill_capacity: dict[str, int]
     part_stock: dict[str, int]
+    part_arrivals: tuple[PartArrivalInput, ...] = field(default_factory=tuple)
 
 
 @dataclass(frozen=True)

@@ -4,7 +4,9 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from fleet_maintenance.api.errors import RequestContextMiddleware, install_error_handlers
 from fleet_maintenance.api.router import router
+from fleet_maintenance.logging_config import configure_logging
 from fleet_maintenance.persistence.database import SessionLocal, create_schema
 from fleet_maintenance.services.records import seed_demo
 from fleet_maintenance.settings import get_settings
@@ -12,6 +14,7 @@ from fleet_maintenance.settings import get_settings
 
 @asynccontextmanager
 async def lifespan(_: FastAPI) -> AsyncIterator[None]:
+    configure_logging()
     settings = get_settings()
     settings.artifact_root.mkdir(parents=True, exist_ok=True)
     if settings.auto_create_schema:
@@ -23,9 +26,11 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
 
 
 app = FastAPI(title="Fleet Maintenance Decision API", version="0.1.0", lifespan=lifespan)
+app.add_middleware(RequestContextMiddleware)
+install_error_handlers(app)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:8080"],
+    allow_origins=get_settings().allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

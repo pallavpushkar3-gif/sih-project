@@ -109,9 +109,7 @@ def test_baseline_artifact_replays_training_transform_at_inference(tmp_path: Pat
         seed=23,
     )
     transform = json.loads((tmp_path / "standardizer.json").read_text())
-    scaled = (validation.values - np.asarray(transform["mean"])) / np.asarray(
-        transform["scale"]
-    )
+    scaled = (validation.values - np.asarray(transform["mean"])) / np.asarray(transform["scale"])
     replay_metrics = regression_metrics(validation.targets, saved_model.predict(scaled))
 
     assert replay_metrics.as_dict() == result.validation.as_dict()
@@ -123,7 +121,7 @@ def test_baseline_artifact_replays_training_transform_at_inference(tmp_path: Pat
         table,
         split,
         tmp_path,
-        nominal_coverage=0.8,
+        nominal_coverage=0.5,
         target_cap=5,
         minimum_history=3,
         window=3,
@@ -134,3 +132,69 @@ def test_baseline_artifact_replays_training_transform_at_inference(tmp_path: Pat
     assert calibration.calibration_coverage == 1.0
     assert calibration_manifest["final_test_evaluated"] is False
     assert calibration_manifest["model_artifacts"] == manifest["artifacts"]
+
+
+@pytest.mark.science
+def test_serving_cutoff_excludes_future_and_rejects_tampered_artifacts(tmp_path: Path) -> None:
+    from fleet_maintenance.science.prediction.inference import BaselinePredictor, predict_history
+
+    table = _table()
+    split = EngineSplit(
+        fit=tuple(f"NASA_CMAPSS:FD001:train:{engine}" for engine in (1, 2, 3, 4)),
+        validation=("NASA_CMAPSS:FD001:train:5",),
+        calibration=("NASA_CMAPSS:FD001:train:6",),
+    )
+    train_baseline(table, split, tmp_path, target_cap=5, minimum_history=3, window=3, seed=23)
+    calibrate_baseline(
+        table,
+        split,
+        tmp_path,
+        nominal_coverage=0.5,
+        target_cap=5,
+        minimum_history=3,
+        window=3,
+        seed=23,
+    )
+    history = table.features[table.engine_numbers == 5].copy()
+    before = predict_history(tmp_path, history, 4)
+    history[4:] += 100000
+    after = predict_history(tmp_path, history, 4)
+    assert before == after
+    model_path = tmp_path / "model.joblib"
+    model_path.write_bytes(model_path.read_bytes() + b"tampered")
+    with pytest.raises(ValueError, match="hash mismatch"):
+        BaselinePredictor.load(tmp_path)
+
+
+@pytest.mark.science
+def test_explanation_failure_preserves_valid_prediction(tmp_path: Path, monkeypatch) -> None:
+    from fleet_maintenance.science.prediction import inference
+
+    table = _table()
+    split = EngineSplit(
+        fit=tuple(f"NASA_CMAPSS:FD001:train:{engine}" for engine in (1, 2, 3, 4)),
+        validation=("NASA_CMAPSS:FD001:train:5",),
+        calibration=("NASA_CMAPSS:FD001:train:6",),
+    )
+    train_baseline(table, split, tmp_path, target_cap=5, minimum_history=3, window=3, seed=23)
+    calibrate_baseline(
+        table,
+        split,
+        tmp_path,
+        nominal_coverage=0.5,
+        target_cap=5,
+        minimum_history=3,
+        window=3,
+        seed=23,
+    )
+    history = table.features[table.engine_numbers == 5]
+    before = inference.predict_history(tmp_path, history, 4)
+
+    def fail(*args):
+        raise ValueError("Invalid intervention outputs")
+
+    monkeypatch.setattr(inference, "explanation_evidence", fail)
+    after = inference.predict_history(tmp_path, history, 4)
+    assert after.estimate_cycles == before.estimate_cycles
+    assert (after.lower_cycles, after.upper_cycles) == (before.lower_cycles, before.upper_cycles)
+    assert after.evidence["explanation"]["state"] == "unavailable"

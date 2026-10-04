@@ -25,9 +25,7 @@ def summarize(results: tuple[SimulationResult, ...]) -> SimulationSummary:
     return SimulationSummary(
         replications=len(results),
         mean_availability=fmean(availability),
-        mean_downtime_aircraft_hours=fmean(
-            result.downtime_aircraft_hours for result in results
-        ),
+        mean_downtime_aircraft_hours=fmean(result.downtime_aircraft_hours for result in results),
         mean_queue_wait_hours=fmean(result.queue_wait_hours for result in results),
         availability_standard_deviation=stdev(availability) if len(results) > 1 else None,
         minimum_availability=min(availability),

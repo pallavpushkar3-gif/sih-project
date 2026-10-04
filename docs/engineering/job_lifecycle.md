@@ -29,3 +29,16 @@ A cancellation request transitions state and signals cooperation. Confirm `cance
 ## Required Race Cases
 
 Duplicate message; publish-before-dispatch-mark failure; worker loss before/after artifact write; completion-before-ack loss; cancellation versus completion; new attempt versus old result; API restart; reconnect after event retention gap. Evidence belongs in acceptance records.
+
+## Implemented recovery boundary (2026-10-04)
+
+A job stores owner, current attempt number, lease and start/finish timestamps; durable job_attempts now retain each newly claimed attempt from migration eab4b05e021f. Older absent attempt records are not fabricated. Default leases are 300 seconds and recovery is bounded to three attempts. The dispatcher regularly requeues expired running attempts and publishes their new outbox entries; exhausted attempts fail explicitly. Expired cancellation requests become cancelled. Celery uses late acknowledgements, worker-loss rejection, prefetch one and soft/hard time limits shorter than the lease. No lease-extension heartbeat is implemented; configure leases above supported calculation runtimes.
+
+Workers copy immutable inputs, end the read transaction, calculate through shared science modules, then register results and accept the current eligible attempt in one transaction. Cancellation/expired ownership causes rollback of unaccepted result rows. The main browser uses queued planning and simulation APIs. Legacy synchronous proposal/run routes remain available for small reference fixtures; their calculations also release read transactions first and are not the recommended long-running interface.
+
+A real running worker was killed and restarted in the isolated local test stack; the recorded job recovered on attempt two. Transactional tests cover stale completion, duplicate results, cancellation and publication failure. This does not establish all broker/API kill points, event-retention gaps or high availability. The single-host deployment has no automatic host failover.
+
+
+### Attempt retention contract
+
+Each claim creates a unique `(job_id, number)` row with the worker hostname/process ID and UTC lease/start times. Success, failure, explicit recovery, expired-lease recovery and confirmed cancellation retain an outcome/state/finish time in the same job transaction. Active leases are preserved on historical attempts after the Job lease is cleared. GET `/api/jobs/{id}/attempts` returns numbered history. Duplicate/stale completion cannot modify an older closed attempt. No worker identity alone grants ownership; job number/state/lease checks remain authoritative. The live kill/restart rehearsal retained expired then succeeded attempts, and the new table was restored with all rows intact.

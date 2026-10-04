@@ -15,6 +15,10 @@ def get_assessment(
     item = session.get(Assessment, assessment_id)
     if item is None:
         raise HTTPException(404, "Assessment not found")
+    explanation = item.evidence.get("explanation")
+    available = (
+        isinstance(explanation, dict) and explanation.get("state", "available") == "available"
+    )
     return {
         "id": item.id,
         "component_id": item.component_id,
@@ -25,8 +29,12 @@ def get_assessment(
         "model_version": item.model_version,
         "input_version": item.input_version,
         "quality_findings": item.quality_findings,
+        "evidence": item.evidence,
+        "cutoff_cycle": item.cutoff_cycle,
         "explanation": {
-            "state": "unavailable",
-            "reason": "No evaluated model artifact is installed.",
+            "state": "available" if available else "unavailable",
+            "reason": "Noncausal feature sensitivity, retained with model and cutoff."
+            if available
+            else "No explanation is available for this assessment.",
         },
     }

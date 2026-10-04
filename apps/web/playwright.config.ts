@@ -1,14 +1,15 @@
 import { defineConfig } from "@playwright/test";
+import process from "node:process";
 
 export default defineConfig({
   testDir: "./tests/e2e",
   use: {
-    baseURL: "http://127.0.0.1:5173",
+    baseURL: process.env.FLEET_E2E_BASE_URL ?? "http://127.0.0.1:5173",
     trace: "retain-on-failure",
     channel: "chrome",
   },
-  webServer: {
-    command: "pnpm dev",
+  webServer: process.env.FLEET_E2E_BASE_URL ? undefined : {
+    command: "corepack pnpm dev --host 127.0.0.1",
     url: "http://127.0.0.1:5173",
     reuseExistingServer: true,
   },

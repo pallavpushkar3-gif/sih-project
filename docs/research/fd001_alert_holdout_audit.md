@@ -1,0 +1,11 @@
+# FD001 complete-trajectory holdout audit — 2026-10-04
+
+Status: **blocked**. No untouched complete FD001 training trajectories remain. No internal held-out full-trajectory alert evaluation was run or claimed.
+
+The retained baseline manifest and processed split agree exactly. The three disjoint sets exhaust all 100 training engines: 70 fit engines supplied model fitting and fitted scaling; 15 validation engines supplied candidate selection, robustness probes and explanation diagnostics; 15 calibration engines supplied residual-based interval calibration. `training.py`, `sequence_training.py` and `calibration.py` implement these uses. Sequence comparison results are retained in the reproduction log; no separate sequence manifest currently exists in the model directory. The baseline alone establishes that every eligible training engine was already used.
+
+Exact namespaced identities and SHA-256 hashes of the inspected baseline manifest, processed manifest and calibration record are retained in ignored `artifacts/evaluations/fd001-alert-holdout-audit-v1.json`. Its union equals `NASA_CMAPSS:FD001:train:1..100`, with no overlaps and an empty untouched set. This audit did not fit models, change partitions, select thresholds or evaluate alert outcomes.
+
+The official 100-engine test partition remains suitable for its supported final-cutoff RUL evaluation, already performed under frozen demonstrator gates. Its sensor histories are truncated; supplied RUL labels cannot reconstruct future observations. Previously used training engines cannot be retroactively designated unseen. A new eligible source needs its own support protocol and identities frozen before any model, transformation, calibration or policy use. Any future qualifying result must be labelled “internal evaluation on held-out simulated engines”; it would not establish independent operational validation.
+
+No operator-approved missed-alert, false-alert or cost limits exist. Synthetic policy references and cost sensitivity remain research assumptions, not acceptance against operational budgets. Before a future complete-trajectory run, freeze event, warning-horizon, counting and baseline semantics as required by the evaluation protocol. Independent operational validation, operator targets and this internal holdout requirement remain separate blocked criteria.

@@ -1,15 +1,14 @@
-.PHONY: setup web-check backend-check backend-integration science-check science-train science-calibrate science-robustness sequence-check sequence-train alert-evaluation planner-benchmark simulation-reference test e2e services-up services-down migrate seed dev
+.PHONY: setup web-check backend-check backend-integration science-check science-train science-evaluate science-calibrate science-robustness sequence-check sequence-train alert-evaluation planner-benchmark simulation-reference test e2e services-up services-down migrate seed dev
 
 setup:
-	corepack enable
-	pnpm install --frozen-lockfile
+	corepack pnpm install --frozen-lockfile
 	docker build --target test -t fleet-maintenance-test backend
 
 web-check:
-	pnpm lint
-	pnpm typecheck
-	pnpm build
-	pnpm test:web
+	corepack pnpm lint
+	corepack pnpm typecheck
+	corepack pnpm build
+	corepack pnpm test:web
 
 backend-check:
 	docker build --target test -t fleet-maintenance-test backend
@@ -59,7 +58,7 @@ test: web-check backend-check
 
 e2e: services-up
 	docker compose up -d --build api worker outbox
-	pnpm --filter @fleet-maintenance/web test:e2e
+	corepack pnpm --filter @fleet-maintenance/web test:e2e
 
 services-up:
 	docker compose up -d postgres rabbitmq
@@ -75,3 +74,16 @@ seed:
 
 dev:
 	docker compose up --build
+
+science-evaluate:
+	docker build --target science -t fleet-maintenance-science backend
+	docker run --rm -v "$(CURDIR):/workspace" -w /workspace -e PYTHONPATH=/workspace/backend/src fleet-maintenance-science python scripts/evaluate_model.py
+
+.PHONY: explanation-evaluation workload-diagnostic
+explanation-evaluation:
+	docker build --target science -t fleet-maintenance-science backend
+	docker run --rm -v "$(CURDIR):/workspace" -w /workspace -e PYTHONPATH=/workspace/backend/src fleet-maintenance-science python scripts/evaluate_explanations.py
+
+# Host Python environment must have the installable backend package and science dependencies.
+workload-diagnostic:
+	PYTHONPATH=backend/src .venv313/bin/python scripts/benchmark_workload.py

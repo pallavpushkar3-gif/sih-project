@@ -102,9 +102,7 @@ def prepare_intervention(
     elif spec.kind == "regime_shift":
         rows = np.flatnonzero(evaluation_rows)
         setting_columns = np.arange(min(3, values.shape[1]))
-        shifted = values[np.ix_(rows, setting_columns)] + (
-            deviations[setting_columns] * spec.scale
-        )
+        shifted = values[np.ix_(rows, setting_columns)] + (deviations[setting_columns] * spec.scale)
         values[np.ix_(rows, setting_columns)] = np.clip(
             shifted, minimums[setting_columns], maximums[setting_columns]
         )
@@ -115,9 +113,9 @@ def prepare_intervention(
     withheld: list[bool] = []
     for identity, cutoff in zip(evaluation_engine_ids, cutoffs, strict=True):
         engine = _engine_number(identity)
-        indices = np.flatnonzero(
-            (table.engine_numbers == engine) & (table.cycles <= cutoff)
-        )[-window:]
+        indices = np.flatnonzero((table.engine_numbers == engine) & (table.cycles <= cutoff))[
+            -window:
+        ]
         window_missing = missing[indices]
         fraction = float(window_missing.mean())
         longest = max(
@@ -125,8 +123,7 @@ def prepare_intervention(
             default=0,
         )
         withheld.append(
-            fraction > maximum_missing_fraction
-            or longest > maximum_contiguous_missing_cycles
+            fraction > maximum_missing_fraction or longest > maximum_contiguous_missing_cycles
         )
 
     if spec.kind in {"random_missing", "contiguous_outage"}:

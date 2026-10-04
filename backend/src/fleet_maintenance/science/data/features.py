@@ -28,7 +28,13 @@ def _engine_number(identity: str) -> int:
     return int(identity.rsplit(":", 1)[1])
 
 
-def _snapshot(history: NDArray[np.float64], cycle: int, window: int) -> NDArray[np.float64]:
+def snapshot_features(history: NDArray[np.float64], cycle: int, window: int) -> NDArray[np.float64]:
+    if window <= 0 or cycle < 1 or history.ndim != 2 or not len(history):
+        raise ValueError(
+            "Snapshot requires nonempty two-dimensional history and positive window/cycle"
+        )
+    if not np.isfinite(history).all():
+        raise ValueError("Snapshot history must be finite")
     recent = history[-window:]
     mean = recent.mean(axis=0)
     if len(recent) == 1:
@@ -82,7 +88,7 @@ def build_snapshot_dataset(
         maximum_cycle = int(cycles[-1])
         for index in indices:
             cutoff = int(cycles[index])
-            rows.append(_snapshot(history[: index + 1], cutoff, window))
+            rows.append(snapshot_features(history[: index + 1], cutoff, window))
             targets.append(float(min(target_cap, maximum_cycle - cutoff)))
             selected_ids.append(identity)
             cutoffs.append(cutoff)

@@ -1,30 +1,24 @@
 # Access and Permissions
 
-Status: demonstration-header role enforcement implemented for current mutations; identity provisioning, record scoping and cookie-session implementation pending.
+Status: single-workspace server sessions and demo identity injection implemented. External identity federation, multi-role accounts and tenant/record isolation are not implemented.
 
-## Role Responsibilities
-
-| Role | Permitted responsibilities |
+| Role | Implemented mutations |
 |---|---|
-| Viewer | Read records/results within assigned scope. |
-| Technical reviewer | Viewer plus request assessments and acknowledge/review alerts. |
-| Planner | Viewer plus create/revise planning and simulation scenarios/proposals. |
-| Logistics coordinator | Viewer plus authorized stock/arrival corrections and bottleneck review. |
-| Maintenance supervisor | Read applicable evidence and approve/reject/cancel plans or record authorized work outcomes. |
-| Administrator | Account/role/configuration administration; operational approval is a separately granted permission. |
+| viewer | None; read protected workspace records. |
+| engineer | Import supported engine histories, request assessments, acknowledge alerts. |
+| planner | Submit planning/simulation jobs and create/revise proposals/scenarios. |
+| logistics | Version-checked, audited stock adjustments. |
+| supervisor | Engineer/planner/logistics actions plus approval, rejection and work outcomes. |
+| administrator | Controlled model registration and labelled workspace fixture imports; no implicit operational approval. |
 
-An account may hold multiple responsibilities. Dataset import, model registration and policy activation are explicit controlled permissions assigned to appropriate maintainers, not implicitly granted by read access. Final record scoping follows actual deployment needs; do not invent tenant isolation claims.
+Every protected router authenticates on the server. Version checks and role checks apply regardless of hidden browser controls. Jobs record an owner; cancellation requires that owner or a supervisor. Workspace reads are shared by authenticated accounts; there is no tenant-isolation claim.
 
-## Enforcement
+## Sessions
 
-Authenticate every protected command/query and check operation plus record scope on the server. Verify expected versions for material edits. Hiding a button does not enforce access. Test denial leaves state unchanged.
+`FLEET_AUTHENTICATION_MODE=session` uses Argon2 password hashes through pwdlib and opaque random server-side sessions. Only SHA-256 session-token hashes are stored. Cookies are HttpOnly, SameSite=Strict, scoped to `/api`, and Secure in production. Sessions expire after eight hours by default. Mutations require the returned CSRF token and an allowed Origin. Login origin checks, per-account lockout after five failures for fifteen minutes, and proxy login rate limits are implemented. Logout deletes the server session; disabling/resetting an account prevents its previous sessions being used.
 
-## Session Design
+`GET/POST/DELETE /api/access/session` provide identity, login and logout. The browser keeps the CSRF token in memory and returns to sign-in after session expiry. Provision/reset an account using `scripts/provision_user.py` with a configured database and the installable backend package; passwords are prompted twice, require fourteen characters, and never appear in arguments or logs. Provisioning resets sessions and adds an audit event. No real accounts have been provisioned by the agent.
 
-For the single-origin browser demonstrator, prefer a maintained server-side session/auth library with opaque session cookies. Configure HttpOnly, appropriate Secure/SameSite, expiry and CSRF protection for state-changing requests. Define local development exceptions explicitly. Do not write a custom cryptographic scheme or put session secrets in fixtures.
+`demo` mode reads `X-Demo-User` and `X-Demo-Role` for labelled local fixtures only. Session mode ignores these headers. Production settings reject demo authentication, insecure cookies, automatic schema creation/seeding, non-PostgreSQL storage and non-HTTPS origins.
 
-The current local-only build reads `X-Demo-User` and `X-Demo-Role` headers and labels the session authentication mode accordingly. This is test/demo identity injection, not deployable authentication. Planning, approval, scenario-run, durable-job submission and cancellation mutations enforce the planner/supervisor role on the server. Alert acknowledgement enforces the engineer/supervisor role and records a separate idempotent review row without changing alert state. Tests verify viewer denial leaves plans, runs, jobs and acknowledgements unchanged.
-
-## Audit
-
-Record actor/time/version/reason for material adjustments and approvals. Do not treat technical review as aircraft certification. Account provisioning, external identity integration and real operations require separate explicit authorization.
+Audit records retain actors, UTC timestamps, versions and reasons for material changes. These controls do not establish regulatory certification or aircraft maintenance authority.

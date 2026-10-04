@@ -1,58 +1,32 @@
 import { useQuery } from "@tanstack/react-query";
+import { useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-
-import aircraftImage from "../../assets/fleet-aircraft-game.png";
 import { api, isComponentDetail, type ComponentDetail } from "../../shared/api/client";
+import { semanticColor } from "../../shared/styles/semanticColor";
 import { Chart } from "../../shared/charts/Chart";
 import { AsyncState } from "../../shared/ui/AsyncState";
+import { Icon } from "../../shared/ui/Icon";
 import { StatusBadge } from "../../shared/ui/StatusBadge";
-import { HealthAssessment } from "../health/HealthAssessment";
+import { Notice, PageHeader, RefreshButton, StatCard } from "../../shared/ui/WorkspaceUI";
+import { ModelEvidence } from "../health/ModelEvidence";
 import { PredictionEvidenceCard } from "../health/PredictionEvidenceCard";
-import { ComponentHistory } from "./ComponentHistory";
-
 export function ComponentPage() {
   const { componentId = "" } = useParams();
-  const query = useQuery({
-    queryKey: ["component", componentId],
-    queryFn: () => api<ComponentDetail>(`/components/${componentId}`, undefined, isComponentDetail),
-    enabled: Boolean(componentId),
-  });
+  const [sensor, setSensor] = useState("");
+  const query = useQuery({ queryKey: ["component", componentId], queryFn: () => api<ComponentDetail>(`/components/${encodeURIComponent(componentId)}`, undefined, isComponentDetail), enabled: Boolean(componentId) });
   const data = query.data;
-  const option = {
-    backgroundColor: "transparent",
-    grid: { left: 45, right: 18, top: 25, bottom: 40 },
-    tooltip: { trigger: "axis" as const },
-    textStyle: { color: "#929ba7", fontFamily: "Helvetica Neue, Arial, sans-serif" },
-    xAxis: { type: "category" as const, data: data?.observations.map((item) => item.cycle), name: "Operating cycle", axisLine: { lineStyle: { color: "#31445c" } }, axisLabel: { color: "#8295ab" } },
-    yAxis: { type: "value" as const, name: data?.observations[0]?.unit, splitLine: { lineStyle: { color: "#1b2a3d" } }, axisLabel: { color: "#8295ab" } },
-    series: [{ type: "line" as const, data: data?.observations.map((item) => item.value), smooth: true, symbolSize: 7, areaStyle: { color: "rgba(82,217,255,.09)" }, lineStyle: { color: "#59c9dc", width: 3 }, itemStyle: { color: "#59c9dc" } }],
-  };
-  return (
-    <section>
-      <AsyncState loading={query.isLoading} error={query.error}>
-        {data && <>
-          <Link className="back-link" to="/fleet">← Back to fleet</Link>
-          <div className="record-heading">
-            <div><span className="eyebrow">Aircraft component</span><h1>{data.serial_number}</h1><p>{data.kind} · Aircraft {data.aircraft_id.replace("ac-syn-", "SYN-")}</p></div>
-            <StatusBadge status={data.status} />
-          </div>
-          {data.assessment?.state !== "eligible" && <div className="decision-banner"><span>!</span><div><strong>Prediction is intentionally unavailable</strong><p>The validated model has not been approved for live use. The mandatory inspection remains active, so the safe next action is technical review—not a guessed life estimate.</p></div><Link className="button" to="/planning">Review work plan</Link></div>}
-          <article className="diagnostic-stage">
-            <div className="diagnostic-copy"><span className="eyebrow">Aircraft systems</span><h2>Engine health evidence</h2><p>The selected engine has an active inspection task. No unsupported estimate is allowed to enter planning.</p><div className="diagnostic-steps"><span className="done"><b>1</b> Input checked</span><span className="current"><b>2</b> Engineer review</span><span><b>3</b> Plan work</span></div></div>
-            <div className="diagnostic-aircraft"><img src={aircraftImage} alt="Aircraft with selected engine diagnostic context" /><i className="engine-target" /><span>Engine selected</span></div>
-          </article>
-          <div className="metric-grid record-metrics">
-            <article className="metric-card"><span>Current usage</span><strong>{data.current_cycle} cycles</strong><small>Latest observed cycle</small></article>
-            <HealthAssessment assessment={data.assessment} />
-            <article className="metric-card"><span>Open action</span><strong>Inspection</strong><small>Mandatory work stays active</small></article>
-            <article className="metric-card neutral"><span>Data quality</span><strong>Review</strong><small>Generic sensor mapping</small></article>
-          </div>
-          <div className="grid detail-grid">
-            <article className="card span-8"><div className="card-heading"><div><span className="eyebrow">Recorded evidence</span><h3>Sensor trend</h3></div><span className="soft-label">Last {data.observations.length} observations</span></div><Chart option={option} label="Sensor 2 values by operating cycle" /><ComponentHistory observations={data.observations} /></article>
-            <PredictionEvidenceCard assessment={data.assessment} cycle={data.current_cycle} />
-          </div>
-        </>}
-      </AsyncState>
-    </section>
-  );
+  const sensors = [...new Set(data?.observations.map((observation) => observation.sensor) ?? [])];
+  const selectedSensor = sensors.includes(sensor) ? sensor : sensors[0];
+  const observations = useMemo(() => data?.observations.filter((observation) => observation.sensor === selectedSensor) ?? [], [data, selectedSensor]);
+  const unit = observations[0]?.unit ?? "Unknown unit";
+  const assessment = data?.assessment;
+  const hasEstimate = (["available", "eligible", "qualified"].includes(assessment?.state ?? "")) && typeof assessment?.estimate_cycles === "number";
+  const option = useMemo(() => ({ backgroundColor: "transparent", animation: false, grid: { left: 60, right: 24, top: 38, bottom: 55 }, tooltip: { trigger: "axis" as const }, textStyle: { color: semanticColor('text-muted'), fontFamily: "Inter, Arial, sans-serif" }, xAxis: { type: "category" as const, data: observations.map((item) => item.cycle), name: "Operating cycle", nameLocation: "middle" as const, nameGap: 32, axisLine: { lineStyle: { color: semanticColor('border-subtle') } }, axisLabel: { color: semanticColor('text-muted') }, boundaryGap: false }, yAxis: { type: "value" as const, scale: true, name: unit, nameTextStyle: { fontSize: 13 }, splitLine: { lineStyle: { color: semanticColor('border-subtle'), type: "dashed" as const } }, axisLabel: { color: semanticColor('text-muted') } }, series: [{ name: selectedSensor, type: "line" as const, data: observations.map((item) => item.value), markLine: { symbol: "none", label: { formatter: "Observed cutoff", position:"insideEndTop" as const, color: semanticColor("text-secondary") }, lineStyle: {color:semanticColor("text-muted"),type:"dashed" as const}, data: observations.length?[{xAxis:observations.length-1}]:[] }, symbolSize: 7, smooth: false, areaStyle: { color: semanticColor('accent-soft') }, lineStyle: { color: semanticColor('accent'), width: 2.5 }, itemStyle: { color: semanticColor('accent'), borderColor: "white", borderWidth: 2 } }] }), [observations, unit, selectedSensor]);
+  return <section><Link className="back-link" to={`/fleet?aircraft=${encodeURIComponent(data?.aircraft_id ?? "")}&component=${encodeURIComponent(componentId)}`}><Icon name="arrow" size={15} style={{ transform: "rotate(180deg)" }}/>Back to fleet</Link><AsyncState loading={query.isLoading} error={query.error} onRetry={() => void query.refetch()}>{data && <>
+    <PageHeader eyebrow="COMPONENT EVIDENCE" title={data.serial_number} description={`${data.kind.charAt(0).toUpperCase() + data.kind.slice(1)} · Aircraft record ${data.aircraft_id}`} actions={<><StatusBadge status={data.status}/><RefreshButton fetching={query.isFetching} onClick={() => void query.refetch()}/></>}/>
+    {!hasEstimate && <Notice title="Prediction is unavailable" tone="warning">{assessment?.quality_findings[0]?.message ?? "No eligible assessment is available for this component."} No numerical life estimate is substituted. Review recorded work in <Link to="/planning">maintenance planning</Link>.</Notice>}
+    <div className="metric-grid"><StatCard label="Current usage" value={<>{data.current_cycle}<span className="value-unit">cycles</span></>} detail="Latest recorded component usage" icon="activity"/><StatCard label="Remaining useful life" value={hasEstimate ? <>{assessment.estimate_cycles?.toFixed(1)}<span className="value-unit">cycles</span></> : "Unavailable"} detail={hasEstimate ? `Model ${assessment.model_version}` : "No eligible model estimate"} icon="clock" tone={hasEstimate ? "blue" : "warning"}/><StatCard label="Prediction interval" value={hasEstimate && assessment.lower_cycles !== null && assessment.upper_cycles !== null ? `${assessment.lower_cycles.toFixed(1)}–${assessment.upper_cycles.toFixed(1)}` : "—"} detail={hasEstimate ? "Cycles · See evaluation provenance" : "No uncertainty interval available"} icon="chart"/><StatCard label="Recorded observations" value={data.observations.length} detail={`${sensors.length} sensor${sensors.length===1?"":"s"} in this record`} icon="file"/></div>
+    <div className="grid detail-grid"><article className="card span-8"><div className="card-heading"><div><h2>Sensor history</h2><p>Recorded values by operating cycle. The dashed marker is the observed history cutoff; no future sensor history is reconstructed.</p></div><div className="field-inline"><label htmlFor="sensor-select">Sensor</label><select id="sensor-select" value={selectedSensor ?? ""} onChange={(event) => setSensor(event.target.value)}>{sensors.map((name) => <option key={name}>{name}</option>)}</select></div></div>{observations.length ? <><Chart option={option} label={`${selectedSensor} values in ${unit} by operating cycle`}/><div className="chart-caption"><span><i className="chart-key"/>{selectedSensor} · Recorded values</span><span>Cycles {observations[0]?.cycle}–{observations.at(-1)?.cycle}</span></div><details className="technical-details"><summary>View observation values and sources</summary><div className="table-scroll"><table><caption className="sr-only">{selectedSensor} observation history</caption><thead><tr><th scope="col">Cycle</th><th scope="col">Value</th><th scope="col">Unit</th><th scope="col">Source version</th></tr></thead><tbody>{observations.map((row) => <tr key={`${row.cycle}-${row.sensor}`}><td>{row.cycle}</td><td>{row.value}</td><td>{row.unit}</td><td className="mono">{row.source_version}</td></tr>)}</tbody></table></div></details></> : <div className="empty-state async-state"><strong>No sensor history</strong><p>No observations have been recorded for this component.</p></div>}</article><PredictionEvidenceCard assessment={data.assessment} cycle={data.current_cycle}/></div>
+    <article className="card quality-card"><div className="card-heading"><div><h2>Quality & applicability</h2><p>Review these findings before using an assessment.</p></div><Link className="text-link" to="/alerts">Review alerts<Icon name="arrow" size={16}/></Link></div>{assessment?.quality_findings.length ? assessment.quality_findings.map((finding) => <div className="quality-finding" key={finding.code}><Icon name="warning" size={19}/><div><strong>{finding.code.replaceAll("_", " ")}</strong><p>{finding.message}</p></div><span className="source-tag">{finding.severity}</span></div>) : <p className="muted">{assessment ? "No quality findings recorded for this assessment." : "No assessment is available. Input eligibility has not been established."}</p>}<p className="footnote">Generic sensor identifiers retain their source units. Model influences are not confirmed mechanical fault causes.</p></article>
+  <ModelEvidence assessment={data.assessment} componentId={data.id}/></>}</AsyncState></section>;
 }

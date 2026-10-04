@@ -1,0 +1,41 @@
+import {createRequire} from 'node:module';
+import {mkdir,writeFile} from 'node:fs/promises';
+import path from 'node:path';
+import {fileURLToPath} from 'node:url';
+const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
+const require=createRequire(path.join(root,'apps/web/package.json'));
+const {chromium}=require('@playwright/test');
+const output=process.env.FLEET_CAPTURE_DIR??path.join(root,'artifacts/ui-redesign');
+const base=process.env.FLEET_CAPTURE_URL??'http://127.0.0.1:5173';
+await mkdir(output,{recursive:true});
+const browser=await chromium.launch({channel:'chrome'});
+const page=await browser.newPage({viewport:{width:1440,height:900}});
+const errors=[];page.on('pageerror',error=>errors.push(error.message));page.on('console',message=>{if(message.type()==='error')errors.push(`Console: ${message.text()}`);});
+await page.goto(`${base}/fleet`);
+await page.getByRole('button',{name:'Overview',exact:true}).waitFor();
+await page.waitForFunction(()=>!document.querySelector('.scene-toolbar button')?.disabled,{timeout:30000});
+await page.locator('.inspection-evidence h2').waitFor();
+await page.evaluate(()=>document.fonts.ready);
+await page.waitForTimeout(250); // Allow the first textured GPU frame to settle before capture.
+const posterStyle=await page.addStyleTag({content:'.projected-hotspot{visibility:hidden !important}'});
+await page.locator('.aircraft-canvas canvas').screenshot({path:path.join(output,'aircraft-model-poster.png')});
+if(process.env.FLEET_POSTER_PATH)await page.locator('.aircraft-canvas canvas').screenshot({path:process.env.FLEET_POSTER_PATH});
+await posterStyle.evaluate(node=>node.remove());
+await page.screenshot({path:path.join(output,'inspection-1440x900.png')});
+const metrics=await page.evaluate(()=>({browser:navigator.userAgent,hardwareConcurrency:navigator.hardwareConcurrency,deviceMemory:navigator.deviceMemory??null,pixelRatio:devicePixelRatio,asset:performance.getEntriesByType('resource').filter(entry=>entry.name.endsWith('/models/aircraft.glb')).map(entry=>({durationMs:entry.duration,transferBytes:entry.transferSize,decodedBytes:entry.decodedBodySize}))}));
+const samplePromise=page.evaluate(()=>new Promise(resolve=>{const times=[];let previous,start;function sample(now){if(start===undefined)start=now;if(previous!==undefined)times.push(now-previous);previous=now;if(now-start<2500)requestAnimationFrame(sample);else resolve(times);}requestAnimationFrame(sample);}));
+const box=await page.locator('.aircraft-canvas canvas').boundingBox();
+await page.mouse.move(box.x+box.width*.3,box.y+box.height*.3);await page.mouse.down();
+for(let i=0;i<160;i++){await page.mouse.move(box.x+box.width*(.3+.4*i/159),box.y+box.height*(.3+.1*Math.sin(i/8)));await page.waitForTimeout(15);}
+await page.mouse.up();const frames=await samplePromise;frames.sort((a,b)=>a-b);
+metrics.orbit={measurement:'requestAnimationFrame intervals during scripted pointer orbit; not GPU render duration',samples:frames.length,medianMs:frames[Math.floor(frames.length/2)],p95Ms:frames[Math.floor(frames.length*.95)],proposedMedianBudgetMs:33,viewport:{width:1440,height:900}};
+await page.getByRole('button',{name:'Reset view',exact:true}).click();
+for(const [name,width,height] of [['inspection-1366x768',1366,768],['inspection-tablet',900,1000],['inspection-mobile',390,844]]){await page.setViewportSize({width,height});await page.screenshot({path:path.join(output,`${name}.png`),fullPage:true});if(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth))errors.push(`Overflow: ${name}`);}
+await page.setViewportSize({width:1440,height:900});await page.emulateMedia({reducedMotion:'reduce'});await page.goto(`${base}/fleet`);await page.waitForFunction(()=>!document.querySelector('.scene-toolbar button')?.disabled);await page.locator('.inspection-evidence h2').waitFor();await page.waitForTimeout(250);await page.screenshot({path:path.join(output,'inspection-reduced-motion.png')});
+await page.goto(`${base}/components/cmp-eng-01`);await page.getByRole('heading',{name:'Quality & applicability'}).waitFor();await page.screenshot({path:path.join(output,'component-evidence.png'),fullPage:true});
+await page.goto(`${base}/planning`);await page.getByRole('heading',{name:'Maintenance planning',exact:true}).waitFor();const plans=await (await page.request.get(`${base}/api/plans`)).json();const scheduled=plans.find(plan=>plan.assignments?.length&&plan.status!=='proposed')??plans.find(plan=>plan.assignments?.length);if(scheduled){await page.locator('#plan-picker').selectOption(scheduled.id);if(scheduled.status!=='proposed')await page.getByRole('table',{name:'Work records',exact:true}).waitFor();}await page.screenshot({path:path.join(output,'planning-constraints.png'),fullPage:true});
+await page.goto(`${base}/scenarios`);await page.getByRole('heading',{name:'Scenario analysis',exact:true}).waitFor();const runs=await (await page.request.get(`${base}/api/scenarios/runs/all`)).json();const baseline=runs.find(run=>run.scenario_id==='scenario-baseline'),delayed=runs.findLast(run=>run.metrics.assumptions?.part_available_hours===8);if(baseline&&delayed){await page.locator('#baseline-run').selectOption(baseline.id);await page.locator('#alternative-run').selectOption(delayed.id);}await page.screenshot({path:path.join(output,'scenario-comparison.png'),fullPage:true});await page.locator('.scenario-comparison').screenshot({path:path.join(output,'scenario-comparison-focused.png')});
+metrics.normalPageErrors=[...errors];errors.length=0;
+await page.route('**/models/aircraft.glb',route=>route.fulfill({status:503,body:'Deliberate visual verification of unavailable asset'}));
+await page.goto(`${base}/fleet`);await page.getByText('3D view unavailable',{exact:true}).waitFor();await page.screenshot({path:path.join(output,'inspection-fallback.png'),fullPage:true});
+metrics.expectedFallbackErrors=errors;metrics.capturedAt=new Date().toISOString();metrics.mode='Local public simulated FD001 records and synthetic logistics; no API fixture substitutions';await writeFile(path.join(output,'browser-verification.json'),JSON.stringify(metrics,null,2));await browser.close();console.log(JSON.stringify(metrics,null,2));

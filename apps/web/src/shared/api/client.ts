@@ -4,6 +4,7 @@ export type FleetItem = components["schemas"]["FleetItemResponse"];
 export type Assessment = components["schemas"]["AssessmentSummaryResponse"];
 export type ComponentDetail = components["schemas"]["ComponentDetailResponse"];
 export type Plan = components["schemas"]["PlanResponse"];
+export type PartArrival = components["schemas"]["ArrivalResponse"];
 export type InventoryPart = components["schemas"]["InventoryPartResponse"];
 export type Scenario = components["schemas"]["ScenarioResponse"];
 export type SimulationRun = components["schemas"]["SimulationRunResponse"];
@@ -12,6 +13,11 @@ export type Job = components["schemas"]["JobResponse"];
 
 export type Validator<T> = (value: unknown) => value is T;
 
+let csrfToken: string | null = null;
+export function setCsrfToken(token: string | null) { csrfToken = token; }
+export class ApiError extends Error {
+  constructor(message: string, public readonly status: number) { super(message); }
+}
 const base = import.meta.env.VITE_API_BASE_URL ?? "/api";
 
 function record(value: unknown): value is Record<string, unknown> {
@@ -30,6 +36,17 @@ function finiteNumber(value: unknown): value is number {
   return typeof value === "number" && Number.isFinite(value);
 }
 
+function nonnegativeInteger(value: unknown): value is number {
+  return finiteNumber(value) && Number.isInteger(value) && value >= 0;
+}
+
+function nullableNumber(value: unknown): value is number | null {
+  return value === null || (finiteNumber(value) && value >= 0);
+}
+
+export const isHealth: Validator<{ status: string; database: string | null }> = (value): value is { status: string; database: string | null } =>
+  record(value) && value.status === "ready" && (value.database === null || string(value.database));
+
 export function arrayOf<T>(validator: Validator<T>): Validator<T[]> {
   return (value: unknown): value is T[] => Array.isArray(value) && value.every(validator);
 }
@@ -42,8 +59,8 @@ export const isFleetItem: Validator<FleetItem> = (value): value is FleetItem =>
   string(value.provenance) &&
   Array.isArray(value.component_ids) &&
   value.component_ids.every(string) &&
-  finiteNumber(value.components) &&
-  finiteNumber(value.open_tasks);
+  nonnegativeInteger(value.components) &&
+  nonnegativeInteger(value.open_tasks);
 
 export const isAlert: Validator<Alert> = (value): value is Alert =>
   record(value) &&
@@ -66,10 +83,11 @@ export const isInventoryPart: Validator<InventoryPart> = (value): value is Inven
   record(value) &&
   string(value.id) &&
   string(value.name) &&
-  finiteNumber(value.on_hand) &&
-  finiteNumber(value.reserved) &&
-  finiteNumber(value.lead_time_slots) &&
-  finiteNumber(value.version) &&
+  nonnegativeInteger(value.on_hand) &&
+  nonnegativeInteger(value.reserved) &&
+  value.reserved <= value.on_hand &&
+  nonnegativeInteger(value.lead_time_slots) &&
+  nonnegativeInteger(value.version) && value.version >= 1 &&
   string(value.provenance);
 
 export const isPlan: Validator<Plan> = (value): value is Plan =>
@@ -83,8 +101,8 @@ export const isPlan: Validator<Plan> = (value): value is Plan =>
     (assignment) =>
       record(assignment) &&
       string(assignment.task_id) &&
-      finiteNumber(assignment.start) &&
-      finiteNumber(assignment.end),
+      nonnegativeInteger(assignment.start) &&
+      nonnegativeInteger(assignment.end) && assignment.end > assignment.start,
   ) &&
   Array.isArray(value.diagnostics) &&
   value.diagnostics.every(string) &&
@@ -96,7 +114,7 @@ export const isScenario: Validator<Scenario> = (value): value is Scenario =>
   record(value) &&
   string(value.id) &&
   string(value.name) &&
-  finiteNumber(value.version) &&
+  nonnegativeInteger(value.version) && value.version >= 1 &&
   record(value.assumptions) &&
   string(value.provenance);
 
@@ -115,7 +133,7 @@ export const isJob: Validator<Job> = (value): value is Job =>
   record(value) &&
   string(value.id) &&
   string(value.kind) &&
-  string(value.state) &&
+  string(value.state) && ["queued", "running", "succeeded", "failed", "cancellation_requested", "cancelled"].includes(value.state) &&
   finiteNumber(value.attempt) &&
   Number.isInteger(value.attempt) &&
   value.attempt >= 0 &&
@@ -130,12 +148,12 @@ export const isComponentDetail: Validator<ComponentDetail> = (
   string(value.serial_number) &&
   string(value.kind) &&
   string(value.status) &&
-  finiteNumber(value.current_cycle) &&
+  nonnegativeInteger(value.current_cycle) &&
   Array.isArray(value.observations) &&
   value.observations.every(
     (observation) =>
       record(observation) &&
-      finiteNumber(observation.cycle) &&
+      nonnegativeInteger(observation.cycle) &&
       string(observation.sensor) &&
       finiteNumber(observation.value) &&
       string(observation.unit) &&
@@ -145,9 +163,14 @@ export const isComponentDetail: Validator<ComponentDetail> = (
     (record(value.assessment) &&
       string(value.assessment.id) &&
       string(value.assessment.state) &&
+      nullableNumber(value.assessment.estimate_cycles) &&
+      nullableNumber(value.assessment.lower_cycles) &&
+      nullableNumber(value.assessment.upper_cycles) &&
+      (value.assessment.lower_cycles === null || value.assessment.upper_cycles === null || value.assessment.lower_cycles <= value.assessment.upper_cycles) &&
       nullableString(value.assessment.model_version) &&
       string(value.assessment.input_version) &&
-      Array.isArray(value.assessment.quality_findings)));
+      Array.isArray(value.assessment.quality_findings) &&
+      value.assessment.quality_findings.every((finding) => record(finding) && string(finding.code) && string(finding.severity) && string(finding.message))));
 
 export async function api<T>(
   path: string,
@@ -156,19 +179,48 @@ export async function api<T>(
 ): Promise<T> {
   const response = await fetch(`${base}${path}`, {
     ...init,
+    credentials: "include",
     headers: {
       "Content-Type": "application/json",
-      "X-Demo-Role": "planner",
+      "X-Demo-Role": "supervisor",
+      "X-Demo-User": "demo-supervisor",
+      ...(csrfToken ? { "X-CSRF-Token": csrfToken } : {}),
       ...(init?.headers ?? {}),
     },
   });
   if (!response.ok) {
-    const message = await response.text();
-    throw new Error(message || `Request failed: ${response.status}`);
+    const body: unknown = await response.json().catch(() => null);
+    const message = record(body) && string(body.detail) ? body.detail : record(body) && string(body.message) ? body.message : `Request failed (${response.status}). Please try again.`;
+    if (response.status === 401 && path !== "/access/session") window.dispatchEvent(new Event("fleet:session-expired"));
+    throw new ApiError(message, response.status);
   }
+  if (response.status === 204) return undefined as T;
   const payload: unknown = await response.json();
   if (validate && !validate(payload)) {
     throw new Error(`API response validation failed for ${path}`);
   }
   return payload as T;
 }
+
+
+export const isPartArrival: Validator<PartArrival> = (value): value is PartArrival =>
+  record(value) && string(value.id) && string(value.part_id) &&
+  nonnegativeInteger(value.quantity) && value.quantity > 0 &&
+  nonnegativeInteger(value.arrival_slot) && value.arrival_slot < 14 &&
+  ["expected", "received", "cancelled"].includes(String(value.status)) &&
+  nonnegativeInteger(value.version) && value.version >= 1 && string(value.reason) &&
+  string(value.created_at) && nullableString(value.received_at) &&
+  value.provenance === "synthetic" && value.slot_duration_hours === 8;
+
+export type AssessmentDetail = components["schemas"]["AssessmentDetailResponse"];
+export const isAssessmentDetail: Validator<AssessmentDetail> = (value): value is AssessmentDetail =>
+  record(value) && string(value.id) && string(value.component_id) && string(value.input_version) &&
+  string(value.state) && nullableNumber(value.estimate_cycles) && nullableNumber(value.lower_cycles) && nullableNumber(value.upper_cycles) &&
+  record(value.evidence) && record(value.explanation) && string(value.explanation.state) && string(value.explanation.reason) &&
+  (value.cutoff_cycle === null || nonnegativeInteger(value.cutoff_cycle));
+export type MaintenanceContext = components["schemas"]["ComponentMaintenanceResponse"];
+export const isMaintenanceContext: Validator<MaintenanceContext> = (value): value is MaintenanceContext => record(value) && string(value.component_id) && nonnegativeInteger(value.slot_duration_hours) && Array.isArray(value.tasks) && value.tasks.every(task=>record(task)&&string(task.id)&&string(task.title)&&string(task.status)&&typeof task.mandatory==='boolean'&&nonnegativeInteger(task.deadline_slot)&&nonnegativeInteger(task.duration_slots)&&string(task.required_skill)&&nullableString(task.part_id)&&nonnegativeInteger(task.part_required)&&nullableNumber(task.part_available)&&nonnegativeInteger(task.version));
+
+export type PlanCommitment = components["schemas"]["PlanCommitmentResponse"];
+export const isPlanCommitment: Validator<PlanCommitment> = (value): value is PlanCommitment =>
+  record(value)&&string(value.plan_id)&&Array.isArray(value.reservations)&&value.reservations.every(row=>record(row)&&nonnegativeInteger(row.id)&&string(row.part_id)&&nonnegativeInteger(row.quantity)&&string(row.status))&&Array.isArray(value.work)&&value.work.every(row=>record(row)&&string(row.id)&&string(row.task_id)&&string(row.status)&&nonnegativeInteger(row.version)&&nonnegativeInteger(row.consumed_quantity)&&string(row.notes)&&nullableString(row.started_at)&&nullableString(row.completed_at));

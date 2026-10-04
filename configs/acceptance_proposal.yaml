@@ -1,0 +1,26 @@
+version: fd001-demonstrator-gates-v1
+status: frozen_demonstrator_targets_2026_10_04
+support: simulated_NASA_CMAPSS_FD001_only
+sampling: one_last_observed_cutoff_per_official_test_engine
+minimum_history_cycles: 30
+target_cap_cycles: 125
+prediction:
+  maximum_mae_cycles: 12.5
+  maximum_rmse_cycles: 15.0
+  rationale: provisional_product_error_budget_and_historical_FD001_RMSE_reference
+intervals:
+  nominal_coverage: 0.90
+  minimum_empirical_coverage: 0.90
+  minimum_one_sided_95pct_coverage_lower_bound: 0.80
+  maximum_mean_width_cycles: 62.5
+  rationale: binomial_sampling_tolerance_and_half_target_range_utility_limit
+alerts:
+  evaluation: held_out_complete_run_to_failure_trajectories_required
+  warning_horizon_cycles: 45
+  maximum_missed_event_fraction: 0.05
+  maximum_false_episodes_per_100_engine_histories: 10.0
+  counting_unit: actionable_episode_starting_before_the_warning_window
+  rationale: provisional_cost_asymmetry_no_published_operational_validation
+release:
+  scientific_acceptance: pending_independent_evaluation
+  operational_acceptance: not_established_by_this_benchmark

@@ -1,13 +1,14 @@
 from collections.abc import Generator
+from datetime import datetime
 
-from sqlalchemy import create_engine
+from sqlalchemy import DateTime, create_engine
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
 
 from fleet_maintenance.settings import get_settings
 
 
 class Base(DeclarativeBase):
-    pass
+    type_annotation_map = {datetime: DateTime(timezone=True)}
 
 
 def _engine_kwargs(url: str) -> dict[str, object]:
@@ -16,7 +17,10 @@ def _engine_kwargs(url: str) -> dict[str, object]:
 
 settings = get_settings()
 engine = create_engine(
-    settings.database_url, pool_pre_ping=True, **_engine_kwargs(settings.database_url)
+    settings.database_url,
+    pool_pre_ping=True,
+    hide_parameters=True,
+    **_engine_kwargs(settings.database_url),
 )
 SessionLocal = sessionmaker(bind=engine, expire_on_commit=False)
 

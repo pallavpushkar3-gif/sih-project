@@ -54,9 +54,7 @@ def test_saved_sequence_model_replays_validation_predictions(tmp_path: Path) -> 
         sampling="one_seeded_cutoff_per_engine",
         seed=11,
     )
-    values = (validation.values - np.asarray(transform["mean"])) / np.asarray(
-        transform["scale"]
-    )
+    values = (validation.values - np.asarray(transform["mean"])) / np.asarray(transform["scale"])
     replay_metrics = regression_metrics(validation.targets, predictor.predict(values))
 
     assert replay_metrics.as_dict() == result.validation.as_dict()

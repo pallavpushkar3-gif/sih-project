@@ -67,6 +67,8 @@ class ExplanationStateResponse(BaseModel):
 
 class AssessmentDetailResponse(AssessmentSummaryResponse):
     component_id: str
+    cutoff_cycle: int | None = None
+    evidence: dict[str, object] = Field(default_factory=dict)
     explanation: ExplanationStateResponse
 
 
@@ -103,6 +105,10 @@ class PlanAssignmentResponse(BaseModel):
 
 
 class PlanResponse(BaseModel):
+    input_snapshot: dict[str, object] = Field(default_factory=dict)
+    objective: float | None = None
+    best_bound: float | None = None
+    parent_id: str | None = None
     id: str
     status: str
     solver_status: str
@@ -137,3 +143,47 @@ class JobResponse(BaseModel):
     state: str
     attempt: int = Field(ge=0)
     result: dict[str, object] | None
+
+
+class InspectionTaskResponse(BaseModel):
+    id: str
+    title: str
+    status: str
+    mandatory: bool
+    deadline_slot: int
+    duration_slots: int
+    required_skill: str
+    part_id: str | None
+    part_required: int
+    part_available: int | None
+    version: int
+
+
+class ComponentMaintenanceResponse(BaseModel):
+    component_id: str
+    slot_duration_hours: int
+    tasks: list[InspectionTaskResponse]
+
+
+class ReservationHistoryResponse(BaseModel):
+    id: int
+    part_id: str
+    quantity: int
+    status: str
+
+
+class WorkHistoryResponse(BaseModel):
+    id: str
+    task_id: str
+    status: str
+    version: int
+    consumed_quantity: int
+    notes: str
+    started_at: datetime | None
+    completed_at: datetime | None
+
+
+class PlanCommitmentResponse(BaseModel):
+    plan_id: str
+    reservations: list[ReservationHistoryResponse]
+    work: list[WorkHistoryResponse]

@@ -2,6 +2,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 
 const eventTypes = [
+  "resync",
   "job.queued",
   "job.running",
   "job.requeued",
@@ -20,10 +21,16 @@ export function EventStreamBridge() {
       void client.invalidateQueries({ queryKey: ["jobs"] });
       void client.invalidateQueries({ queryKey: ["plans"] });
       void client.invalidateQueries({ queryKey: ["scenario-runs"] });
+      void client.invalidateQueries({ queryKey: ["inventory"] });
+      void client.invalidateQueries({ queryKey: ["arrivals"] });
+      void client.invalidateQueries({ queryKey: ["alerts"] });
     };
+    const expired = () => { source.close(); window.dispatchEvent(new Event("fleet:session-expired")); };
+    source.addEventListener("auth.required", expired);
     for (const type of eventTypes) source.addEventListener(type, refresh);
     return () => {
       for (const type of eventTypes) source.removeEventListener(type, refresh);
+      source.removeEventListener("auth.required", expired);
       source.close();
     };
   }, [client]);

@@ -1,0 +1,20 @@
+version: fd001-explanation-diagnostic-v1
+status: validation_diagnostic_not_scientific_acceptance
+dataset: NASA_CMAPSS_FD001
+sampling: one_seeded_cutoff_per_validation_engine
+seed: 26249
+method: one_feature_at_training_mean_sensitivity
+reference: fit_engine_mean_per_engineered_feature
+perturbation:
+  kind: independent_gaussian_engineered_feature_noise
+  standard_deviation: 0.01
+  repetitions_per_engine: 20
+  description: 1% of fit-standard-deviation; sensitivity probe, not calibrated sensor noise
+metrics:
+  - exact_single_feature_intervention_error_cycles
+  - repeated_input_max_difference_cycles
+  - top_10_jaccard
+  - sensitivity_vector_cosine
+  - mean_absolute_sensitivity_change_cycles
+  - prediction_absolute_change_cycles
+acceptance: diagnostic_only_no_validated_stability_threshold

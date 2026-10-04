@@ -1,6 +1,6 @@
 # Evaluation Protocol
 
-Status: metrics/procedure drafted; final numerical quality/performance budgets remain to be frozen before their test evaluations. These unresolved budgets block corresponding release claims.
+Status: FD001 demonstrator prediction/interval targets were frozen with user approval on 2026-10-04 in configs/acceptance_proposal.yaml, then evaluated on the official final test. Alert targets are provisional and lack independent complete held-out histories. Planner/workload, explanation and broader robustness acceptance remain incomplete. See fd001_acceptance_proposal.md and ../operations/production_readiness.md.
 
 ## Common Rules
 
@@ -37,3 +37,14 @@ Declare actual target hardware/browser, data sizes, visible-chart sizes, users/c
 ## Final Decisions
 
 Register metric definitions, budgets and support boundary as a versioned evaluation configuration. Choose the model/policy from actual valid results; the best baseline may win. Any inspected-test retuning requires disclosed new evaluation status and limits on subsequent claims.
+
+
+## Explanation diagnostics
+
+`configs/explanation_evaluation.yaml` freezes a validation-only diagnostic before its run. The shared training-mean intervention method is checked against independent scalar interventions, identical replay and a seeded small engineered-feature perturbation probe. Report ranking overlap, vector cosine and absolute sensitivity/prediction changes with per-engine samples and hashes. This verifies the declared intervention meaning; it does not establish causal, additive or physical-fault fidelity. No validated stability threshold is currently frozen. Do not use the inspected final-test partition to tune the explanation.
+
+## Local workload diagnostic
+
+`configs/workload_diagnostic.json` defines a bounded five-reader HTTP workload on existing small synthetic fixtures while two real durable jobs are submitted. Retain per-route p95/p99, errors, observed active-job samples, job outcomes, actual runtime allocation and configuration/module hashes. This diagnostic is not the frozen AC-X05 workload: target hardware, representative data sizes, sustained concurrency and browser interaction budgets remain to be agreed before acceptance.
+
+See [alert evaluation boundaries](alert_evaluation_boundaries.md) for explicit event/window/counting semantics, retained synthetic baseline results and assumed-cost sensitivity. The [holdout audit](fd001_alert_holdout_audit.md) leaves the requested complete-trajectory evaluation blocked.

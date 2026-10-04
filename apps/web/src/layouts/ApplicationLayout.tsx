@@ -1,57 +1,19 @@
-import { NavLink, Outlet } from "react-router-dom";
-
-const links = [
-  ["/fleet", "Fleet", "Aircraft overview", "aircraft"],
-  ["/alerts", "Alerts", "Review evidence", "attention"],
-  ["/planning", "Planning", "Schedule work", "schedule"],
-  ["/inventory", "Inventory", "Parts and logistics", "parts"],
-  ["/scenarios", "Scenarios", "Compare outcomes", "compare"],
-] as const;
-
-function NavIcon({ name }: { name: string }) {
-  const paths: Record<string, React.ReactNode> = {
-    aircraft: <path d="M3 13h7l4 7h2l-2-7h5.5a2.5 2.5 0 0 0 0-5H14l2-6h-2l-4 6H3l2 2.5Z" />,
-    attention: <><path d="M12 3 2.7 19h18.6L12 3Z" /><path d="M12 9v4m0 3h.01" /></>,
-    schedule: <><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M7 3v4m10-4v4M3 10h18m-14 4h4m3 0h3m-10 3h3" /></>,
-    parts: <><path d="m12 2 9 5-9 5-9-5 9-5Z" /><path d="m3 12 9 5 9-5M3 17l9 5 9-5" /></>,
-    compare: <><path d="M4 19V9m6 10V5m6 14v-7m4 7H2" /></>,
-  };
-  return <svg viewBox="0 0 24 24" aria-hidden="true">{paths[name]}</svg>;
-}
-
+import { useSession } from "../features/access/SessionGate";
+import * as Dialog from "@radix-ui/react-dialog";
+import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { NavLink, Outlet, useLocation } from "react-router-dom";
+import { api, arrayOf, isAlert, isHealth, type Alert } from "../shared/api/client";
+import { Icon, type IconName } from "../shared/ui/Icon";
+const links: { to: string; label: string; icon: IconName }[] = [
+  { to:"/fleet",label:"Fleet",icon:"aircraft" },{ to:"/alerts",label:"Alerts",icon:"bell" },{ to:"/planning",label:"Planning",icon:"calendar" },{ to:"/inventory",label:"Inventory",icon:"box" },{ to:"/scenarios",label:"Scenarios",icon:"chart" },
+];
 export function ApplicationLayout() {
-  return (
-    <div className="shell">
-      <aside className="sidebar">
-        <div className="brand">
-          <span className="brand-mark"><span>F</span></span>
-          <div><strong>FlightDeck</strong><small>Fleet maintenance</small></div>
-        </div>
-        <div className="nav-label">Workspace</div>
-        <nav aria-label="Primary">
-          {links.map(([to, label, description, icon]) => (
-            <NavLink key={to} to={to}><NavIcon name={icon} /><span><b>{label}</b><small>{description}</small></span></NavLink>
-          ))}
-        </nav>
-        <div className="sidebar-card">
-          <span className="live-dot" />
-          <div><strong>Local demonstrator</strong><span>All services connected</span></div>
-        </div>
-        <div className="scope-note">
-          <strong>Evidence boundary</strong>
-          <span>Synthetic fleet and logistics. Simulation results are projections.</span>
-        </div>
-      </aside>
-      <main>
-        <header className="topbar">
-          <div className="breadcrumbs"><strong>PS 26249</strong><i>/</i><span>Fleet maintenance</span><em>DEMO</em></div>
-          <div className="topbar-actions">
-            <span className="status-pill"><span className="live-dot" /> Systems online</span>
-            <span className="avatar">DP</span>
-          </div>
-        </header>
-        <div className="page"><Outlet /></div>
-      </main>
-    </div>
-  );
+  const location=useLocation(),session=useSession();
+  const [mobileOpen,setMobileOpen]=useState(false);
+  const health=useQuery({queryKey:["api-health"],queryFn:()=>api("/health/ready",undefined,isHealth),refetchInterval:30_000,retry:false});
+  const alerts=useQuery({queryKey:["alerts"],queryFn:()=>api<Alert[]>("/alerts",undefined,arrayOf(isAlert))});
+  const pending=alerts.data?.filter(alert=>!alert.acknowledgements.length).length;
+  const navigation=<nav aria-label="Primary navigation">{links.map(link=><NavLink key={link.to} to={link.to} onClick={()=>setMobileOpen(false)}><Icon name={link.icon} size={18}/><span>{link.label}</span>{link.to==='/alerts'&&pending!==undefined&&pending>0&&<span className="nav-count">{pending}</span>}</NavLink>)}</nav>;
+  return <Dialog.Root open={mobileOpen} onOpenChange={setMobileOpen}><div className="inspection-shell"><a className="skip-link" href="#main-content">Skip to content</a><header className="product-header"><NavLink className="product-brand" to="/fleet"><Icon name="aircraft" size={22}/><span>Aircraft maintenance<small>PS 26249</small></span></NavLink><div className="desktop-navigation">{navigation}</div><div className="product-account"><span className={`connection-status ${health.isError?'offline':''}`}><i/>{health.isPending?'Connecting…':health.isError?'API unavailable':'API connected'}</span><span className="environment-tag">{session?.authentication==='server session'?'SIGNED IN':'LOCAL DEMO'}</span><details className="account-menu"><summary aria-label="Account details"><Icon name="user" size={18}/></summary><div><strong>{session?.id??'Workspace user'}</strong><p>{session?.role??'Authenticated access'}</p>{session?.authentication==='server session'&&<button onClick={()=>void api('/access/session',{method:'DELETE'}).then(()=>window.dispatchEvent(new Event('fleet:session-expired')))}>Sign out</button>}</div></details><Dialog.Trigger asChild><button className="icon-button compact-navigation" aria-label="Open navigation"><Icon name="menu"/></button></Dialog.Trigger></div></header><Dialog.Portal><Dialog.Overlay className="nav-overlay"/><Dialog.Content className="mobile-destinations" aria-describedby={undefined}><Dialog.Title>Workspace navigation</Dialog.Title>{navigation}<Dialog.Close asChild><button className="button-secondary">Close navigation</button></Dialog.Close></Dialog.Content></Dialog.Portal><main id="main-content" className="page" tabIndex={-1} key={location.pathname}><Outlet/></main><footer className="workspace-footer"><span>Aircraft maintenance · Synthetic demonstrator workspace</span><span>Evidence supports human review. No aircraft clearance.</span></footer></div></Dialog.Root>;
 }

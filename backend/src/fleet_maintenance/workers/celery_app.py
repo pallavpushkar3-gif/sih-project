@@ -1,7 +1,9 @@
 from celery import Celery  # type: ignore[import-untyped]
 
+from fleet_maintenance.logging_config import configure_logging
 from fleet_maintenance.settings import get_settings
 
+configure_logging()
 settings = get_settings()
 app = Celery(
     "fleet_maintenance",
@@ -15,6 +17,8 @@ app = Celery(
 )
 app.conf.update(
     task_track_started=True,
+    task_time_limit=settings.job_lease_seconds - 1,
+    task_soft_time_limit=settings.job_lease_seconds - 5,
     task_acks_late=True,
     task_ignore_result=True,
     worker_prefetch_multiplier=1,

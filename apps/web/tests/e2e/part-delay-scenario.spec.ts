@@ -1,0 +1,24 @@
+import {expect,test} from '@playwright/test';
+test('supply revision creates a saved projected outcome without changing baseline',async({page})=>{
+ test.setTimeout(60000);
+ await page.goto('/scenarios');
+ const card=page.locator('[data-scenario-id="scenario-baseline"]');
+ await card.getByRole('button',{name:'Revise assumptions',exact:true}).click();
+ const name=`Synthetic supply delay browser check ${Date.now()}`;
+ await card.getByLabel('Alternative name',{exact:true}).fill(name);
+ await card.getByLabel('Part availability (hours)',{exact:true}).fill('8');
+ const saved=page.waitForResponse(response=>response.url().endsWith('/revisions')&&response.request().method()==='POST');
+ await card.getByRole('button',{name:'Save new revision',exact:true}).click();
+ const response=await saved;expect(response.ok()).toBe(true);const revision=await response.json();
+ const alternative=page.locator('.scenario-card').filter({has:page.getByRole('heading',{name,exact:true})});
+ await expect(alternative).toContainText('Revision 2');
+ const submitted=page.waitForResponse(response=>response.url().includes(`/api/jobs/simulation/${revision.id}`)&&response.request().method()==='POST');
+ await alternative.getByRole('button',{name:'Run simulation',exact:true}).click();
+ const job=await (await submitted).json();await expect(page.locator(`[data-job-id="${job.id}"]`)).toContainText('Projection saved',{timeout:30000});
+ const runResponse=await page.request.get('/api/scenarios/runs/all');const runs=await runResponse.json();
+ const result=runs.find((run:{scenario_id:string})=>run.scenario_id===revision.id);expect(result.metrics.part_wait_hours).toBe(10);
+ const original=runs.find((run:{scenario_id:string})=>run.scenario_id==='scenario-baseline');expect(original).toBeTruthy();
+ await page.locator('#baseline-run').selectOption(original.id);await page.locator('#alternative-run').selectOption(result.id);
+ await expect(page.getByRole('img',{name:'Baseline and alternative simulated aircraft-time availability in percent'})).toBeVisible();
+ await expect(page.getByText(/One deterministic run per revision/)).toBeVisible();
+});

@@ -1,3 +1,4 @@
+import math
 from dataclasses import dataclass
 
 import simpy
@@ -8,6 +9,7 @@ from fleet_maintenance.science.simulation.environment import ScenarioInput, Simu
 @dataclass
 class _EventTrace:
     arrival: float
+    queued_at: float | None = None
     start: float | None = None
     end: float | None = None
 
@@ -21,6 +23,12 @@ def run_scenario(source: ScenarioInput, seed: int = 26249) -> SimulationResult:
         if arrival < 0 or arrival >= source.horizon_hours or duration <= 0:
             raise ValueError("Maintenance arrivals and durations must fit the scenario domain.")
 
+    if (
+        not math.isfinite(source.part_available_hours)
+        or not 0 <= source.part_available_hours < source.horizon_hours
+    ):
+        raise ValueError("Part availability must be finite and inside the simulation horizon")
+
     env = simpy.Environment()
     bay = simpy.Resource(env, capacity=source.maintenance_capacity)
     completed = 0
@@ -31,6 +39,8 @@ def run_scenario(source: ScenarioInput, seed: int = 26249) -> SimulationResult:
         trace = _EventTrace(arrival)
         traces.append(trace)
         yield env.timeout(arrival)
+        yield env.timeout(max(0.0, source.part_available_hours - arrival))
+        trace.queued_at = float(env.now)
         with bay.request() as request:
             yield request
             trace.start = float(env.now)
@@ -55,10 +65,15 @@ def run_scenario(source: ScenarioInput, seed: int = 26249) -> SimulationResult:
     queue_wait = sum(
         max(
             0.0,
-            float(source.horizon_hours if trace.start is None else trace.start) - trace.arrival,
+            float(source.horizon_hours if trace.start is None else trace.start)
+            - float(source.horizon_hours if trace.queued_at is None else trace.queued_at),
         )
+        for trace in traces
+    )
+    part_wait = sum(
+        max(0.0, min(source.part_available_hours, source.horizon_hours) - trace.arrival)
         for trace in traces
     )
     possible = source.horizon_hours * source.aircraft_count
     availability = max(0.0, (possible - downtime) / possible)
-    return SimulationResult(availability, downtime, queue_wait, completed, seed)
+    return SimulationResult(availability, downtime, queue_wait, completed, seed, part_wait)

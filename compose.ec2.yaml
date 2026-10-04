@@ -1,0 +1,13 @@
+# Use after compose.yaml and compose.production.yaml; HTTPS is terminated by web.
+services:
+  web:
+    environment:
+      DEPLOYMENT_DOMAIN: ${DEPLOYMENT_DOMAIN:?Set the team-controlled DNS hostname}
+      NGINX_ENVSUBST_FILTER: ^DEPLOYMENT_DOMAIN$
+    ports: !override
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./infra/proxy/${FLEET_PROXY_TEMPLATE:-ec2-tls.conf.template}:/etc/nginx/templates/default.conf.template:ro
+      - ${FLEET_TLS_DIRECTORY:?Set the absolute certificate directory}:/etc/letsencrypt:ro
+      - ${FLEET_ACME_DIRECTORY:?Set the absolute ACME webroot directory}:/var/www/certbot:ro

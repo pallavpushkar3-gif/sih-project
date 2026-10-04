@@ -1,12 +1,13 @@
 import { expect, test } from "@playwright/test";
 
 test("evidence remains honest before planning", async ({ page }) => {
-  await page.goto("/fleet");
-  await expect(page.getByRole("heading", { name: "Airbus A320" })).toBeVisible();
-  await page.getByRole("link", { name: "SYN-001" }).click();
-  await expect(page.getByText("Prediction is intentionally unavailable", { exact: true })).toBeVisible();
-  await expect(page.getByText(/validated model has not been approved/)).toBeVisible();
-  await page.getByRole("navigation").getByRole("link", { name: /Planning/ }).click();
+  test.setTimeout(60000);
+  await page.goto("/fleet/register");
+  await expect(page.getByRole("heading", { name: "Fleet overview", exact: true })).toBeVisible();
+  await page.getByRole("link", { name: "SYN-001", exact:true }).click();
+  await expect(page.getByRole("heading",{name:"ENG-SYN-001",exact:true})).toBeVisible();
+  await expect(page.getByRole("heading",{name:"Quality & applicability"})).toBeVisible();
+  await page.getByRole("navigation").getByRole("link", { name: "Planning" }).click();
   await expect(page.getByRole("heading", { name: "Maintenance planning" })).toBeVisible();
   const submitted = page.waitForResponse(
     (response) =>
@@ -15,6 +16,6 @@ test("evidence remains honest before planning", async ({ page }) => {
   await page.getByRole("button", { name: "Queue proposal calculation" }).click();
   const job = (await (await submitted).json()) as { id: string };
   const jobRow = page.locator(`[data-job-id="${job.id}"]`);
-  await expect(jobRow).toContainText("succeeded");
+  await expect(jobRow).toContainText("Completed",{timeout:30000});
   await expect(jobRow).toContainText("Plan ready for review");
 });
