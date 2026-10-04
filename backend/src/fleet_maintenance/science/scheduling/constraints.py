@@ -1,11 +1,27 @@
 from fleet_maintenance.science.scheduling.formulation import PlanningInput, PlanningResult
 from fleet_maintenance.science.scheduling.grouping import groups, validate_groups
+from fleet_maintenance.science.scheduling.resources import compatible
 
 
 def validate_input(value: PlanningInput) -> list[str]:
     errors: list[str] = []
     if value.horizon <= 0:
         errors.append("Planning horizon must be positive.")
+    if value.slot_duration_hours <= 0:
+        errors.append("Slot duration must be positive hours.")
+    resource_ids: set[str] = set()
+    for resource in value.resources:
+        if resource.id in resource_ids:
+            errors.append(f"Duplicate resource: {resource.id}")
+        resource_ids.add(resource.id)
+        if resource.kind not in {"crew", "bay"} or resource.capacity <= 0:
+            errors.append(f"Invalid resource kind/capacity: {resource.id}")
+        if resource.valid_from < 0 or resource.valid_until <= resource.valid_from:
+            errors.append(f"Invalid qualification window: {resource.id}")
+        if any(
+            left < 0 or right <= left or right > value.horizon for left, right in resource.available
+        ):
+            errors.append(f"Invalid calendar window: {resource.id}")
     errors.extend(validate_groups(value))
     if any(quantity < 0 for quantity in value.part_stock.values()):
         errors.append("Part stock cannot be negative.")
@@ -51,6 +67,9 @@ def validate_result(source: PlanningInput, result: PlanningResult) -> list[str]:
     errors: list[str] = []
     by_id = {task.id: task for task in source.tasks}
     assigned = {item.task_id: item for item in result.assignments}
+    resources = {resource.id: resource for resource in source.resources}
+    occupancy: dict[tuple[str, int, int], str] = {}
+    aircraft_occupancy: dict[tuple[str, int], str] = {}
     if len(assigned) != len(result.assignments):
         errors.append("Duplicate task assignments are not allowed.")
     if set(assigned) != set(by_id):
@@ -64,6 +83,43 @@ def validate_result(source: PlanningInput, result: PlanningResult) -> list[str]:
         if task and task.fixed_start is not None and assignment.start != task.fixed_start:
             errors.append(f"Task {task_id} moved from its fixed commitment.")
         if task:
+            if source.resources:
+                for kind, identifier, unit in (
+                    ("crew", assignment.crew_id, assignment.crew_unit),
+                    ("bay", assignment.bay_id, assignment.bay_unit),
+                ):
+                    resource = resources.get(identifier or "")
+                    if resource is None or resource.kind != kind or not compatible(resource, task):
+                        errors.append(f"Task {task_id}: no eligible assigned {kind}.")
+                        continue
+                    if not 0 <= unit < resource.capacity:
+                        errors.append(f"Task {task_id}: invalid {kind} capacity unit.")
+                    if (
+                        assignment.start < resource.valid_from
+                        or assignment.end > resource.valid_until
+                    ):
+                        errors.append(f"Task {task_id}: {kind} qualification expires during work.")
+                    fixed_id = task.fixed_crew_id if kind == "crew" else task.fixed_bay_id
+                    fixed_unit = task.fixed_crew_unit if kind == "crew" else task.fixed_bay_unit
+                    if fixed_id and unit != fixed_unit:
+                        errors.append(f"Task {task_id}: committed {kind} unit changed.")
+                    for slot in range(assignment.start, assignment.end):
+                        if not any(left <= slot < right for left, right in resource.available):
+                            errors.append(
+                                f"Task {task_id}: {kind} shift/closure conflict at {slot}."
+                            )
+                        occupancy_key = (resource.id, unit, slot)
+                        if occupancy_key in occupancy:
+                            errors.append(f"Resource {resource.id} unit {unit} overlaps at {slot}.")
+                        occupancy[occupancy_key] = task_id
+            if task.aircraft_id:
+                for slot in range(assignment.start, assignment.end):
+                    aircraft_key = (task.aircraft_id, slot)
+                    if aircraft_key in aircraft_occupancy:
+                        errors.append(
+                            f"Aircraft {task.aircraft_id} has overlapping work at {slot}."
+                        )
+                    aircraft_occupancy[aircraft_key] = task_id
             for predecessor_id in task.predecessors:
                 predecessor = assigned.get(predecessor_id)
                 if predecessor and predecessor.end > assignment.start:

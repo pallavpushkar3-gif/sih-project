@@ -1,5 +1,7 @@
 """Work outcomes atomically consume or release reservations without changing history."""
 
+import hashlib
+import json
 from datetime import UTC, datetime
 
 from sqlalchemy import select
@@ -7,6 +9,7 @@ from sqlalchemy.orm import Session
 
 from fleet_maintenance.persistence.models import (
     AuditEvent,
+    CommandRecord,
     MaintenanceTask,
     Part,
     Plan,
@@ -38,6 +41,11 @@ def update_work(
         .execution_options(populate_existing=True)
     )
     assert work is not None
+    command_hash = hashlib.sha256(
+        json.dumps([actor, work_id, action, expected_version, notes], ensure_ascii=True).encode()
+    ).hexdigest()
+    if session.get(CommandRecord, command_hash) is not None:
+        return work
     if work.version != expected_version:
         raise ApprovalConflict("Work version changed; reload before recording an outcome.")
     task = session.scalar(
@@ -86,9 +94,21 @@ def update_work(
         work.status = "completed" if action == "complete" else "cancelled"
         task.status = "completed" if action == "complete" else "open"
         work.completed_at = datetime.now(UTC)
+        from fleet_maintenance.services.resources import release_bookings
+
+        release_bookings(session, plan.id, task.id, work.status)
     else:
         raise ValueError("Unknown work action")
     work.notes = notes
+    session.add(
+        CommandRecord(
+            id=command_hash,
+            actor=actor,
+            kind=f"work.{action}",
+            payload_hash=command_hash,
+            result_id=work.id,
+        )
+    )
     work.version += 1
     task.version += 1
     session.add(
@@ -117,6 +137,19 @@ def update_work(
         )
     elif "in_progress" in states:
         plan.status = "in_progress"
+    from fleet_maintenance.persistence.models import OutboxEvent
+
+    session.add(
+        OutboxEvent(
+            topic="events",
+            payload={
+                "event_type": f"work.{action}",
+                "work_id": work.id,
+                "plan_id": plan.id,
+                "component_id": task.component_id,
+            },
+        )
+    )
     if commit:
         session.commit()
     else:

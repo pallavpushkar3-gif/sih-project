@@ -85,7 +85,7 @@ class ArrivalRequest(BaseModel):
 
 
 class ArrivalOutcome(BaseModel):
-    action: Literal["receive", "cancel"]
+    action: Literal["receive", "cancel", "quarantine", "reject"]
     expected_version: int = Field(strict=True, ge=1)
     reason: str = Field(min_length=1, max_length=1000)
 
@@ -95,7 +95,7 @@ class ArrivalResponse(BaseModel):
     part_id: str
     quantity: int
     arrival_slot: int
-    status: Literal["expected", "received", "cancelled"]
+    status: Literal["expected", "received", "cancelled", "quarantined", "rejected"]
     version: int
     reason: str
     created_at: datetime

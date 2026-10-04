@@ -28,3 +28,18 @@ The commands read the frozen YAML configurations and store their hashes with the
 ## Commands and Troubleshooting
 
 If the API is not ready, inspect `docker compose ps` and `docker compose logs api postgres rabbitmq`. A host with Python 3.14 cannot create the declared backend environment directly because the package supports Python 3.13–3.13; use the documented container target. For browser failures, verify the API health endpoint before Playwright and ensure Chrome is installed. Run commands from the actual repository root. Corepack invokes the pinned pnpm without requiring host shim installation.
+
+## Resource-aware upgrade and customer rehearsal
+
+`docker compose up -d --build` applies reviewed migrations and seeds labelled development resources without resetting named volumes. Existing proposed plans need fresh snapshots; active pre-resource work has no inferred crew/bay history and blocks ordinary replanning until explicitly reconciled or completed/cancelled. Dedicated new customer trials remain isolated from it.
+
+For a clean environment, retain/acquire verified FD001 data and fitted/calibrated artifacts first. Model registration/sample installation is an offline development operation:
+
+```sh
+docker compose run --rm -v "$PWD:/workspace" -w /workspace \
+  -e PYTHONPATH=/workspace/backend/src api python scripts/install_customer_demo.py
+```
+
+This requires the independently retained `artifacts/models/customer-trial-v1` and matching `data/raw/cmapss/train_FD001.txt`; it rejects different bytes under an existing version and does not invent a prediction if artifacts are absent. A fresh training candidate requires a new version and explicit evaluation; do not overwrite selected release bytes.
+
+Open `/demo`: enter a case → inspect AI evidence → calculate schedule → compare the exact saved plan → record receipt/replan → approve → start/complete work. For reproducible isolated acceptance use `compose.verify.yaml` and `http://localhost:18080`; see backup/restore for installation and recovery evidence. Ordinary local UI remains at `http://localhost:8080`. Production mode excludes customer-trial routes.

@@ -48,7 +48,9 @@ def main() -> None:
             members = set(bundle.namelist())
             missing = REQUIRED - members
             if missing:
-                raise RuntimeError(f"NASA archive is missing required FD001 files: {sorted(missing)}")
+                raise RuntimeError(
+                    f"NASA archive is missing required FD001 files: {sorted(missing)}"
+                )
             file_hashes: dict[str, str] = {}
             for member in sorted(REQUIRED):
                 output = destination / member

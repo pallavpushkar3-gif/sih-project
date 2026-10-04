@@ -207,7 +207,7 @@ export const isPartArrival: Validator<PartArrival> = (value): value is PartArriv
   record(value) && string(value.id) && string(value.part_id) &&
   nonnegativeInteger(value.quantity) && value.quantity > 0 &&
   nonnegativeInteger(value.arrival_slot) && value.arrival_slot < 14 &&
-  ["expected", "received", "cancelled"].includes(String(value.status)) &&
+  ["expected", "received", "cancelled", "quarantined", "rejected"].includes(String(value.status)) &&
   nonnegativeInteger(value.version) && value.version >= 1 && string(value.reason) &&
   string(value.created_at) && nullableString(value.received_at) &&
   value.provenance === "synthetic" && value.slot_duration_hours === 8;

@@ -1,5 +1,7 @@
 import uuid
+from dataclasses import replace
 from datetime import UTC, datetime
+from typing import Any, cast
 
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
@@ -7,22 +9,14 @@ from sqlalchemy.orm import Session
 
 from fleet_maintenance.persistence.models import (
     AuditEvent,
-    MaintenanceTask,
-    Part,
-    PartArrival,
     Plan,
     Reservation,
     WorkRecord,
 )
 from fleet_maintenance.science.scheduling.constraints import validate_input, validate_result
-from fleet_maintenance.science.scheduling.formulation import (
-    Assignment,
-    PartArrivalInput,
-    PlanningInput,
-    PlanningResult,
-    TaskInput,
-)
-from fleet_maintenance.services.planning import committed_tasks, current_input_version
+from fleet_maintenance.science.scheduling.formulation import Assignment, PlanningResult
+from fleet_maintenance.services.planning import planning_records, planning_snapshot, restore_source
+from fleet_maintenance.services.resources import reserve_assignments, resource_records
 
 
 class ApprovalConflict(Exception):
@@ -37,16 +31,15 @@ def approve_plan(session: Session, plan_id: str, actor: str) -> Plan:
         return plan
     if plan.status != "proposed":
         raise ApprovalConflict("Only a usable proposed plan can be approved.")
-    tasks = list(
-        session.scalars(
-            select(MaintenanceTask)
-            .where(MaintenanceTask.status == "open")
-            .order_by(MaintenanceTask.id)
-            .with_for_update()
-        ).all()
-    )
-    parts = list(session.scalars(select(Part).order_by(Part.id).with_for_update()).all())
-    if current_input_version(tasks, parts) != plan.input_version:
+    scope_value = plan.input_snapshot.get("scope_component_id")
+    scope = str(scope_value) if scope_value is not None else None
+    try:
+        tasks, parts = planning_records(session, scope, lock=True)
+    except ValueError as exc:
+        raise ApprovalConflict(str(exc)) from exc
+    resources = resource_records(session, scope, lock=True)
+    snapshot = planning_snapshot(session, scope)
+    if snapshot["input_version"] != plan.input_version:
         raise ApprovalConflict("Plan inputs changed; generate a new proposal.")
     part_by_id = {p.id: p for p in parts}
     task_by_id = {t.id: t for t in tasks}
@@ -55,43 +48,32 @@ def approve_plan(session: Session, plan_id: str, actor: str) -> Plan:
         raise ApprovalConflict("Plan must have unique task assignments.")
     if any(task_id not in task_by_id for task_id in assigned_ids):
         raise ApprovalConflict("Plan contains unavailable tasks.")
-    selected = [task_by_id[task_id] for task_id in assigned_ids]
-    holds = committed_tasks(session)
-    source = PlanningInput(
-        14,
-        tuple(
-            TaskInput(
-                t.id,
-                t.duration_slots,
-                t.earliest_slot,
-                t.deadline_slot,
-                t.required_skill,
-                t.required_part_id,
-                t.required_part_quantity,
-                t.fixed_start,
-                tuple(t.predecessors),
-                component_id=t.component_id,
-                group_id=t.grouping_key,
-            )
-            for t in selected
-        )
-        + holds,
-        {"engine": 1},
-        {p.id: p.on_hand for p in parts},
-        tuple(
-            PartArrivalInput(a.part_id, a.arrival_slot, a.quantity)
-            for a in session.scalars(
-                select(PartArrival).where(PartArrival.status == "expected").order_by(PartArrival.id)
-            ).all()
+    current = restore_source(snapshot)
+    if not current.resources:
+        raise ApprovalConflict("Configure qualified crew and bay resources before approval.")
+    source = replace(
+        current,
+        tasks=tuple(
+            task for task in current.tasks if task.id in assigned_ids or task.id.startswith("hold:")
         ),
     )
+    held_assignments = [
+        Assignment(
+            task.id,
+            task.earliest,
+            task.deadline,
+            task.fixed_crew_id,
+            task.fixed_bay_id,
+            task.fixed_crew_unit,
+            task.fixed_bay_unit,
+        )
+        for task in source.tasks
+        if task.id.startswith("hold:")
+    ]
     result = PlanningResult(
         "feasible",
-        tuple(
-            Assignment(str(a["task_id"]), int(str(a["start"])), int(str(a["end"])))
-            for a in plan.assignments
-        )
-        + tuple(Assignment(t.id, t.earliest, t.deadline) for t in holds),
+        tuple(Assignment(**cast(dict[str, Any], assignment)) for assignment in plan.assignments)
+        + tuple(held_assignments),
     )
     violations = validate_input(source) + validate_result(source, result)
     if violations:
@@ -113,6 +95,11 @@ def approve_plan(session: Session, plan_id: str, actor: str) -> Plan:
         part.on_hand -= quantity
         part.version += 1
         session.add(Reservation(plan_id=plan.id, part_id=part_id, quantity=quantity))
+    try:
+        reserve_assignments(session, plan.id, plan.assignments, resources)
+    except IntegrityError as exc:
+        session.rollback()
+        raise ApprovalConflict("Crew or bay capacity was already reserved; replan.") from exc
     for task_id in assigned_ids:
         task = task_by_id[task_id]
         task.status = "approved"
@@ -133,6 +120,20 @@ def approve_plan(session: Session, plan_id: str, actor: str) -> Plan:
             action="plan.approved",
             subject_id=plan.id,
             details={"input_version": plan.input_version},
+        )
+    )
+    from fleet_maintenance.persistence.models import OutboxEvent
+
+    session.add(
+        OutboxEvent(
+            topic="events",
+            payload={
+                "event_type": "plan.approved",
+                "plan_id": plan.id,
+                "input_version": plan.input_version,
+                "scope_component_id": plan.input_snapshot.get("scope_component_id"),
+                "actor": actor,
+            },
         )
     )
     try:

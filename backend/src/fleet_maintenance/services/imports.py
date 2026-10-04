@@ -19,7 +19,20 @@ def import_history(
     rows: list[dict[str, object]],
     previous_id: str | None,
     actor: str,
+    *,
+    commit: bool = True,
 ) -> ImportRecord:
+    from fleet_maintenance.domain.contracts.health import HistoryImport
+
+    parsed = HistoryImport.model_validate(
+        {
+            "source_version": source_version,
+            "engine_identity": engine_identity,
+            "rows": rows,
+            "previous_id": previous_id,
+        }
+    )
+    rows = [row.model_dump() for row in parsed.rows]
     component = session.scalar(
         select(Component).where(Component.id == component_id).with_for_update()
     )
@@ -73,5 +86,8 @@ def import_history(
             },
         )
     )
-    session.commit()
+    if commit:
+        session.commit()
+    else:
+        session.flush()
     return record

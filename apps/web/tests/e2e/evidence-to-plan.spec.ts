@@ -13,8 +13,10 @@ test("evidence remains honest before planning", async ({ page }) => {
     (response) =>
       response.url().endsWith("/api/jobs/planning") && response.request().method() === "POST",
   );
-  await page.getByRole("button", { name: "Queue proposal calculation" }).click();
-  const job = (await (await submitted).json()) as { id: string };
+  await page.getByRole("button", { name: "Calculate maintenance schedule" }).click();
+  const response = await submitted;
+  expect(response.status(), await response.text()).toBe(200);
+  const job = (await response.json()) as { id: string };
   const jobRow = page.locator(`[data-job-id="${job.id}"]`);
   await expect(jobRow).toContainText("Completed",{timeout:30000});
   await expect(jobRow).toContainText("Plan ready for review");

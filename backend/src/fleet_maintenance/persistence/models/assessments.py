@@ -31,6 +31,10 @@ class Alert(Base):
     policy_version: Mapped[str] = mapped_column(String(64))
     assessment_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
     acknowledged_by: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    episode_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    policy_context: Mapped[dict[str, object]] = mapped_column(
+        JSON, default=dict, server_default="{}"
+    )
 
 
 class AlertAcknowledgement(Base):

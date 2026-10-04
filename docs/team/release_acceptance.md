@@ -1,0 +1,76 @@
+# AeroCare implementation and acceptance ledger
+
+2026-10-05. This replaces the earlier working ledger. The original release criteria remain **partially accepted**; operational/government qualification is **externally blocked**. No completion percentage, procurement prediction or measured aircraft benefit is justified. States are **verified**, **partial**, **failed**, **pending**, or **externally blocked**. Verified bounded checks do not accept an entire workstream.
+
+## Eight workstreams
+
+Implementation paths are relative to `backend/src/fleet_maintenance/` unless stated otherwise.
+
+| Workstream | Gap and implementation location | Executed check / evidence | Remaining dependency / state |
+|---|---|---|---|
+| Planning | Qualified crew/bay units, availability/closures, qualification validity throughout work, aircraft compatibility, precedence, parts, deadlines and existing bookings. Domain planning contracts, `science/scheduling/{resources,calendar,solver,constraints,baseline}.py`, planning/resource services, migrations/API and ResourcePanel. Independent checking precedes approval. | Backend checks and real separate-connection PostgreSQL stock/resource races pass. `resource-benchmark.json`: 4/8 tasks optimal, 16 feasible at 5s limit, 24 infeasible; configuration/status/bound and immutable inputs retained. | **Partial**: bounded engineering verified; representative fleet, operator calendar/qualification/grid and quality/runtime acceptance remain external. Active legacy work with no resource identities blocks ordinary planning until explicit reconciliation. |
+| Alerts | Versioned `services/alert_policy.py`, `services/alert_episodes.py`; stable episodes, fresh persistence, hysteresis/cooldown, critical escalation, concern retention during withholding and separate acknowledgement. Frozen lifecycle evaluator/config. | Causal/censored replay tests pass. Two fits reproduce identical reports/hashes; 50/15/15/20 split. Demo policy detects 20/20 events, mean lead 32.7 cycles, 2 early false episodes over 3,489 eligible exposure cycles; sensitivity retained. | **Partial**: holdout from the new model, historically used engines. Independent representative lifecycles and false/missed-alert costs externally blocked. Candidate width 86.51 cycles fails older 62.5-cycle utility bound; no promotion. |
+| Explanations | Deterministic version-aligned feature interventions and artifact checks; distinct model/policy/task/resource/simulation evidence. Prediction explanations/evaluator and assessment/plan UI. | `explanations.json`: repeat difference/direct intervention error zero; mean top-ten overlap 0.9442 and cosine 0.9957 under validation probes. Negative/provenance scientific tests pass. | **Partial**: noncausal sensitivity. Broader justified stability/fidelity acceptance is not frozen; no mechanical diagnosis or LLM safety reasoning. |
+| Robustness | Atomic immutable imports, identity/24 features/chronology/units, example CSV adapter with row errors, `science/data/eligibility.py`, serving artifact checks. | Short/missing/nonfinite/flat/unsupported withholding, cutoff exclusion, transformation parity and corrupt weights/transforms/calibrator tests pass. `robustness.json` retains a separate offline validation/imputation experiment, not serving acceptance. | **Partial**: supported simulated FD001 only; representative operating support and error/withholding limits external. Mandatory maintenance survives withheld prediction. |
+| Reliability | Transactional outbox, confirms, fenced jobs/leases/attempts, bounded transient retries, permanent failure, cooperative cancellation, scoped SSE refresh; atomic stock/resource/work/audit/events. Jobs/work/planning services and workers. | Recovery/idempotency tests and PG rollback/races pass. `runtime-recovery-final.json`: **8 checks pass** on actual broker/dispatcher/worker/PG, including publication/mark interruption, duplicates, killed worker, stale result, both cancellation states and SSE resume. | **Partial**: bounded local recovery verified; retention/customer recovery limits and host failover unaccepted. Native computation finishes before cooperative cancellation is observed; no exactly-once claim. |
+| Performance/usability | Guided entered-data case → AI evidence → options → exact-plan comparison → receipt/replan → approval/work. Lazy 3D/charts, poster/2D controls, paginated/scoped queries/events. `apps/web/` and API collections. | Final lint/type/build + 6 unit checks pass; **37/37 browser checks** on final images. Actual customer/changed-health cases use real services/model; many route regressions use API fixtures. Selected keyboard/focus/reflow/form-error/contrast/fallback checks and local performance capture pass. | **Partial**: selected WCAG checks, not complete AA. Optional chart/3D chunks remain large. Representative device/workload budgets and intended-user study pending; study protocol delivered. |
+| Reproducibility | Frozen raw/split/config/code/lock/model/transform/calibrator/report hashes, generated schema/client, two reviewed additive migrations, source/evidence index, shared install/backup/restore scripts. | Current mounted source: Ruff and full mypy **138 files** pass; **110 backend/scientific tests** pass. Dedicated PG integration **49 pass**, drift check passes; counts overlap. Two frozen scientific runs match. Fresh installation/browser and fresh restore executed. | **Partial**: source archive/hash pin is not a reviewed commit/release approval. Protected durable retention and release ownership pending. Inspected endpoints are not blind evaluation. |
+| Deployment | Production guard/session/secure-cookie/origin/TLS preparation; single-agency guard, request limits and role/import/job/SSE checks. Settings/middleware/Compose and selected ASVS map. | Production configuration and access/session/CSRF negative checks pass. Migration head `f537880a4c71`, no drift. Restore matches **27 table fingerprints** and artifact hashes; five restored customer cases pass on final images. | **Partial**: local deployment verified; trusted host/domain, boot/renewal/monitoring/retention, independent security/agency acceptance externally blocked. Shared multi-agency deployment is rejected. ASVS mapping is not certification. |
+
+## Responsibility chain and calculation boundaries
+
+The model estimates supported engine RUL in **cycles** with marginal sampled-cutoff intervals. Demo policy requests review and derives a proposed window using recorded utilization. CP-SAT allocates declared resources on an **8-hour** grid; absolute-calendar conversion uses **Asia/Kolkata**, while persistence already uses UTC. Availability and qualification intervals round inward. Simulation consumes the exact immutable plan/snapshot. Supervisors approve; engineers execute. No action grants airworthiness clearance.
+
+Actual-plan simulation compares earliest-release FIFO using identical resources/parts/commitments under declared duration, +25% and +50% cases. These are assumption cases, not probabilistic confidence bounds or a fitted failure law. Downtime unions grounded intervals per represented aircraft, including unfinished waits through the 112-hour horizon; denominator is represented aircraft × horizon. Calendar/resource overruns and late tasks are visible. Missing monetary inputs produce no cost estimate. Future cancellation/replanning requires explicit new records.
+
+The real customer browser journey verifies **40h** projected downtime with expected delivery versus **16h** after accepted receipt and explicit replanning, preserving the prior plan/result. FIFO can equal the optimized plan; zero benefit is retained. Holding usage/stock/logistics constant, changing the observed cutoff 140→180 changes the model estimate approximately **91.06→14.29 cycles**, normal→critical review and the planning window. Impossible deadlines remain infeasible. All are synthetic demonstrations.
+
+## Executed commands and evidence
+
+Local ignored evidence is in `artifacts/release-v2/`; retain it together with `artifacts/models/` and acquisition records. Tests isolate databases/volumes. Never add `down -v`.
+
+```sh
+COREPACK_HOME=/tmp/fleet-corepack make web-check
+docker run --rm -v "$PWD:/workspace" -w /workspace/backend \
+  -e PYTHONPATH=/workspace/backend/src fleet-maintenance-sequence \
+  sh -c 'ruff check src tests /workspace/scripts && mypy src/fleet_maintenance && python -m pytest tests --ignore=tests/integration/test_inventory_reservations.py --ignore=tests/integration/test_postgres_resources.py'
+make backend-integration
+FLEET_E2E_BASE_URL=http://localhost:18080 corepack pnpm --filter web test:e2e
+python3 scripts/verify_local_runtime.py --output artifacts/release-v2/runtime-recovery-final.json
+docker run --rm --network fleet-release-verify_default \
+  -v "$PWD:/workspace" -w /workspace -e PYTHONPATH=/workspace/backend/src \
+  fleet-maintenance-sequence python scripts/benchmark_workload.py \
+  --base-url http://web/api --output artifacts/release-v2/workload-isolated-final.json
+```
+
+`make backend-integration` now creates/migrates **fleet_release_integration_test**, never the ordinary fleet DB. Its 49 checks include real PostgreSQL stock/resource concurrency cases; other service fixtures use isolated SQLite stores, so 49 does not mean 49 PostgreSQL races. The full backend command includes optional Torch; the excluded two files run against PG separately. No final skipped check is counted as passed. Science mounts current source instead of trusting an older installed Docker package.
+
+| Evidence | Result / meaning |
+|---|---|
+| `web-release-final.log`, `build-release-final.log`, `verify-built-final.log` | Frontend gates and final ordinary/isolated builds pass. |
+| `backend-release.log`, `make-integration.log`, `postgres-final.log`, `sequence-check.log` | 110 backend/science cases; 49 integration cases; explicit 4-case PG slice/no drift; optional Torch slice 11. Sets overlap; deprecations retained. |
+| `lifecycle-provenance.json`, `lifecycle-reproduced.json`, `science-reproduce.log` | Two frozen runs match; wider candidate not promoted. |
+| `official-endpoints.json`, `explanations.json`, `robustness.json`, `scientific-diagnostics.log` | Selected model endpoint reproduction and validation diagnostics; interpretation in research report. |
+| `resource-benchmark.json`, `planner-legacy-reference.json` | Declared resource benchmark; legacy EDF diagnostics are separate. |
+| `browser-fresh.log`, `browser-ready-final.log`, `browser-restored.log`, `browser-restored-final.log` | Fresh 35/35 at that stage; final expanded 37/37; restored initial four and final five real customer cases. |
+| `browser-performance.json` | Final unthrottled Chrome initial /demo diagnostic: DCL about 206ms, no >50ms task observed during capture; no scene/GLB until requested. Selected foreground/white contrast ≥4.5. Not a device/workload SLA or full accessibility audit. |
+| `runtime-recovery-final.json`, `runtime-recovery-final.log` | Eight actual-infrastructure checks pass; obsolete attempt cannot replace recovered plan, and one accepted plan exists. |
+| `workload-isolated-final.json`, `workload-isolated-final.log` | Final isolated fixture: 200 reads / five readers, zero failed reads; p95 20.13ms / p99 27.07ms. Both real planning and simulation jobs succeeded; 24 read samples observed queued/running jobs. Small local diagnostic, not a fleet SLA. |
+| `backup-final/backup.json`, `restore.json`, `restore.log` | 27 fingerprints and registered bytes match; observed 16.64s restore/89.94s backup age, not agreed RTO/RPO. |
+| `source-manifest.json`, `source-working-tree.tar.gz`, `evidence-index.json` | Exact source/locks, working-tree state, image IDs and evidence hashes for protected retention. Archive is not a reviewed release commit. |
+
+Environment: macOS arm64; Docker Linux aarch64, 8CPU/~8GB; Python3.13.16, PostgreSQL17, RabbitMQ4 and locked Celery/OR-Tools/SimPy/scikit-learn; optional Torch2.8.0+cpu; Node24, pnpm12.8.1, React19.3, TypeScript6, Vite8.3.2, Chrome154. Locks retained, no broad dependency upgrade.
+
+Scientific commands use `fleet-maintenance-sequence` with `-v "$PWD:/workspace" -w /workspace -e PYTHONPATH=/workspace/backend/src`: `scripts/evaluate_lifecycle_release.py --artifact-dir artifacts/models/lifecycle-release-v2-provenance --output artifacts/release-v2/lifecycle-provenance.json`, repeated into `lifecycle-release-v2-reproduced`; `evaluate_model.py --artifact-dir artifacts/models/customer-trial-v1 --output artifacts/release-v2/official-endpoints.json`; `evaluate_explanations.py`/`evaluate_robustness.py` with that selected artifact directory and the respective retained report output; `benchmark_resources.py --output artifacts/release-v2/resource-benchmark.json`. Raw/config/split/module hashes are in the reports.
+
+## Failures retained, not counted as passes
+
+The cached-image baseline was not current-source evidence. First lifecycle training failed after fit for missing dataset-builder arguments; partial bytes/log remain. Lint/type findings were fixed and rerun. Earlier ordinary browser planning hit active legacy work without qualified bookings: current code explicitly blocks it, preserving old work. Another run recorded seven connection failures before rebuilt web readiness; the ready final rerun passed 37/37. A cached installed package initially exported a stale schema and failed the web build; export was corrected to mounted source, generated files reviewed and images rebuilt. Original failures remain in the evidence directory.
+
+The earlier ordinary `workload.json` completed 200 reads without HTTP failures, but planning returned **409** for legacy work; only its simulation job succeeded. It does not prove two successful concurrent jobs. The final isolated measurement is separate. Large optional chart/3D chunks and deprecation warnings remain. No full WCAG/ASVS, host-failure, procurement or operational aircraft acceptance follows.
+
+## Handoff and remaining gates
+
+Ordinary product: **http://localhost:8080/demo**. Clean install/upgrade and artifact installation: [local setup](../operations/local_setup.md). Guarded new-project recovery: [backup/restore](../operations/backup_and_restore.md). Scientific interpretation: [evaluation](../research/release_evaluation.md). Human acceptance: [study protocol](../design/user_study_protocol.md). Selected security controls: [security review](../operations/security_review.md).
+
+Remaining gates: **(1)** representative customer telemetry/records/spares integration and lawful rights; **(2)** approved alert/error/cost, resource/calendar and workload limits; **(3)** intended-user study and complete accessibility acceptance on intended devices; **(4)** trusted deployment, retention/recovery and independent security/agency acceptance; **(5)** reviewed source/artifact ownership and commercial support/procurement requirements. These span the eight workstreams and cannot be reduced to equal-sized tasks or a fabricated date. The unpromoted wide-interval candidate additionally needs justified improvement; the retained serving model itself remains customer-unqualified. Local engineering evidence does not close original external acceptance gates.

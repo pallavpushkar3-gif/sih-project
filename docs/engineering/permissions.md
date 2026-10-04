@@ -22,3 +22,9 @@ Every protected router authenticates on the server. Version checks and role chec
 `demo` mode reads `X-Demo-User` and `X-Demo-Role` for labelled local fixtures only. Session mode ignores these headers. Production settings reject demo authentication, insecure cookies, automatic schema creation/seeding, non-PostgreSQL storage and non-HTTPS origins.
 
 Audit records retain actors, UTC timestamps, versions and reasons for material changes. These controls do not establish regulatory certification or aircraft maintenance authority.
+
+Customer-trial `/demo` routes additionally require development environment and demo authentication; production and server-session configurations return 403. Trial creation/planning requires planner or supervisor. Assessments, delivery outcomes, approval and work retain their existing engineer/logistics/supervisor checks. Offline model installation uses administrator registration; a customer cannot upload executable model weights. Actions in the guided customer trial mutate only its dedicated synthetic records.
+
+## Release scope — 2026-10-05
+
+Administrator additionally configures operational resources; planner/supervisor submits exact-plan comparisons. Authentication scopes one isolated agency installation: all authenticated accounts share its read workspace; job cancellation retains owner/supervisor authorization. `deployment_scope` rejects shared multi-agency mode. Selected ASVS 5.0.0 controls and remaining security-assessment limits are mapped in `docs/operations/security_review.md`.

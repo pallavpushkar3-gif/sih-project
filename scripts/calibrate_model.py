@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 
 import yaml
+
 from fleet_maintenance.science.data.loaders import load_cmapss_table
 from fleet_maintenance.science.data.splitting import EngineSplit
 from fleet_maintenance.science.prediction.calibration import calibrate_baseline
@@ -21,9 +22,7 @@ def main() -> None:
         type=Path,
         default=Path("data/processed/cmapss_fd001/manifest.json"),
     )
-    parser.add_argument(
-        "--artifact-dir", type=Path, default=Path("artifacts/models/baseline-v1")
-    )
+    parser.add_argument("--artifact-dir", type=Path, default=Path("artifacts/models/baseline-v1"))
     parser.add_argument("--config", type=Path, default=Path("configs/calibration.yaml"))
     args = parser.parse_args()
     manifest = json.loads(args.processed_manifest.read_text())

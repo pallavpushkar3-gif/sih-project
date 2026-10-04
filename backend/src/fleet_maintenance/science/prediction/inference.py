@@ -31,6 +31,13 @@ class BaselinePredictor:
             tuple(transform["scale"]),
             tuple(transform["features"]),
         )
+        if (list(standardizer.features) != manifest["feature_order"]
+                or len(standardizer.mean) != len(standardizer.features)
+                or len(standardizer.scale) != len(standardizer.features)
+                or not np.isfinite(standardizer.mean).all()
+                or not np.isfinite(standardizer.scale).all()
+                or np.any(np.asarray(standardizer.scale) <= 0)):
+            raise ValueError("Transform features/finite scales do not match the model manifest")
         model = joblib.load(artifact_dir / "model.joblib")
         if not isinstance(model, GradientBoostingRul):
             raise TypeError("Baseline artifact contains an unexpected model type.")

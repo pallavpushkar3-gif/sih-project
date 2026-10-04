@@ -25,9 +25,13 @@ class Settings(BaseSettings):
     job_max_attempts: int = Field(default=3, ge=1, le=10)
     outbox_poll_seconds: float = Field(default=0.5, gt=0)
     outbox_batch_size: int = Field(default=50, ge=1, le=1000)
+    maximum_request_bytes: int = Field(default=4000000, ge=1024, le=16000000)
+    deployment_scope: str = "single_agency"
 
     @model_validator(mode="after")
     def validate_release(self) -> "Settings":
+        if self.deployment_scope != "single_agency":
+            raise ValueError("Only isolated single-agency deployments are supported")
         if self.authentication_mode not in {"demo", "session"}:
             raise ValueError("authentication_mode must be demo or session")
         if self.environment == "production":

@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException
+from typing import Annotated
+
+from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field, FiniteFloat, model_validator
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -24,6 +26,7 @@ def scenarios(session: Session = Depends(get_session)) -> list[dict[str, object]
             "provenance": s.provenance,
         }
         for s in session.scalars(select(Scenario)).all()
+        if not s.assumptions.get("customer_trial") and not s.assumptions.get("plan_sha256")
     ]
 
 
@@ -59,7 +62,20 @@ def run(
 
 
 @router.get("/runs/all", response_model=list[SimulationRunResponse])
-def runs(session: Session = Depends(get_session)) -> list[dict[str, object]]:
+def runs(
+    session: Session = Depends(get_session),
+    plan_id: str | None = None,
+    scenario_id: str | None = None,
+    limit: Annotated[int, Query(ge=1, le=200)] = 100,
+    offset: Annotated[int, Query(ge=0)] = 0,
+) -> list[dict[str, object]]:
+    query = select(SimulationRun).order_by(
+        SimulationRun.created_at.desc().nulls_last(), SimulationRun.id.desc()
+    )
+    if plan_id:
+        query = query.where(SimulationRun.metrics["plan_id"].as_string() == plan_id)
+    if scenario_id:
+        query = query.where(SimulationRun.scenario_id == scenario_id)
     return [
         {
             "id": r.id,
@@ -69,7 +85,7 @@ def runs(session: Session = Depends(get_session)) -> list[dict[str, object]]:
             "availability": r.availability,
             "metrics": r.metrics,
         }
-        for r in session.scalars(select(SimulationRun)).all()
+        for r in session.scalars(query.offset(offset).limit(limit)).all()
     ]
 
 

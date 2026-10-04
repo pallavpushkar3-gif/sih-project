@@ -1,5 +1,7 @@
 from typing import cast
 
+from sqlalchemy.exc import OperationalError
+
 from fleet_maintenance.persistence.database import SessionLocal
 from fleet_maintenance.science.scheduling.solver import solve
 from fleet_maintenance.science.simulation.replications import run_scenario
@@ -10,6 +12,7 @@ from fleet_maintenance.services.jobs import (
     claim_job,
     confirm_cancellation,
     fail_attempt,
+    retry_transient,
 )
 from fleet_maintenance.services.planning import planning_snapshot, propose_plan, restore_source
 from fleet_maintenance.services.scenarios import run_saved_scenario, scenario_source
@@ -34,6 +37,14 @@ def execute(job_id: str) -> None:
         payload = job.input_payload
         session.rollback()
         try:
+            # Cooperative checkpoint before expensive native calculation; final acceptance
+            # checks cancellation again. Native work is bounded by the solver/task limits.
+            session.refresh(job)
+            cancelled = job.state == "cancellation_requested"
+            session.rollback()
+            if cancelled:
+                confirm_cancellation(session, job_id, attempt)
+                return
             result: dict[str, object]
             if kind == "planning":
                 if not payload:
@@ -72,6 +83,15 @@ def execute(job_id: str) -> None:
                         computed_result=computed_simulation,
                     ).id
                 }
+            elif kind == "plan_simulation":
+                from fleet_maintenance.services.plan_simulation import calculate, save_comparison
+
+                computed_comparison = calculate(payload)
+                result = {
+                    "run_id": save_comparison(
+                        session, payload, computed_comparison, f"sim-for-{job_id}"
+                    ).id
+                }
             elif kind == "assessment":
                 import numpy as np
 
@@ -93,11 +113,9 @@ def execute(job_id: str) -> None:
                 hashes = model.hashes
                 session.rollback()
                 computed_prediction = None
-                if cutoff >= minimum and all(
-                    value is not None
-                    for row in rows
-                    for value in cast(list[float | None], row["values"])
-                ):
+                from fleet_maintenance.science.data.eligibility import history_findings
+
+                if not history_findings(rows, minimum, model.manifest):
                     verify_hashes(directory, hashes)
                     computed_prediction = predict_history(
                         directory,
@@ -119,6 +137,12 @@ def execute(job_id: str) -> None:
                 fail_attempt(session, job_id, attempt, "unsupported_job_kind")
                 return
             accept_result(session, job_id, attempt, result)
+        except (OperationalError, TimeoutError) as exc:
+            session.rollback()
+            try:
+                retry_transient(session, job_id, attempt, type(exc).__name__)
+            except JobConflict:
+                session.rollback()
         except (KeyError, LookupError, ValueError):
             session.rollback()
             fail_attempt(session, job_id, attempt, "invalid_job_input")

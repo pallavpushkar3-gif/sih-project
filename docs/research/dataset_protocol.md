@@ -1,6 +1,6 @@
 # Dataset Protocol
 
-Status: FD001 acquisition, identity, split and target protocol frozen for validation-v1; final test remains uninspected by model-selection code.
+Status: FD001 acquisition, identity, split and target protocol frozen for validation-v1; official final endpoints have been inspected in evaluation; model-selection code excludes them.
 
 ## Source and Initial Support
 
@@ -29,3 +29,7 @@ Cutoffs expose observations only through the selected cycle. Corrupt inputs thro
 ## Artifacts
 
 Preserve source hashes, ID manifests, target definitions, fitted transforms, preprocessing code version and processed artifact references. Logistics/task mappings are separately labelled synthetic inputs and do not become engine truth labels.
+
+## Historical inspection and new experiment — 2026-10-05
+
+The original official FD001 endpoint test has been inspected and reproduced; its outcomes are unavailable to tuning code but no longer blind evidence. All 100 training engines were used by earlier experiments. `configs/lifecycle_release.yaml` therefore specifies a NEW retrained model with disjoint 50 fit / 15 validation / 15 calibration / 20 complete-life replay engines, fixed seed 26250, before fitting. These 20 are held out only from the new model, not historically unseen. Calibration samples one predeclared random cutoff per engine; coverage is marginal at that cutoff, not trajectory-wide. Read `docs/research/release_evaluation.md` for measurements, reproduction and limitations.

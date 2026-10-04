@@ -240,6 +240,429 @@
         }
       }
     },
+    "/api/demo/catalog": {
+      "get": {
+        "tags": [
+          "customer trials"
+        ],
+        "summary": "Trial Catalog",
+        "operationId": "trial_catalog_api_demo_catalog_get",
+        "parameters": [
+          {
+            "name": "x-demo-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "demo-planner",
+              "title": "X-Demo-User"
+            }
+          },
+          {
+            "name": "x-demo-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "planner",
+              "title": "X-Demo-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrialCatalogResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/demo/trials": {
+      "get": {
+        "tags": [
+          "customer trials"
+        ],
+        "summary": "Trial List",
+        "operationId": "trial_list_api_demo_trials_get",
+        "parameters": [
+          {
+            "name": "x-demo-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "demo-planner",
+              "title": "X-Demo-User"
+            }
+          },
+          {
+            "name": "x-demo-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "planner",
+              "title": "X-Demo-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TrialResponse"
+                  },
+                  "title": "Response Trial List Api Demo Trials Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "customer trials"
+        ],
+        "summary": "Trial Create",
+        "operationId": "trial_create_api_demo_trials_post",
+        "parameters": [
+          {
+            "name": "x-demo-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "demo-planner",
+              "title": "X-Demo-User"
+            }
+          },
+          {
+            "name": "x-demo-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "planner",
+              "title": "X-Demo-Role"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TrialRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrialResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/demo/trials/{trial_id}": {
+      "get": {
+        "tags": [
+          "customer trials"
+        ],
+        "summary": "Trial Detail",
+        "operationId": "trial_detail_api_demo_trials__trial_id__get",
+        "parameters": [
+          {
+            "name": "trial_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Trial Id"
+            }
+          },
+          {
+            "name": "x-demo-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "demo-planner",
+              "title": "X-Demo-User"
+            }
+          },
+          {
+            "name": "x-demo-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "planner",
+              "title": "X-Demo-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrialResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/demo/trials/{trial_id}/planning": {
+      "post": {
+        "tags": [
+          "customer trials"
+        ],
+        "summary": "Trial Plan",
+        "operationId": "trial_plan_api_demo_trials__trial_id__planning_post",
+        "parameters": [
+          {
+            "name": "trial_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Trial Id"
+            }
+          },
+          {
+            "name": "x-demo-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "demo-planner",
+              "title": "X-Demo-User"
+            }
+          },
+          {
+            "name": "x-demo-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "planner",
+              "title": "X-Demo-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/demo/trials/{trial_id}/jobs": {
+      "get": {
+        "tags": [
+          "customer trials"
+        ],
+        "summary": "Trial Jobs",
+        "operationId": "trial_jobs_api_demo_trials__trial_id__jobs_get",
+        "parameters": [
+          {
+            "name": "trial_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Trial Id"
+            }
+          },
+          {
+            "name": "x-demo-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "demo-planner",
+              "title": "X-Demo-User"
+            }
+          },
+          {
+            "name": "x-demo-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "planner",
+              "title": "X-Demo-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/JobResponse"
+                  },
+                  "title": "Response Trial Jobs Api Demo Trials  Trial Id  Jobs Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/demo/trials/{trial_id}/history": {
+      "get": {
+        "tags": [
+          "customer trials"
+        ],
+        "summary": "Trial History",
+        "operationId": "trial_history_api_demo_trials__trial_id__history_get",
+        "parameters": [
+          {
+            "name": "trial_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Trial Id"
+            }
+          },
+          {
+            "name": "x-demo-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "demo-planner",
+              "title": "X-Demo-User"
+            }
+          },
+          {
+            "name": "x-demo-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "planner",
+              "title": "X-Demo-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HistoryImport"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/components/{component_id}": {
       "get": {
         "tags": [
@@ -611,6 +1034,68 @@
         }
       }
     },
+    "/api/plans/{plan_id}/comparison": {
+      "post": {
+        "tags": [
+          "plans"
+        ],
+        "summary": "Compare Saved Plan",
+        "operationId": "compare_saved_plan_api_plans__plan_id__comparison_post",
+        "parameters": [
+          {
+            "name": "plan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Plan Id"
+            }
+          },
+          {
+            "name": "x-demo-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "demo-planner",
+              "title": "X-Demo-User"
+            }
+          },
+          {
+            "name": "x-demo-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "planner",
+              "title": "X-Demo-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/plans": {
       "get": {
         "tags": [
@@ -619,6 +1104,45 @@
         "summary": "List Plans",
         "operationId": "list_plans_api_plans_get",
         "parameters": [
+          {
+            "name": "scope_component_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Scope Component Id"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 100,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          },
           {
             "name": "x-demo-user",
             "in": "header",
@@ -952,6 +1476,138 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/PlanCommitmentResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/resources": {
+      "get": {
+        "tags": [
+          "resources"
+        ],
+        "summary": "Resources",
+        "operationId": "resources_api_resources_get",
+        "parameters": [
+          {
+            "name": "x-demo-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "demo-planner",
+              "title": "X-Demo-User"
+            }
+          },
+          {
+            "name": "x-demo-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "planner",
+              "title": "X-Demo-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": true
+                  },
+                  "title": "Response Resources Api Resources Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/resources/{resource_id}": {
+      "put": {
+        "tags": [
+          "resources"
+        ],
+        "summary": "Configure",
+        "operationId": "configure_api_resources__resource_id__put",
+        "parameters": [
+          {
+            "name": "resource_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Resource Id"
+            }
+          },
+          {
+            "name": "x-demo-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "demo-planner",
+              "title": "X-Demo-User"
+            }
+          },
+          {
+            "name": "x-demo-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "planner",
+              "title": "X-Demo-Role"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResourceConfiguration"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Configure Api Resources  Resource Id  Put"
                 }
               }
             }
@@ -1418,6 +2074,61 @@
         "operationId": "runs_api_scenarios_runs_all_get",
         "parameters": [
           {
+            "name": "plan_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Plan Id"
+            }
+          },
+          {
+            "name": "scenario_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Scenario Id"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 100,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          },
+          {
             "name": "x-demo-user",
             "in": "header",
             "required": false,
@@ -1546,6 +2257,45 @@
         "summary": "Jobs",
         "operationId": "jobs_api_jobs_get",
         "parameters": [
+          {
+            "name": "kind",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Kind"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 100,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          },
           {
             "name": "x-demo-user",
             "in": "header",
@@ -2165,6 +2915,80 @@
         }
       }
     },
+    "/api/components/{component_id}/imports/csv": {
+      "post": {
+        "tags": [
+          "evidence"
+        ],
+        "summary": "Import Csv",
+        "operationId": "import_csv_api_components__component_id__imports_csv_post",
+        "parameters": [
+          {
+            "name": "component_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Component Id"
+            }
+          },
+          {
+            "name": "x-demo-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "demo-planner",
+              "title": "X-Demo-User"
+            }
+          },
+          {
+            "name": "x-demo-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "planner",
+              "title": "X-Demo-Role"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CsvImportRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Import Csv Api Components  Component Id  Imports Csv Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/components/{component_id}/imports": {
       "post": {
         "tags": [
@@ -2472,6 +3296,22 @@
             },
             "type": "array",
             "title": "Acknowledgements"
+          },
+          "episode_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Episode Id"
+          },
+          "policy_context": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Policy Context"
           }
         },
         "type": "object",
@@ -2493,7 +3333,9 @@
             "type": "string",
             "enum": [
               "receive",
-              "cancel"
+              "cancel",
+              "quarantine",
+              "reject"
             ],
             "title": "Action"
           },
@@ -2590,7 +3432,9 @@
             "enum": [
               "expected",
               "received",
-              "cancelled"
+              "cancelled",
+              "quarantined",
+              "rejected"
             ],
             "title": "Status"
           },
@@ -2999,6 +3843,46 @@
           "password"
         ],
         "title": "Credentials"
+      },
+      "CsvImportRequest": {
+        "properties": {
+          "csv_text": {
+            "type": "string",
+            "maxLength": 1500000,
+            "minLength": 1,
+            "title": "Csv Text"
+          },
+          "source_version": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Source Version"
+          },
+          "engine_identity": {
+            "type": "string",
+            "maxLength": 120,
+            "title": "Engine Identity"
+          },
+          "previous_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 64
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Previous Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "csv_text",
+          "source_version",
+          "engine_identity"
+        ],
+        "title": "CsvImportRequest"
       },
       "ExplanationStateResponse": {
         "properties": {
@@ -3434,6 +4318,40 @@
             "type": "integer",
             "minimum": 0.0,
             "title": "End"
+          },
+          "crew_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Crew Id"
+          },
+          "bay_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bay Id"
+          },
+          "crew_unit": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Crew Unit",
+            "default": 0
+          },
+          "bay_unit": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Bay Unit",
+            "default": 0
           }
         },
         "type": "object",
@@ -3659,6 +4577,94 @@
           "status"
         ],
         "title": "ReservationHistoryResponse"
+      },
+      "ResourceConfiguration": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "crew",
+              "bay"
+            ],
+            "title": "Kind"
+          },
+          "label": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Label"
+          },
+          "capabilities": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 50,
+            "minItems": 1,
+            "title": "Capabilities"
+          },
+          "available": {
+            "items": {
+              "items": {
+                "type": "integer"
+              },
+              "type": "array"
+            },
+            "type": "array",
+            "maxItems": 100,
+            "title": "Available"
+          },
+          "aircraft_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 1000,
+            "title": "Aircraft Ids"
+          },
+          "capacity": {
+            "type": "integer",
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Capacity",
+            "default": 1
+          },
+          "valid_from": {
+            "type": "integer",
+            "maximum": 13.0,
+            "minimum": 0.0,
+            "title": "Valid From",
+            "default": 0
+          },
+          "valid_until": {
+            "type": "integer",
+            "maximum": 14.0,
+            "minimum": 1.0,
+            "title": "Valid Until",
+            "default": 14
+          },
+          "expected_version": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expected Version"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "kind",
+          "label",
+          "capabilities",
+          "available"
+        ],
+        "title": "ResourceConfiguration"
       },
       "ScenarioResponse": {
         "properties": {
@@ -3986,6 +4992,238 @@
           "deadline_slot"
         ],
         "title": "TaskFixture"
+      },
+      "TrialCatalogResponse": {
+        "properties": {
+          "available": {
+            "type": "boolean",
+            "title": "Available"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          },
+          "model_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Id"
+          },
+          "history": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/HistoryImport"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "source_sha256": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Sha256"
+          }
+        },
+        "type": "object",
+        "required": [
+          "available",
+          "reason",
+          "model_id",
+          "history",
+          "source_sha256"
+        ],
+        "title": "TrialCatalogResponse"
+      },
+      "TrialRequest": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^trial-[a-f0-9]{32}$",
+            "title": "Id"
+          },
+          "aircraft_label": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Aircraft Label"
+          },
+          "cutoff_cycle": {
+            "type": "integer",
+            "maximum": 10000.0,
+            "minimum": 1.0,
+            "title": "Cutoff Cycle"
+          },
+          "cycles_per_day": {
+            "type": "number",
+            "maximum": 120.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Cycles Per Day"
+          },
+          "duration_slots": {
+            "type": "integer",
+            "maximum": 14.0,
+            "minimum": 1.0,
+            "title": "Duration Slots"
+          },
+          "deadline_slot": {
+            "type": "integer",
+            "maximum": 14.0,
+            "minimum": 1.0,
+            "title": "Deadline Slot"
+          },
+          "spare_on_hand": {
+            "type": "integer",
+            "maximum": 10.0,
+            "minimum": 0.0,
+            "title": "Spare On Hand"
+          },
+          "arrival_slot": {
+            "type": "integer",
+            "maximum": 13.0,
+            "minimum": 0.0,
+            "title": "Arrival Slot"
+          },
+          "history": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/HistoryImport"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "aircraft_label",
+          "cutoff_cycle",
+          "cycles_per_day",
+          "duration_slots",
+          "deadline_slot",
+          "spare_on_hand",
+          "arrival_slot"
+        ],
+        "title": "TrialRequest"
+      },
+      "TrialResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "aircraft_label": {
+            "type": "string",
+            "title": "Aircraft Label"
+          },
+          "component_id": {
+            "type": "string",
+            "title": "Component Id"
+          },
+          "part_id": {
+            "type": "string",
+            "title": "Part Id"
+          },
+          "import_id": {
+            "type": "string",
+            "title": "Import Id"
+          },
+          "model_id": {
+            "type": "string",
+            "title": "Model Id"
+          },
+          "cutoff_cycle": {
+            "type": "integer",
+            "title": "Cutoff Cycle"
+          },
+          "cycles_per_day": {
+            "type": "number",
+            "title": "Cycles Per Day"
+          },
+          "duration_slots": {
+            "type": "integer",
+            "title": "Duration Slots"
+          },
+          "deadline_slot": {
+            "type": "integer",
+            "title": "Deadline Slot"
+          },
+          "spare_on_hand": {
+            "type": "integer",
+            "title": "Spare On Hand"
+          },
+          "arrival_slot": {
+            "type": "integer",
+            "title": "Arrival Slot"
+          },
+          "arrival_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Arrival Id"
+          },
+          "baseline_scenario_id": {
+            "type": "string",
+            "title": "Baseline Scenario Id"
+          },
+          "supply_scenario_id": {
+            "type": "string",
+            "title": "Supply Scenario Id"
+          },
+          "engine_identity": {
+            "type": "string",
+            "title": "Engine Identity"
+          },
+          "history_sha256": {
+            "type": "string",
+            "title": "History Sha256"
+          },
+          "history_origin": {
+            "type": "string",
+            "title": "History Origin"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "aircraft_label",
+          "component_id",
+          "part_id",
+          "import_id",
+          "model_id",
+          "cutoff_cycle",
+          "cycles_per_day",
+          "duration_slots",
+          "deadline_slot",
+          "spare_on_hand",
+          "arrival_slot",
+          "arrival_id",
+          "baseline_scenario_id",
+          "supply_scenario_id",
+          "engine_identity",
+          "history_sha256",
+          "history_origin"
+        ],
+        "title": "TrialResponse"
       },
       "ValidationError": {
         "properties": {

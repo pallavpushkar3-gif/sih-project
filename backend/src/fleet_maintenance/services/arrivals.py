@@ -19,6 +19,8 @@ def schedule_arrival(
     expected_part_version: int,
     reason: str,
     actor: str,
+    *,
+    commit: bool = True,
 ) -> PartArrival:
     if quantity <= 0 or not 0 <= slot < 14:
         raise ValueError("Delivery quantity and slot are outside the supported horizon")
@@ -63,7 +65,10 @@ def schedule_arrival(
         )
     )
     try:
-        session.commit()
+        if commit:
+            session.commit()
+        else:
+            session.flush()
     except IntegrityError as exc:
         session.rollback()
         raise ApprovalConflict("Delivery identity conflicted; reload and retry") from exc
@@ -87,7 +92,8 @@ def record_arrival(
         .execution_options(populate_existing=True)
     )
     assert item is not None
-    target = {"receive": "received", "cancel": "cancelled"}.get(action)
+    target = {"receive": "received", "cancel": "cancelled",
+              "quarantine": "quarantined", "reject": "rejected"}.get(action)
     if target is None:
         raise ValueError("Unknown delivery outcome")
     if item.status == target:
@@ -100,6 +106,9 @@ def record_arrival(
     if action == "receive":
         part.on_hand += item.quantity
         item.received_at = datetime.now(UTC)
+    elif action in {"quarantine", "reject"}:
+        item.received_at = datetime.now(UTC)
+        # Physical receipt alone does not make quarantined/rejected units usable.
     session.add(
         AuditEvent(
             actor=actor,

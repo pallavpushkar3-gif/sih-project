@@ -1,5 +1,7 @@
 # Users and Workflows
 
+The current interaction contract is [Maintenance decision user flow](user_flow.md). The default Start page explains the offer; primary navigation is Start, Fleet and Planning. Alerts, Parts & deliveries, What-if comparisons and AI & evidence are supporting tools. The sequence below remains the domain workflow; interface stages group it into three understandable phases.
+
 ## Intended Responsibilities
 
 Maintenance planners construct proposals; technical reviewers inspect assessment evidence; logistics coordinators maintain stock/arrival information; supervisors approve plans and compare projected outcomes. Exact permissions are defined separately.

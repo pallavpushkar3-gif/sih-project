@@ -24,8 +24,8 @@ export function JobProgress({ kind }: { kind: "planning" | "simulation" }) {
   const client = useQueryClient();
   const [showAll, setShowAll] = useState(false);
   const query = useQuery({
-    queryKey: ["jobs"],
-    queryFn: () => api<Job[]>("/jobs", undefined, arrayOf(isJob)),
+    queryKey: ["jobs", kind],
+    queryFn: () => api<Job[]>(`/jobs?kind=${kind}&limit=50`, undefined, arrayOf(isJob)),
     refetchInterval: (query) => query.state.data?.some((job) => activeStates.has(job.state)) ? 2_000 : 10_000,
   });
   const cancel = useMutation({

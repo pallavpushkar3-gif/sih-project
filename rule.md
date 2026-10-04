@@ -49,3 +49,7 @@ Run checks appropriate to changed behaviour. Prioritize leakage/parity, constrai
 ## 12. Document Ownership
 
 This is the canonical engineering-rule file. `AGENTS.md` references it rather than maintaining a duplicate rule set. User instructions and applicable system/tool instructions govern assistants; this document does not grant external-action permissions. Resolve internal conflicts explicitly and keep planned scope separate from implementation status.
+
+## Release evidence application — 2026-10-05
+
+A new engine-disjoint retraining experiment does not erase earlier use of the same FD001 engines. Label its lifecycle holdout relative to that new model and retain the historical inspection disclosure. Deterministic scenario envelopes have no probabilistic confidence interval. A FIFO placement failure is not a mathematical infeasibility proof. Legacy active work without crew/bay identities must be reconciled or explicitly completed/cancelled before new scheduling; never invent historical reservations. A passing local functional journey cannot substitute for unresolved scientific, human, deployment or customer gates.

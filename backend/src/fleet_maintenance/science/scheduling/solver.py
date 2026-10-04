@@ -7,6 +7,7 @@ from fleet_maintenance.science.scheduling.formulation import (
     PlanningResult,
 )
 from fleet_maintenance.science.scheduling.grouping import groups
+from fleet_maintenance.science.scheduling.resources import allowed_starts, compatible
 
 
 def solve(source: PlanningInput, time_limit_seconds: float = 5.0) -> PlanningResult:
@@ -19,6 +20,9 @@ def solve(source: PlanningInput, time_limit_seconds: float = 5.0) -> PlanningRes
     starts: dict[str, cp_model.IntVar] = {}
     ends: dict[str, cp_model.IntVar] = {}
     intervals: dict[str, cp_model.IntervalVar] = {}
+    choices: dict[tuple[str, str], list[tuple[str, int, cp_model.IntVar]]] = {}
+    unit_intervals: dict[tuple[str, int], list[cp_model.IntervalVar]] = {}
+    blockers: list[str] = []
     for task in source.tasks:
         starts[task.id] = model.new_int_var(
             task.earliest, task.deadline - task.duration, f"start_{task.id}"
@@ -31,6 +35,40 @@ def solve(source: PlanningInput, time_limit_seconds: float = 5.0) -> PlanningRes
         )
         if task.fixed_start is not None:
             model.add(starts[task.id] == task.fixed_start)
+        for kind in ("crew", "bay") if source.resources else ():
+            options = []
+            for resource in source.resources:
+                allowed = allowed_starts(resource, task)
+                if resource.kind != kind or not compatible(resource, task) or not allowed:
+                    continue
+                for unit in range(resource.capacity):
+                    fixed_id = task.fixed_crew_id if kind == "crew" else task.fixed_bay_id
+                    fixed_unit = task.fixed_crew_unit if kind == "crew" else task.fixed_bay_unit
+                    if fixed_id and unit != fixed_unit:
+                        continue
+                    selected = model.new_bool_var(f"{task.id}_{resource.id}_{unit}")
+                    optional = model.new_optional_interval_var(
+                        starts[task.id],
+                        task.duration,
+                        ends[task.id],
+                        selected,
+                        f"use_{task.id}_{resource.id}_{unit}",
+                    )
+                    model.add_allowed_assignments(
+                        [starts[task.id]], [(start,) for start in allowed]
+                    ).only_enforce_if(selected)
+                    unit_intervals.setdefault((resource.id, unit), []).append(optional)
+                    options.append((resource.id, unit, selected))
+            choices[(task.id, kind)] = options
+            if not options:
+                blockers.append(
+                    f"Task {task.id}: no qualified {kind} with a valid uninterrupted shift/window."
+                )
+            model.add_exactly_one([choice[2] for choice in options])
+    for resource_intervals in unit_intervals.values():
+        model.add_no_overlap(resource_intervals)
+    for aircraft in {t.aircraft_id for t in source.tasks if t.aircraft_id}:
+        model.add_no_overlap([intervals[t.id] for t in source.tasks if t.aircraft_id == aircraft])
     for task in source.tasks:
         for predecessor_id in task.predecessors:
             model.add(starts[task.id] >= ends[predecessor_id])
@@ -57,6 +95,8 @@ def solve(source: PlanningInput, time_limit_seconds: float = 5.0) -> PlanningRes
     model.minimize(makespan)
     solver = cp_model.CpSolver()
     solver.parameters.max_time_in_seconds = time_limit_seconds
+    solver.parameters.num_search_workers = 1
+    solver.parameters.random_seed = 26249
     status = solver.solve(model)
     names = {
         cp_model.OPTIMAL: "optimal",
@@ -67,9 +107,28 @@ def solve(source: PlanningInput, time_limit_seconds: float = 5.0) -> PlanningRes
     }
     label = names.get(status, "failed")
     if label not in {"optimal", "feasible"}:
-        return PlanningResult(label)
+        return PlanningResult(label, diagnostics=tuple(blockers))
+
+    def selected_resource(task_id: str, kind: str) -> tuple[str | None, int]:
+        return next(
+            (
+                (identifier, unit)
+                for identifier, unit, selected in choices.get((task_id, kind), [])
+                if solver.value(selected)
+            ),
+            (None, 0),
+        )
+
     assignments = tuple(
-        Assignment(task.id, solver.value(starts[task.id]), solver.value(ends[task.id]))
+        Assignment(
+            task.id,
+            solver.value(starts[task.id]),
+            solver.value(ends[task.id]),
+            selected_resource(task.id, "crew")[0],
+            selected_resource(task.id, "bay")[0],
+            selected_resource(task.id, "crew")[1],
+            selected_resource(task.id, "bay")[1],
+        )
         for task in source.tasks
     )
     result = PlanningResult(

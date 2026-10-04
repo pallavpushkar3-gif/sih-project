@@ -27,6 +27,54 @@ async function records(page: Page) {
 
 test.beforeEach(async ({ page }) => records(page));
 
+test('start page explains the offer and leads through fleet, evidence and maintenance options', async ({ page }) => {
+  const requests: string[] = [];
+  page.on('request', request => requests.push(request.url()));
+  await page.goto('/');
+  await expect(page).toHaveURL(/\/overview$/);
+  await expect(page.getByRole('heading', { name: /Know what needs attention.*Plan what happens next/ })).toBeVisible();
+  await expect(page.getByRole('list', { name: 'Maintenance decision flow' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Review SYN-001' })).toHaveAttribute('href', '/components/cmp-eng-01');
+  await expect(page.getByRole('link', { name: 'Review SYN-002' })).toHaveCount(0);
+  expect(requests.some(url => url.endsWith('.glb') || url.includes('/AircraftScene-'))).toBe(false);
+  await expect(page.getByRole('link', { name: 'Try it with your data' })).toHaveAttribute('href', '/demo');
+  await page.getByRole('link', { name: 'Review SYN-001' }).click();
+  await expect(page.getByRole('heading', { name: 'Assessment & model evidence' })).toBeVisible();
+  await page.getByRole('link', { name: 'Review maintenance options' }).click();
+  await expect(page).toHaveURL(/component=cmp-eng-01/);
+  await expect(page.getByText(/this selection does not restrict the solver/)).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Calculate maintenance schedule' })).toBeVisible();
+});
+
+test('supporting tools keep keyboard focus and a route back to the main journey', async ({ page }) => {
+  await page.goto('/overview');
+  const navigation = page.getByRole('navigation', { name: 'Primary navigation' });
+  await expect(navigation.getByRole('link')).toHaveCount(4);
+  const trigger = page.getByRole('button', { name: 'Open navigation' });
+  await trigger.click();
+  const dialog = page.getByRole('dialog', { name: 'Workspace navigation' });
+  await expect(dialog.getByRole('link', { name: 'Parts & deliveries' })).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(trigger).toBeFocused();
+  await trigger.click();
+  await dialog.getByRole('link', { name: 'Parts & deliveries' }).click();
+  await expect(page).toHaveURL(/\/inventory$/);
+  await expect(dialog).not.toBeVisible();
+});
+
+test('mobile start page remains readable and failed records never become an empty healthy fleet', async ({ page }, testInfo) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/overview');
+  await expect(page.getByRole('link', { name: 'Review SYN-001' })).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  await page.screenshot({ path: testInfo.outputPath('start-mobile-fixture.png'), fullPage: true });
+  await page.route('**/api/fleet', route => route.fulfill({ status: 503, json: { detail: 'Fixture fleet unavailable' } }));
+  await page.reload();
+  await expect(page.getByRole('alert')).toContainText('Fixture fleet unavailable');
+  await expect(page.getByText('No open maintenance tasks recorded', { exact: true })).toHaveCount(0);
+  await expect(page.getByRole('link', { name: 'Try it with your data' })).toBeVisible();
+});
+
 test("fleet search and filters use the returned aircraft records", async ({ page }) => {
   await page.goto("/fleet/register");
   await expect(page.getByRole("heading", { name:"Fleet overview", exact:true })).toBeVisible();

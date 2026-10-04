@@ -1,6 +1,6 @@
 # Milestones
 
-Status: dependency-ordered plan, no completion claims or dates assigned.
+Status: dependency-ordered plan. For audited implemented status, current verification and the eight remaining release workstreams, see [project status](project_status.md). The list below is an ordering guide, not a record that each milestone is either entirely absent or fully accepted.
 
 1. Establish documentation/contracts and reproducible environments.
 2. Acquire/validate supported data; freeze splits/targets and labelled fixtures.

@@ -17,6 +17,14 @@ from fleet_maintenance.persistence.models import (
 
 def seed_demo(session: Session) -> bool:
     if session.scalar(select(Aircraft.id).limit(1)):
+        from fleet_maintenance.services.resources import seed_resources
+
+        seed_resources(session)
+        for component in session.scalars(
+            select(Component).where(Component.id.startswith("trial-"))
+        ):
+            seed_resources(session, component.id)
+        session.commit()
         return False
     records = [
         User(id="demo-planner", display_name="Demo Planner", role="planner"),
@@ -128,6 +136,10 @@ def seed_demo(session: Session) -> bool:
                     source_version="synthetic-demo-v1",
                 )
             )
+    session.commit()
+    from fleet_maintenance.services.resources import seed_resources
+
+    seed_resources(session)
     session.commit()
     return True
 

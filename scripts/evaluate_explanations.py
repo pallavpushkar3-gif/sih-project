@@ -12,21 +12,15 @@ from fleet_maintenance.science.prediction.explanation_evaluation import (
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--raw", type=Path, default=Path("data/raw/cmapss"))
-    parser.add_argument(
-        "--artifact-dir", type=Path, default=Path("artifacts/models/baseline-v1")
-    )
-    parser.add_argument(
-        "--config", type=Path, default=Path("configs/explanation_evaluation.yaml")
-    )
+    parser.add_argument("--artifact-dir", type=Path, default=Path("artifacts/models/baseline-v1"))
+    parser.add_argument("--config", type=Path, default=Path("configs/explanation_evaluation.yaml"))
     parser.add_argument(
         "--output",
         type=Path,
         default=Path("artifacts/evaluations/explanations-validation-v1.json"),
     )
     args = parser.parse_args()
-    result = evaluate_explanations(
-        args.raw, args.artifact_dir, args.config, args.output
-    )
+    result = evaluate_explanations(args.raw, args.artifact_dir, args.config, args.output)
     print(
         json.dumps(
             {

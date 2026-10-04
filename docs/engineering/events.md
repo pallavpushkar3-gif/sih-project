@@ -21,3 +21,7 @@ Progress is optional/indeterminate unless measured. Throttle high-frequency upda
 ## Interface Handling
 
 Events invalidate/refetch relevant query data; they should not create independent unvalidated replicas of approved plans. Keep old-view results from replacing a newer selection. Test duplicate/disconnect/replay and access filtering.
+
+## Context and refresh — 2026-10-05
+
+Job events carry available component/scope/scenario/plan identifiers. The browser refreshes relevant job/result queries on terminal events; `alert.review_required` records opening/escalation, while `plan.approved` and work events refresh commitments. No automatic replan or approval follows an alert. Resync refreshes authoritative queries; periodic scoped reads remain the fallback. A shared-agency stream is not supported.

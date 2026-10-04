@@ -3,7 +3,7 @@
 **Project:** Aircraft Predictive Maintenance & Fleet Availability
 **Problem statement:** PS 26249
 **Repository location:** `docs/product/acceptance_criteria.md`
-**Status:** Initial acceptance specification; no checks claimed as passed
+**Status:** Acceptance specification; original full release remains incomplete. Individual implemented checks and retained results are recorded in [project status](../team/project_status.md), [release readiness](../operations/production_readiness.md) and [UI verification](../design/ui_verification.md); this specification is not a completed release acceptance record.
 **Related documents:** `intent.md`, `scope.md`, `docs/product/feature_specifications.md`
 
 ## 1. How Acceptance Works
@@ -183,6 +183,18 @@ It does not establish real military fleet improvements, regulatory certification
 
 ## Aircraft inspection redesign acceptance
 
+Decision-flow presentation additionally checks default Start routing, API-backed open-work records without an inferred health classification, Start → register → component → planning with retained context, main/supporting navigation grouping and keyboard focus restoration, mobile viewport containment and API failure without a fabricated empty/healthy state. Source-rendered screenshots and browser checks are indexed in UI verification. A participant understanding study remains required separately; route tests are not usability acceptance.
+
+AI visibility checks additionally verify the Fleet explanation/navigation path, `/ai` saved estimate/interval and quality state, selection/reload, component/aircraft and assessment-version alignment, withheld/no-assessment handling, API failure/retry and mobile navigation/containment. Retain labelled-fixture browser evidence separately from live model evaluation and the participant comprehension study. Presentation checks do not close independent alert, explanation-stability or robustness gates.
+
 Verify actual rendered screens, not rewritten specifications alone. Required checks: mapped annotation/list parity; aircraft/component identity reconciliation and delayed-response protection; renderer/model/no-WebGL fallback retaining evidence/actions; history units/cutoff/table alternatives; actual interval metadata and unavailable explanation states; exact-plan approval and stale conflict; versioned supply assumptions preserving prior outcomes; honest job/result status. Capture 1440×900, 1366×768, tablet and mobile, keyboard, reduced-motion and 200% zoom. Record source revision/check scope, actual screenshots, device/browser and asset/orbit measurements in UI verification.
 
 Proposed initial budgets are ≤10 MB compressed model and ≤2K textures, and median orbit frame interval ≤33 ms on the recorded demonstration device. A measured pass on one device is not a cross-device guarantee. Participant comprehension of aircraft/component/evidence/proposal remains to be evaluated. Original public HTTPS, independent complete-history alert evaluation and operator-approved costs/targets remain blocked where prerequisites are absent; this redesign cannot close those gates.
+
+### Customer-trial verification boundary
+
+The local `/demo` journey must retain entered input identities and actual model/plan/run/work results; isolate trial resources from ordinary fleet proposals and other trials; require matching available AI for the trial policy; preserve mandatory deadlines; distinguish expected from received stock; invalidate stale proposals; and reserve/consume parts through existing transactions. Check both insufficient history and an impossible AI-informed window. Browser transitions do not establish participant comprehension, model qualification or full release acceptance. See [customer_trial.md](customer_trial.md) and [UI verification](../design/ui_verification.md).
+
+## Release-v2 evidence status — 2026-10-05
+
+Resource-aware planning, episode behavior, actual-plan replay, PostgreSQL exclusion races, real queue recovery and fresh restore now have executed bounded evidence. Required original scientific stability/robustness/performance decisions, intended-user understanding, external aircraft qualification and public deployment must not be relabelled passed. The detailed eight-workstream ledger is `docs/team/release_acceptance.md`. Completing local engineering checks does not narrow the original release silently.

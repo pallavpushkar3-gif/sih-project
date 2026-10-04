@@ -42,3 +42,7 @@ A real running worker was killed and restarted in the isolated local test stack;
 ### Attempt retention contract
 
 Each claim creates a unique `(job_id, number)` row with the worker hostname/process ID and UTC lease/start times. Success, failure, explicit recovery, expired-lease recovery and confirmed cancellation retain an outcome/state/finish time in the same job transaction. Active leases are preserved on historical attempts after the Job lease is cleared. GET `/api/jobs/{id}/attempts` returns numbered history. Duplicate/stale completion cannot modify an older closed attempt. No worker identity alone grants ownership; job number/state/lease checks remain authoritative. The live kill/restart rehearsal retained expired then succeeded attempts, and the new table was restored with all rows intact.
+
+## Additional recovery behavior — 2026-10-05
+
+Transient database/time-out failures requeue with recorded interrupted attempts, bounded by the configured attempt maximum; invalid inputs fail permanently. Workers check cancellation before computation and fence acceptance afterward. Native computation is bounded by solver/Celery time limits; cancellation is not immediate interruption. `plan_simulation` calculations use the shared science module and exact immutable inputs, with per-job result identity and serialized per-plan scenario registration. Real fault-injection evidence is in the release ledger; no exactly-once or host failover guarantee is made.

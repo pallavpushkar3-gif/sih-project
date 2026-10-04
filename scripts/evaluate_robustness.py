@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Any, cast
 
 import yaml
+
 from fleet_maintenance.science.data.loaders import load_cmapss_table
 from fleet_maintenance.science.data.robustness import InterventionKind, InterventionSpec
 from fleet_maintenance.science.data.splitting import EngineSplit
@@ -62,9 +63,7 @@ def main() -> None:
             minimum_history=int(model_manifest["minimum_history_cycles"]),
             window=int(model_manifest["feature_window_cycles"]),
             seed=int(config["seed"]),
-            maximum_missing_fraction=float(
-                eligibility["maximum_missing_fraction_per_window"]
-            ),
+            maximum_missing_fraction=float(eligibility["maximum_missing_fraction_per_window"]),
             maximum_contiguous_missing_cycles=int(
                 eligibility["maximum_contiguous_missing_cycles_per_feature"]
             ),

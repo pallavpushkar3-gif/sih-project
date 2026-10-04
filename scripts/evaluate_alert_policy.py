@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Any
 
 import yaml
+
 from fleet_maintenance.science.alerts.evaluation import (
     AlertHistory,
     AlertObservation,

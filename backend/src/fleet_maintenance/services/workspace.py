@@ -19,7 +19,9 @@ from fleet_maintenance.persistence.models import (
 from fleet_maintenance.services.approvals import ApprovalConflict
 
 
-def import_fixture(session: Session, body: WorkspaceFixture, actor: str) -> dict[str, int]:
+def import_fixture(
+    session: Session, body: WorkspaceFixture, actor: str, *, commit: bool = True
+) -> dict[str, int]:
     digest = hashlib.sha256(body.model_dump_json().encode()).hexdigest()
     key = hashlib.sha256(f"fixture:{body.source_version}".encode()).hexdigest()
     counts = {
@@ -101,7 +103,10 @@ def import_fixture(session: Session, body: WorkspaceFixture, actor: str) -> dict
                 },
             )
         )
-        session.commit()
+        if commit:
+            session.commit()
+        else:
+            session.flush()
     except IntegrityError as exc:
         session.rollback()
         raise ApprovalConflict(

@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException
+from typing import Annotated
+
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -23,11 +25,16 @@ def serialize(item: Job) -> dict[str, object]:
 
 
 @router.get("", response_model=list[JobResponse])
-def jobs(session: Session = Depends(get_session)) -> list[dict[str, object]]:
-    return [
-        serialize(item)
-        for item in session.scalars(select(Job).order_by(Job.created_at.desc())).all()
-    ]
+def jobs(
+    session: Session = Depends(get_session),
+    kind: str | None = None,
+    limit: Annotated[int, Query(ge=1, le=200)] = 100,
+    offset: Annotated[int, Query(ge=0)] = 0,
+) -> list[dict[str, object]]:
+    query = select(Job).order_by(Job.created_at.desc(), Job.id.desc())
+    if kind:
+        query = query.where(Job.kind == kind)
+    return [serialize(item) for item in session.scalars(query.offset(offset).limit(limit)).all()]
 
 
 @router.get("/{job_id}", response_model=JobResponse)
@@ -43,7 +50,11 @@ def submit_planning(
     session: Session = Depends(get_session), actor: Actor = Depends(current_actor)
 ) -> dict[str, object]:
     require_planner(actor)
-    return serialize(submit_job(session, "planning", planning_snapshot(session), owner=actor.id))
+    try:
+        snapshot = planning_snapshot(session)
+    except ValueError as exc:
+        raise HTTPException(409, str(exc)) from exc
+    return serialize(submit_job(session, "planning", snapshot, owner=actor.id))
 
 
 @router.post("/simulation/{scenario_id}", response_model=JobResponse)

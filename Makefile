@@ -15,8 +15,11 @@ backend-check:
 	docker run --rm fleet-maintenance-test sh -c 'ruff check src tests && mypy --exclude "science/prediction/(sequence|sequence_training)\\.py" src/fleet_maintenance && python -m pytest tests/unit tests/verification'
 
 backend-integration: services-up
+	docker compose build api
 	docker build --target test -t fleet-maintenance-test backend
-	docker run --rm --network fleet-maintenance_default -e FLEET_DATABASE_URL=postgresql+psycopg://fleet:fleet@postgres:5432/fleet fleet-maintenance-test python -m pytest tests/integration
+	docker compose run --rm --no-deps api python -c "from sqlalchemy import create_engine,text; from sqlalchemy.engine import make_url; from fleet_maintenance.settings import get_settings; e=create_engine(make_url(get_settings().database_url).set(database='postgres'),isolation_level='AUTOCOMMIT'); c=e.connect(); c.execute(text('CREATE DATABASE fleet_release_integration_test')) if not c.scalar(text(\"SELECT 1 FROM pg_database WHERE datname='fleet_release_integration_test'\")) else None; c.close(); e.dispose()"
+	docker compose run --rm --no-deps -e FLEET_DATABASE_URL=postgresql+psycopg://fleet:fleet@postgres:5432/fleet_release_integration_test api alembic upgrade head
+	docker run --rm --network fleet-maintenance_default -e FLEET_DATABASE_URL=postgresql+psycopg://fleet:fleet@postgres:5432/fleet_release_integration_test fleet-maintenance-test python -m pytest tests/integration
 
 science-check:
 	docker build --target science -t fleet-maintenance-science backend

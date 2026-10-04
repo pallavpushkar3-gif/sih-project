@@ -1,6 +1,6 @@
 # Data Model
 
-Status: conceptual contract for implementation; ORM/migration files pending.
+Status: implemented ORM/migrations with conceptual relationships below; see the resource/policy extension and release ledger for verified boundaries.
 
 ## Identity and Versioning
 
@@ -41,3 +41,11 @@ Use version tokens for mutable commands, idempotency identity for approval/jobs 
 ## Schema Changes
 
 Implement reviewed Alembic migrations. Test a representative upgrade and restore. The conceptual table list is not permission to invent unneeded tables or duplicated state; refine fields against implemented workflows and document material changes.
+
+## Bounded local trial manifests
+
+Customer trials reserve `trial-<uuid>` record identities. A tagged immutable Scenario assumptions object holds the trial manifest/request hash and component/part/import/model/comparison references; it is not exposed as a runnable scenario. Two separate numerical Scenario records hold matched projections. Scoped plans retain `scope_component_id` and the advisory policy/evidence in their JSON snapshots. No migration is required by this JSON extension. Dedicated synthetic trial resources are excluded from ordinary fleet snapshots/commitments; they do not create extra real shared capacity. See ADR 0005. Production tenancy and scaled collections remain outside this local design.
+
+## Implemented resource/policy extension — 2026-10-05
+
+ORM and reviewed migrations are implemented; the earlier conceptual status above is historical. Head `f537880a4c71` adds resource tables and episode/comparison provenance. `maintenance_resources` own kind, label, capabilities, available half-open windows, capacity, qualification bounds, aircraft restrictions, version and optional trial scope. `resource_bookings` link plan/task/resource/unit/window; `resource_slots` uniquely claim resource/unit/slot. Completion/cancellation releases active slots and retains booking history. Nonnegative free stock/reservations are database constraints. Alert episode context and simulation timestamps are nullable/new where historical facts do not exist. Base maps datetime to timezone-aware SQL timestamps; earlier UTC migration remains authoritative. SQLite uses UTC by convention. Model imports and simulation inputs stay immutable; configuration edits increment versions and invalidate old approval inputs.

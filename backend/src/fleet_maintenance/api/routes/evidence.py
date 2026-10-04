@@ -1,8 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
-from pydantic import BaseModel, ConfigDict, Field, FiniteFloat, model_validator
+from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
 from fleet_maintenance.api.dependencies import Actor, current_actor, require_engineer
+from fleet_maintenance.domain.contracts.demo import HistoryImport
 from fleet_maintenance.persistence.database import get_session
 from fleet_maintenance.services.approvals import ApprovalConflict
 from fleet_maintenance.services.assessments import register_model
@@ -10,28 +11,6 @@ from fleet_maintenance.services.imports import import_history
 from fleet_maintenance.services.jobs import submit_job
 
 router = APIRouter(tags=["evidence"])
-
-
-class HistoryRow(BaseModel):
-    model_config = ConfigDict(extra="forbid", strict=True)
-    cycle: int = Field(strict=True, ge=1)
-    values: list[FiniteFloat | None] = Field(min_length=24, max_length=24)
-
-
-class HistoryImport(BaseModel):
-    model_config = ConfigDict(extra="forbid", strict=True)
-    source_version: str = Field(min_length=1, max_length=80, pattern=r"^[A-Za-z0-9_.-]+$")
-    engine_identity: str = Field(
-        pattern=r"^NASA_CMAPSS:FD001:(train|test):[1-9][0-9]*$", max_length=120
-    )
-    rows: list[HistoryRow] = Field(min_length=1, max_length=10000)
-    previous_id: str | None = Field(default=None, max_length=64)
-
-    @model_validator(mode="after")
-    def consecutive(self) -> "HistoryImport":
-        if [row.cycle for row in self.rows] != list(range(1, len(self.rows) + 1)):
-            raise ValueError("Cycles must start at one and be consecutive and ordered")
-        return self
 
 
 class Registration(BaseModel):
@@ -43,6 +22,36 @@ class AssessmentRequest(BaseModel):
     import_id: str = Field(min_length=1, max_length=64)
     model_id: str = Field(min_length=1, max_length=64)
     cutoff_cycle: int = Field(strict=True, ge=1)
+
+
+class CsvImportRequest(BaseModel):
+    csv_text: str = Field(min_length=1, max_length=1500000)
+    source_version: str = Field(min_length=1, max_length=80)
+    engine_identity: str = Field(max_length=120)
+    previous_id: str | None = Field(default=None, max_length=64)
+
+
+@router.post("/components/{component_id}/imports/csv")
+def import_csv(
+    component_id: str,
+    body: CsvImportRequest,
+    session: Session = Depends(get_session),
+    actor: Actor = Depends(current_actor),
+) -> dict[str, object]:
+    from pydantic import ValidationError
+
+    from fleet_maintenance.integrations.example_csv import AdapterValidationError, adapt_csv
+
+    require_engineer(actor)
+    try:
+        parsed = adapt_csv(
+            body.csv_text, body.source_version, body.engine_identity, body.previous_id
+        )
+    except AdapterValidationError as exc:
+        raise HTTPException(422, {"mode": "atomic_batch", "errors": exc.errors}) from exc
+    except ValidationError as exc:
+        raise HTTPException(422, "History identifiers or rows are invalid") from exc
+    return import_component(component_id, parsed, session, actor)
 
 
 @router.post("/components/{component_id}/imports")
@@ -107,7 +116,12 @@ def submit_assessment(
         raise HTTPException(404, "Import or model not found")
     if body.cutoff_cycle > len(history.rows):
         raise HTTPException(422, "Cutoff outside imported history")
-    job = submit_job(session, "assessment", body.model_dump(), owner=actor.id)
+    job = submit_job(
+        session,
+        "assessment",
+        {**body.model_dump(), "component_id": history.component_id},
+        owner=actor.id,
+    )
     from fleet_maintenance.api.routes.jobs import serialize
 
     return serialize(job)

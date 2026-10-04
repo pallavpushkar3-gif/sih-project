@@ -18,7 +18,10 @@ from fleet_maintenance.persistence.models import (
     WorkRecord,
 )
 from fleet_maintenance.services.approvals import ApprovalConflict, approve_plan
-from fleet_maintenance.services.planning import current_input_version, propose_plan
+from fleet_maintenance.services.planning import (
+    planning_snapshot,
+    propose_plan,
+)
 
 
 def test_approval_reserves_exact_stock_once(isolated_session: Session):
@@ -96,13 +99,11 @@ def test_postgres_concurrent_approvals_cannot_double_reserve_stock():
                 )
             )
         with sessions() as session:
-            tasks = list(
-                session.scalars(
-                    select(MaintenanceTask).where(MaintenanceTask.status == "open")
-                ).all()
-            )
-            parts = list(session.scalars(select(Part)).all())
-            version = current_input_version(tasks, parts)
+            from fleet_maintenance.services.resources import seed_resources
+
+            seed_resources(session)
+            session.commit()
+            version = planning_snapshot(session)["input_version"]
             session.add_all(
                 [
                     Plan(
@@ -110,7 +111,9 @@ def test_postgres_concurrent_approvals_cannot_double_reserve_stock():
                         status="proposed",
                         solver_status="feasible",
                         input_version=version,
-                        assignments=[{"task_id": task_id, "start": 0, "end": 1}],
+                        assignments=[{"task_id": task_id, "start": 0, "end": 1,
+                                      "crew_id": "demo-crew", "bay_id": "demo-bay",
+                                      "crew_unit": 0, "bay_unit": 0}],
                     )
                     for plan_id in plan_ids
                 ]
@@ -149,6 +152,11 @@ def test_postgres_concurrent_approvals_cannot_double_reserve_stock():
             assert count == 1
     finally:
         with sessions.begin() as session:
+            from fleet_maintenance.persistence.models import ResourceBooking, ResourceSlot
+
+            booking_ids = select(ResourceBooking.id).where(ResourceBooking.plan_id.in_(plan_ids))
+            session.execute(delete(ResourceSlot).where(ResourceSlot.booking_id.in_(booking_ids)))
+            session.execute(delete(ResourceBooking).where(ResourceBooking.plan_id.in_(plan_ids)))
             session.execute(delete(WorkRecord).where(WorkRecord.plan_id.in_(plan_ids)))
             session.execute(delete(Reservation).where(Reservation.plan_id.in_(plan_ids)))
             session.execute(delete(AuditEvent).where(AuditEvent.subject_id.in_(plan_ids)))

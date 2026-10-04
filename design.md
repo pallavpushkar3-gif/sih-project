@@ -261,3 +261,9 @@ Detailed decisions belong in `docs/decisions/`. Record an architecture change wi
 ## Aircraft inspection presentation update — 2026-10-04
 
 The entry workspace now uses a licensed local illustrative aircraft GLB through React Three Fiber/Drei and a compact neutral shell. Fleet register and existing decision screens remain available. Spatial engine selection opens authoritative evidence; quantitative history, sensitivity and planning remain 2D. The shared simulation includes explicit synthetic common part-availability time on immutable scenario revisions. This browser redesign changes neither FD001 qualification nor deployment/operational-validation boundaries. See ADR 0004 and `docs/design/3d_viewer.md` / `asset_register.md`.
+
+## Resource, policy and comparison implementation — 2026-10-05
+
+Immutable scheduling contracts live in `domain/contracts/planning.py`; science calculates schedules and independently checks them. Resource records supply compatibility/qualification/windows; `resource_bookings` retain history and unique `resource_slots` enforce exclusive capacity claims. Approval locks current inputs, checks the snapshot, and commits stock, resource slots, work, audit and outbox together. Episode identity/persistence/cooldown are separate from the model.
+
+`plan_simulation` jobs consume the saved plan hash, assignments and input snapshot; SimPy replays that timeline and constrained FIFO under deterministic declared/25%/50% duration overruns. Changes to deliveries/cancellations require explicit revision and a fresh comparison; results never alter live work. Events include record context for targeted query invalidation; scoped collections retain polling as a recovery fallback. See the release acceptance and simulation contracts for limits.

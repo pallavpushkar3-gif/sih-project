@@ -1,17 +1,43 @@
-# Backup and Restore
+# Coordinated local backup and fresh restore
 
-## Data to Preserve
+Preserve PostgreSQL operational/job/audit state together with registered model/transform/calibration bytes, sample input artifacts, schema/configuration metadata, source evidence and permitted research reports/splits. Deployment secrets require separate protected retention. Ignored model/report/backup directories are not disposable.
 
-PostgreSQL operational history/job state, registered artifact bytes/manifests, immutable split versions, permitted source references and deployment configuration metadata. Store actual secrets through the appropriate protected mechanism, not ordinary research archives.
+## Executed procedures
 
-## Consistency
+From the repository root with the local stack running:
 
-Database and artifact snapshots must preserve resolvable references. Document the point-in-time boundary and any pause/reconciliation needed. Broker messages are dispatch signals; database job state remains authoritative. Do not equate copying a database with preserving trained models.
+```sh
+python3 scripts/backup_local.py --output artifacts/backups/unique-backup-name
+```
 
-## Restore Procedure
+The script refuses to reuse a directory, briefly stops API/worker/dispatcher/web writers, takes a custom-format `pg_dump` without owners/ACLs, retains a globals dump **without role passwords**, copies artifacts, records SHA-256 files/schema/table record fingerprints and restarts previously running services even on error. The archive directory is mode 0700 and files 0600. Do not add `down -v` or reset data. Backups contain records and require protected storage; local modes do not establish encryption, offsite retention or an agreed RPO.
 
-Restore into an isolated environment; verify schema/version, artifact hashes and relationships; reconcile incomplete/orphaned jobs; establish compatible code/configuration; recover eligible attempts under the job policy. Verify representative record retrieval, assessment/evidence linkage and reservations before treating the restore as usable.
+Restore only into a new dedicated project. Ports 18000/18080 must be free; stop an existing verification/restored stack without deleting volumes first.
 
-## Verification
+```sh
+python3 scripts/restore_local.py \
+  --backup artifacts/backups/unique-backup-name \
+  --project fleet-release-restored-new \
+  --output artifacts/restore-observation.json
+```
 
-Retain an actual restore record with revisions, manifests and outcomes. Retention schedule, storage location, recovery budgets and encryption are deployment decisions pending actual requirements. Do not claim a recovery time without measuring it.
+The script allows only a `fleet-release-restored...` project name, refuses nonempty target databases, verifies archived bytes, restores transactionally into the precreated fleet-owned database, compares every table fingerprint **before writers start**, copies the independent artifact volume, checks every DB model registration against its restored bytes, and checks readiness. `globals.sql` is a review artifact, not blindly applied cluster state: Compose precreates the fleet role, and the restore intentionally uses no original owners/ACLs. For a different production role layout, the operator must review roles/grants and secrets independently.
+
+The dispatcher reconciles expired jobs with bounded attempts/fencing. Broker signals can be republished; accepted business effects remain in PostgreSQL. Stock/resource reservations are not recreated or released from simulation results. Preserve failed/cancelled attempt history. Reconcile any pre-resource active work explicitly instead of inventing bookings.
+
+Verify the restored user journey:
+
+```sh
+FLEET_E2E_BASE_URL=http://localhost:18080 \
+  corepack pnpm --filter @fleet-maintenance/web test:e2e customer-trial --workers=1
+```
+
+## Observed rehearsal
+
+`artifacts/release-v2/backup-final/backup.json` and `restore.json`: all **27** table fingerprints matched before API startup, including 65 jobs/attempts, 19 plans, 31 simulation runs and retained work/bookings. All registered artifact hashes matched. Observed restore time **16.64 seconds** and backup age **89.94 seconds** describe this small local Docker rehearsal; these are not customer RTO/RPO promises. Initial four customer journeys passed (`browser-restored.log`); after the final image rebuild, all **five** current customer journeys passed on the restored database/artifacts (`browser-restored-final.log`). The backup boundary remains the recorded snapshot.
+
+## Clean install and fault rehearsal
+
+`compose.verify.yaml` isolates DB/artifacts/broker and binds only loopback ports. Build local images with `docker compose build`; start `docker compose -f compose.verify.yaml up -d`. Its fresh migration and full browser journey were executed. Install the independently retained selected model and labelled sample using `scripts/install_customer_demo.py` in the API environment as described in local setup; the acquisition/training files are intentionally not committed.
+
+Run `python3 scripts/verify_local_runtime.py --output artifacts/runtime-check.json` **only against this verification stack**, after model installation/journey checks. It uses the actual broker, dispatcher, worker and PostgreSQL, with a test-only calculation delay for worker loss/cancellation; it never targets live fleet-maintenance containers. It exercises outages, confirmed-publish/mark interruption, duplicate delivery, killed worker/expired attempt, obsolete result, cancellation and SSE resume. Leave the user's ordinary stack running; `docker compose -f compose.verify.yaml stop` preserves verification volumes.

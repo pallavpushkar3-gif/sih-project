@@ -9,6 +9,7 @@ Select a tested source revision, labelled fixtures, supported held-out engine, m
 ## Sequence
 
 1. Introduce the maintenance decision problem and public/synthetic data boundary.
+   Use **AI & evidence** to explain the predictor, alert rules, solver and simulation. Select the demonstrated component and open its saved API evidence; if its model or input is unavailable, show that actual state. The page explains implemented roles without implying that every scientific release gate has passed.
 2. Open fleet/component records and show their source.
 3. Replay supported engine history at a cutoff; inspect assessment, interval and input quality.
 4. Open the evidence card and explain model influence versus physical cause.
@@ -36,3 +37,7 @@ Every displayed metric has units and provenance; every benefit has a baseline/co
 5. Return to the exact proposal review. Confirm the displayed plan/input/version and approve only an eligible current proposal with the appropriate role. If stock or versions changed, explain the conflict and calculate a fresh proposal. Inspect the resulting reservations/work history in Inventory/Planning. An already-approved demonstration record is history, not a newly simulated approval.
 
 Keep public CMAPSS simulated histories and synthetic logistics visible throughout. No operational qualification, cost savings, aircraft clearance or public deployment claim is made.
+
+## Customer-led product trial
+
+Use **Start → Try it with your data**. Follow the [interactive customer trial](customer_trial.md): enter the customer's case, inspect/download its actual history, calculate AI, test a constrained schedule, run the matched parts comparison, record a demo receipt/replan, approve and record work completion. Reopen the retained case, then change assumptions in a new case. Use a short-history and a tight-window case to show honest withholding and unusable schedules. The plane appears in both the trial and primary Aircraft destination. This supersedes a text-only sales walkthrough; prior general fleet/scenario screens remain available for experienced users.

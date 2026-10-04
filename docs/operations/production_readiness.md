@@ -1,5 +1,10 @@
 # Release readiness — 2026-10-04
 
+Latest implementation evidence: [release-v2 acceptance ledger](../team/release_acceptance.md). The historical runs below are retained separately; original full release/customer/public-deployment acceptance remains incomplete.
+
+
+Latest source audit and AI presentation follow-up: [project status](../team/project_status.md). That report separates checks run on checkout `b73bbef` plus its current changes from the historical live-service/scientific evidence below and lists eight remaining release workstreams. The AI presentation update does not close the scientific or deployment acceptance gaps.
+
 This workspace is a hardened maintenance decision demonstrator. It has not been deployed, accepted against every original release criterion, or qualified for aircraft operations. Changes are in the uncommitted workspace; no immutable release revision is claimed. The current support boundary is NASA C-MAPSS FD001 simulated engines and labelled synthetic maintenance/logistics inputs.
 
 ## Implemented software
@@ -101,3 +106,7 @@ Ruff passed again. A redundant host verification pass stalled while reading/impo
 ## Aircraft inspection verification update — 2026-10-04
 
 The aircraft inspection redesign, read-only component task/free-stock context and immutable common synthetic supply-delay revisions are implemented. Backend Ruff and mypy (121 files) passed in the complete Torch test image; 81 tests passed with PostgreSQL concurrency and sequence checks. Generated API/browser contracts include the new context and supply field. The actual browser workspace is captured locally; detailed UI checks, corrected integration failures and the earlier orbit-budget miss and latest passing local production measurement are retained in `docs/design/ui_verification.md`. This supersedes earlier UI/backend test counts, while the original scientific, operational and deployment gates retain their explicit boundaries. No public host/domain was provisioned and no data was published externally.
+
+### Local customer trial — 2026-10-05
+
+A real fitted/calibrated baseline and labelled validation-engine sample are installed locally; `/demo` now supports customer-entered histories/logistics through shared jobs, scoped planning, matched simulation, audited receipt/approval and recorded work consumption. The feature is restricted to development plus demo authentication. Trial resources/commitments are isolated from ordinary fleet proposals. Model installation and the visible synthetic utilisation/window policy do not establish new scientific or operational qualification. Seven focused trial service checks and the full 34-check browser suite passed; the 75-check backend run included isolated PostgreSQL concurrency. Remaining release gates listed above remain open. See `docs/product/customer_trial.md` and `docs/team/project_status.md` for setup, provenance, failures fixed and exact evidence boundaries.

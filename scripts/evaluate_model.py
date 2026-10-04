@@ -15,12 +15,8 @@ def main() -> None:
         description="Evaluate a frozen FD001 model on the official final test"
     )
     parser.add_argument("--raw", type=Path, default=Path("data/raw/cmapss"))
-    parser.add_argument(
-        "--artifact-dir", type=Path, default=Path("artifacts/models/baseline-v1")
-    )
-    parser.add_argument(
-        "--policy", type=Path, default=Path("configs/acceptance_proposal.yaml")
-    )
+    parser.add_argument("--artifact-dir", type=Path, default=Path("artifacts/models/baseline-v1"))
+    parser.add_argument("--policy", type=Path, default=Path("configs/acceptance_proposal.yaml"))
     parser.add_argument(
         "--output",
         type=Path,

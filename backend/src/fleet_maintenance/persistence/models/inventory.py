@@ -1,6 +1,6 @@
 from datetime import UTC, datetime
 
-from sqlalchemy import ForeignKey, Integer, String, UniqueConstraint
+from sqlalchemy import CheckConstraint, ForeignKey, Integer, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column
 
 from fleet_maintenance.persistence.database import Base
@@ -8,6 +8,7 @@ from fleet_maintenance.persistence.database import Base
 
 class Part(Base):
     __tablename__ = "parts"
+    __table_args__ = (CheckConstraint("on_hand >= 0", name="ck_part_nonnegative_stock"),)
     id: Mapped[str] = mapped_column(String(64), primary_key=True)
     name: Mapped[str] = mapped_column(String(120))
     on_hand: Mapped[int] = mapped_column(Integer)
@@ -17,7 +18,10 @@ class Part(Base):
 
 class Reservation(Base):
     __tablename__ = "reservations"
-    __table_args__ = (UniqueConstraint("plan_id", "part_id", name="uq_plan_part_reservation"),)
+    __table_args__ = (
+        UniqueConstraint("plan_id", "part_id", name="uq_plan_part_reservation"),
+        CheckConstraint("quantity >= 0", name="ck_reservation_nonnegative"),
+    )
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     plan_id: Mapped[str] = mapped_column(ForeignKey("plans.id"), index=True)
     part_id: Mapped[str] = mapped_column(ForeignKey("parts.id"), index=True)

@@ -86,6 +86,8 @@ class AlertResponse(BaseModel):
     assessment_id: str | None
     acknowledged_by: str | None
     acknowledgements: list[AlertAcknowledgementResponse]
+    episode_id: str | None = None
+    policy_context: dict[str, object] = Field(default_factory=dict)
 
 
 class InventoryPartResponse(BaseModel):
@@ -102,6 +104,10 @@ class PlanAssignmentResponse(BaseModel):
     task_id: str
     start: int = Field(ge=0)
     end: int = Field(ge=0)
+    crew_id: str | None = None
+    bay_id: str | None = None
+    crew_unit: int = Field(default=0, ge=0)
+    bay_unit: int = Field(default=0, ge=0)
 
 
 class PlanResponse(BaseModel):

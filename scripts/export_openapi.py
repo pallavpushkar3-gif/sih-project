@@ -10,7 +10,7 @@ def main() -> None:
     parser.add_argument("output", type=Path)
     args = parser.parse_args()
     args.output.parent.mkdir(parents=True, exist_ok=True)
-    args.output.write_text(json.dumps(app.openapi(), indent=2, sort_keys=True) + "\n")
+    args.output.write_text(json.dumps(app.openapi(), indent=2) + "\n")
 
 
 if __name__ == "__main__":

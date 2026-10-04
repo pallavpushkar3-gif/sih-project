@@ -2,7 +2,6 @@
 
 import json
 import uuid
-from typing import cast
 
 import numpy as np
 from sqlalchemy.orm import Session
@@ -93,17 +92,12 @@ def assess(
         },
     )
     minimum = int(str(registration.manifest["minimum_history_cycles"]))
-    missing = any(
-        value is None for row in rows for value in cast(list[float | None], row["values"])
-    )
-    if cutoff < minimum or missing:
-        record.quality_findings = [
-            {
-                "code": "insufficient_history" if cutoff < minimum else "missing_values",
-                "severity": "warning",
-                "message": "Assessment withheld; complete model-compatible history required.",
-            }
-        ]
+    from fleet_maintenance.science.data.eligibility import history_findings
+
+    findings = history_findings(rows, minimum, registration.manifest)
+    if findings:
+        record.state = "withheld"
+        record.quality_findings = findings
     else:
         directory = artifact_directory(
             get_settings().artifact_root, registration.artifact_directory

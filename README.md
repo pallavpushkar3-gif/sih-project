@@ -4,6 +4,10 @@ PS 26249 is a local decision-workspace demonstrator connecting labelled componen
 
 ## Current implemented boundary
 
+The default local entry now opens **Start**, with a concise offer and the flow **Review a component → Check maintenance options → Review approval & work**. Primary navigation is Start, Fleet and Planning; supporting tools are grouped under More tools. See the [defined user flow](docs/product/user_flow.md) for screen responsibilities, exception paths and implementation limits.
+
+The website now includes **AI & evidence** (`/ai`) and an explanation on the Fleet entry screen. It explains how supported sensor history becomes an engine-life estimate and how that evidence connects to alerts, constrained planning and simulated downtime. Component selection shows saved API evidence with quality and unavailable states. See [current project status and remaining work](docs/team/project_status.md) for the latest source audit; the original release remains incomplete.
+
 The repository currently provides:
 
 - a React/TypeScript/Vite interface for fleet, component evidence, alerts, planning, inventory and simulation scenarios;
@@ -83,4 +87,14 @@ Scenario revisions now support an explicit common synthetic part-ready hour and 
 
 Use the existing `make dev` workflow (see local setup). The actual redesign screenshots and device/check evidence are indexed in [UI verification](docs/design/ui_verification.md); captures are in `artifacts/ui-redesign/`. To regenerate them against the locally running app, run `node scripts/capture_aircraft_ui.mjs`. See the [asset register](docs/design/asset_register.md), [viewer contract](docs/design/3d_viewer.md), [scoped design evidence](docs/research/ui_design_evidence.md) and [ADR 0004](docs/decisions/0004-aircraft-inspection-ui.md). Model attribution: Copyright 2011–2026 CesiumJS Contributors, Apache 2.0; Inter: Copyright 2016 The Inter Project Authors, SIL OFL 1.1.
 
-The final built-preview browser suite passed all 22 tests; frontend typecheck/lint/build and six unit tests passed. The completed backend verification now includes 81 passing tests with PostgreSQL and Torch, Ruff and mypy across 121 files. This does not close the blocked external validation/deployment criteria or the pending UI device/user-study acceptance. Deployment preparation and deployment acceptance remain separate.
+Historical aircraft-redesign verification (before release-v2): its built-preview browser suite passed all 22 tests; frontend typecheck/lint/build and six unit tests passed. The completed backend verification now includes 81 passing tests with PostgreSQL and Torch, Ruff and mypy across 121 files. This does not close the blocked external validation/deployment criteria or the pending UI device/user-study acceptance. Deployment preparation and deployment acceptance remain separate.
+
+### Interactive customer trial
+
+Open **http://localhost:8080/demo** after local startup. **Try demo** connects an entered aircraft name, sensor-history cutoff, usage, work duration, deadline and parts supply to real model jobs, scheduling, matched simulation, approval and recorded work. The original aircraft viewer remains at **Aircraft** (`/fleet`). A fitted/calibrated model and sample must be installed for numerical output; [customer trial setup and walkthrough](docs/product/customer_trial.md) documents the verified installer and scientific boundaries. Trials retain separate synthetic resources and results; they do not change ordinary fleet planning scope.
+
+## Release-v2 local workflow and evidence
+
+Open **http://localhost:8080/demo** after `docker compose up -d --build`. Enter a case, calculate AI evidence, calculate the schedule, **Compare this saved plan**, record receipt/replan where needed, then approve/start/complete work. Original aircraft exploration remains available; initial case entry defers its 3D code until requested. Models use public simulated FD001 data and synthetic logistics.
+
+[Current implementation/verification ledger](docs/team/release_acceptance.md), [scientific evaluation](docs/research/release_evaluation.md), [backup/restore](docs/operations/backup_and_restore.md), and [intended-user study](docs/design/user_study_protocol.md) describe the current boundary. Legacy active work without crew/bay booking requires explicit reconciliation or completion/cancellation before ordinary fleet replanning; preserve its history. Dedicated new customer trials remain usable. The original release and operational customer acceptance remain incomplete.

@@ -5,10 +5,14 @@ from .inventory import Part, PartArrival, Reservation
 from .jobs import Job, JobAttempt, OutboxEvent
 from .maintenance import MaintenanceTask, Plan
 from .records import Aircraft, Component, Observation
+from .resources import MaintenanceResource, ResourceBooking, ResourceSlot
 from .scenarios import Scenario, SimulationRun
 from .workflows import CommandRecord, ImportRecord, LoginSession, ModelRegistration, WorkRecord
 
 __all__ = [
+    "MaintenanceResource",
+    "ResourceBooking",
+    "ResourceSlot",
     "CommandRecord",
     "ImportRecord",
     "LoginSession",

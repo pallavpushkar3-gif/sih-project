@@ -28,6 +28,8 @@ def serialize(session: Session, alert: Alert) -> dict[str, object]:
         "acknowledgements": [
             {"actor": item.actor, "created_at": item.created_at} for item in acknowledgements
         ],
+        "episode_id": alert.episode_id,
+        "policy_context": alert.policy_context,
     }
 
 

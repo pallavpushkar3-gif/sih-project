@@ -80,3 +80,27 @@ def test_cancelled_delivery_creates_no_stock_and_cannot_be_received(isolated_ses
     assert part.on_hand == before
     with pytest.raises(ApprovalConflict, match="version/state"):
         record_arrival(isolated_session, item.id, "receive", 1, "Too late", "demo-logistics")
+
+
+@pytest.mark.parametrize("action", ["quarantine", "reject"])
+def test_unaccepted_receipts_never_create_usable_stock(isolated_session: Session, action: str):
+    part = isolated_session.get(Part, "part-kit")
+    before = part.on_hand
+    item = schedule_arrival(
+        isolated_session,
+        "delivery-quality",
+        part.id,
+        2,
+        6,
+        part.version,
+        "Synthetic shipment",
+        "logistics",
+    )
+    record_arrival(isolated_session, item.id, action, 1, "Quality issue", "logistics")
+    record_arrival(isolated_session, item.id, action, 1, "Quality issue", "logistics")
+    assert part.on_hand == before
+    assert not planning_snapshot(isolated_session)["source"]["part_arrivals"]
+    with pytest.raises(ApprovalConflict):
+        record_arrival(
+            isolated_session, item.id, "receive", 2, "Cannot bypass quality", "logistics"
+        )

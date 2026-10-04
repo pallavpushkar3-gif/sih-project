@@ -1,0 +1,33 @@
+version: lifecycle-retrain-v2
+status: frozen_internal_simulated_benchmark_not_operational_acceptance
+seed: 26250
+partition_sizes:
+  fit: 50
+  validation: 15
+  calibration: 15
+  lifecycle_evaluation: 20
+minimum_history_cycles: 30
+feature_window_cycles: 30
+target_cap_cycles: 125
+nominal_interval_coverage: 0.9
+evaluation:
+  snapshot_sampling: one_seeded_uniform_cutoff_per_evaluation_engine
+  lifecycle_replay_stride_cycles: 5
+  include_final_cycle: true
+  warning_horizon_cycles: 45
+  false_episode: actionable_episode_start_before_failure_minus_warning_horizon
+  exposure: observed_cycles_from_first_eligible_prefix_to_failure
+  final_test: diagnostic_only_previously_inspected_endpoints_never_lifecycle
+policy:
+  version: demo-v2
+  warning_cycles: 45
+  critical_cycles: 20
+  clear_margin_cycles: 8
+  persistence_samples: 2
+  cooldown_cycles: 10
+  freshness_cycles: 10
+qualification:
+  operational_false_alert_limit: null
+  operational_missed_alert_limit: null
+  monetary_costs: null
+  customer_representativeness: false

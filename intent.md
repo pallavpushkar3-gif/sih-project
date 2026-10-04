@@ -114,3 +114,7 @@ Individual methods may already exist in research. We should demonstrate what our
 - `docs/research/` records sources, reproduction work, data protocols and evaluation methods.
 
 This document is the canonical statement of product purpose. Revise it deliberately if the users, problem or intended outcomes change.
+
+## Implemented decision journey — 2026-10-05
+
+The local journey now includes immutable imports, quality withholding, registered RUL and uncertainty, demo-v2 review episodes, qualified crew/bay scheduling, exact-plan scenario replay, atomic approval/stock/resource bookings and auditable work. A separate engine-disjoint retraining benchmark is delivered without promotion or operational qualification. See `docs/team/release_acceptance.md` for executed evidence and unresolved gates. The mission remains decision support; customer acceptance is separate.

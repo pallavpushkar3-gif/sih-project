@@ -6,6 +6,7 @@ from fleet_maintenance.api.routes import (
     alerts,
     assessments,
     components,
+    demo,
     events,
     evidence,
     fleet,
@@ -13,6 +14,7 @@ from fleet_maintenance.api.routes import (
     inventory,
     jobs,
     plans,
+    resources,
     scenarios,
     work,
     workspace,
@@ -23,10 +25,12 @@ router.include_router(healthcheck.router)
 router.include_router(access.router)
 for route in (
     fleet.router,
+    demo.router,
     components.router,
     assessments.router,
     alerts.router,
     plans.router,
+    resources.router,
     inventory.router,
     scenarios.router,
     jobs.router,

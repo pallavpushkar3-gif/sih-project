@@ -1,3 +1,5 @@
+from datetime import UTC, datetime
+
 from sqlalchemy import JSON, Float, String
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -21,3 +23,6 @@ class SimulationRun(Base):
     seed: Mapped[int] = mapped_column()
     availability: Mapped[float] = mapped_column(Float)
     metrics: Mapped[dict[str, object]] = mapped_column(JSON)
+    created_at: Mapped[datetime | None] = mapped_column(
+        default=lambda: datetime.now(UTC), nullable=True
+    )

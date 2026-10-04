@@ -46,10 +46,10 @@ def current_alerts(session: Session) -> list[Alert]:
 def record_assessment_alert(session: Session, assessment: Assessment) -> None:
     """Only a current cutoff may change the live policy state; old replay stays historical."""
     import uuid
-    from typing import cast
+    from dataclasses import asdict
 
-    from fleet_maintenance.persistence.models import Component, ImportRecord
-    from fleet_maintenance.services.alert_policy import DEFAULT_POLICY, AlertState, next_alert_state
+    from fleet_maintenance.persistence.models import Component, ImportRecord, OutboxEvent
+    from fleet_maintenance.services.alert_episodes import EpisodeState, advance
 
     component = session.scalar(
         select(Component).where(Component.id == assessment.component_id).with_for_update()
@@ -70,27 +70,69 @@ def record_assessment_alert(session: Session, assessment: Assessment) -> None:
     previous = next(
         (alert for alert in current_alerts(session) if alert.component_id == component.id), None
     )
-    prior = cast(AlertState, previous.state if previous else "normal")
-    eligible = assessment.state == "available"
-    state = next_alert_state(
-        prior, assessment.estimate_cycles, "eligible" if eligible else "withheld"
+    from typing import Any, cast
+
+    prior = (
+        EpisodeState(**cast(dict[str, Any], previous.policy_context.get("episode", {})))
+        if previous and previous.policy_context
+        else EpisodeState(
+            state=cast(Any, previous.state),
+            episode_id=f"legacy-concern:{previous.id}"
+            if previous.state in {"warning", "critical"}
+            else None,
+        )
+        if previous
+        else EpisodeState()
     )
-    identifier = (
-        f"alert-{uuid.uuid5(uuid.NAMESPACE_URL, assessment.id + DEFAULT_POLICY.version).hex}"
+    eligible = assessment.state == "available"
+    identifier = f"alert-{uuid.uuid5(uuid.NAMESPACE_URL, assessment.id + 'demo-v2').hex}"
+    episode = advance(
+        prior,
+        assessment.cutoff_cycle or 0,
+        assessment.estimate_cycles,
+        eligible,
+        f"episode-{uuid.uuid5(uuid.NAMESPACE_URL, assessment.id + 'demo-v2').hex}",
     )
     if session.get(Alert, identifier) is None:
         session.add(
             Alert(
                 id=identifier,
                 component_id=component.id,
-                state=state,
+                state=episode.state,
                 reason="Configured demonstration policy on current cycles; "
                 + (
                     "assessment withheld, concern retained."
                     if not eligible
                     else "point estimate evaluated against 45/20-cycle thresholds."
                 ),
-                policy_version=DEFAULT_POLICY.version,
+                policy_version="demo-v2",
                 assessment_id=assessment.id,
+                episode_id=episode.episode_id,
+                policy_context={
+                    "episode": asdict(episode),
+                    "unit": "cycles",
+                    "persistence_samples": 2,
+                    "cooldown_cycles": 10,
+                    "freshness_cycles": 10,
+                    "qualification": "demonstration settings",
+                },
             )
         )
+
+        if episode.episode_id and (
+            prior.episode_id != episode.episode_id or prior.state != episode.state
+        ):
+            session.add(
+                OutboxEvent(
+                    topic="application.alert",
+                    payload={
+                        "event_type": "alert.review_required",
+                        "component_id": component.id,
+                        "assessment_id": assessment.id,
+                        "episode_id": episode.episode_id,
+                        "policy_version": "demo-v2",
+                        "state": episode.state,
+                        "next_action": "Review evidence; request a fresh resource-aware proposal",
+                    },
+                )
+            )

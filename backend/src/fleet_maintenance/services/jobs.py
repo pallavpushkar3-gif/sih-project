@@ -15,6 +15,11 @@ class JobConflict(Exception):
 
 
 def _event(session: Session, job: Job, event_type: str) -> None:
+    context = {
+        key: value
+        for key in ("component_id", "scope_component_id", "scenario_id", "plan_id")
+        if isinstance(value := job.input_payload.get(key), str)
+    }
     session.add(
         OutboxEvent(
             topic="application.job",
@@ -24,6 +29,7 @@ def _event(session: Session, job: Job, event_type: str) -> None:
                 "kind": job.kind,
                 "state": job.state,
                 "attempt": job.attempt,
+                **context,
             },
         )
     )
@@ -138,6 +144,27 @@ def fail_attempt(session: Session, job_id: str, attempt: int, code: str) -> Job:
     job.finished_at = datetime.now(UTC)
     job.lease_expires_at = None
     _event(session, job, "job.failed")
+    session.commit()
+    session.refresh(job)
+    return job
+
+
+def retry_transient(session: Session, job_id: str, attempt: int, code: str) -> Job:
+    """Bounded recorded retries. Queue delivery can repeat; business acceptance stays fenced."""
+    job = session.scalar(
+        select(Job)
+        .where(Job.id == job_id)
+        .with_for_update()
+        .execution_options(populate_existing=True)
+    )
+    if job is None or job.state != "running" or job.attempt != attempt:
+        raise JobConflict("Transient failure belongs to a stale/ineligible attempt")
+    if job.attempt >= get_settings().job_max_attempts:
+        return fail_attempt(session, job_id, attempt, "transient_attempt_limit_exceeded")
+    _finish_attempt(session, job, "interrupted", code)
+    job.state = "queued"
+    job.lease_expires_at = None
+    _event(session, job, "job.requeued")
     session.commit()
     session.refresh(job)
     return job

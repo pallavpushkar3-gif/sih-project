@@ -74,6 +74,109 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/demo/catalog": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Trial Catalog */
+        get: operations["trial_catalog_api_demo_catalog_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/demo/trials": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Trial List */
+        get: operations["trial_list_api_demo_trials_get"];
+        put?: never;
+        /** Trial Create */
+        post: operations["trial_create_api_demo_trials_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/demo/trials/{trial_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Trial Detail */
+        get: operations["trial_detail_api_demo_trials__trial_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/demo/trials/{trial_id}/planning": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Trial Plan */
+        post: operations["trial_plan_api_demo_trials__trial_id__planning_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/demo/trials/{trial_id}/jobs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Trial Jobs */
+        get: operations["trial_jobs_api_demo_trials__trial_id__jobs_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/demo/trials/{trial_id}/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Trial History */
+        get: operations["trial_history_api_demo_trials__trial_id__history_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/components/{component_id}": {
         parameters: {
             query?: never;
@@ -176,6 +279,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/plans/{plan_id}/comparison": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Compare Saved Plan */
+        post: operations["compare_saved_plan_api_plans__plan_id__comparison_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/plans": {
         parameters: {
             query?: never;
@@ -271,6 +391,40 @@ export interface paths {
         /** Commitment */
         get: operations["commitment_api_plans__plan_id__commitment_get"];
         put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/resources": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Resources */
+        get: operations["resources_api_resources_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/resources/{resource_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Configure */
+        put: operations["configure_api_resources__resource_id__put"];
         post?: never;
         delete?: never;
         options?: never;
@@ -585,6 +739,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/components/{component_id}/imports/csv": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Import Csv */
+        post: operations["import_csv_api_components__component_id__imports_csv_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/components/{component_id}/imports": {
         parameters: {
             query?: never;
@@ -677,6 +848,12 @@ export interface components {
             acknowledged_by: string | null;
             /** Acknowledgements */
             acknowledgements: components["schemas"]["AlertAcknowledgementResponse"][];
+            /** Episode Id */
+            episode_id?: string | null;
+            /** Policy Context */
+            policy_context?: {
+                [key: string]: unknown;
+            };
         };
         /** ArrivalOutcome */
         ArrivalOutcome: {
@@ -684,7 +861,7 @@ export interface components {
              * Action
              * @enum {string}
              */
-            action: "receive" | "cancel";
+            action: "receive" | "cancel" | "quarantine" | "reject";
             /** Expected Version */
             expected_version: number;
             /** Reason */
@@ -719,7 +896,7 @@ export interface components {
              * Status
              * @enum {string}
              */
-            status: "expected" | "received" | "cancelled";
+            status: "expected" | "received" | "cancelled" | "quarantined" | "rejected";
             /** Version */
             version: number;
             /** Reason */
@@ -846,6 +1023,17 @@ export interface components {
             user_id: string;
             /** Password */
             password: string;
+        };
+        /** CsvImportRequest */
+        CsvImportRequest: {
+            /** Csv Text */
+            csv_text: string;
+            /** Source Version */
+            source_version: string;
+            /** Engine Identity */
+            engine_identity: string;
+            /** Previous Id */
+            previous_id?: string | null;
         };
         /** ExplanationStateResponse */
         ExplanationStateResponse: {
@@ -993,6 +1181,20 @@ export interface components {
             start: number;
             /** End */
             end: number;
+            /** Crew Id */
+            crew_id?: string | null;
+            /** Bay Id */
+            bay_id?: string | null;
+            /**
+             * Crew Unit
+             * @default 0
+             */
+            crew_unit: number;
+            /**
+             * Bay Unit
+             * @default 0
+             */
+            bay_unit: number;
         };
         /** PlanCommitmentResponse */
         PlanCommitmentResponse: {
@@ -1063,6 +1265,39 @@ export interface components {
             quantity: number;
             /** Status */
             status: string;
+        };
+        /** ResourceConfiguration */
+        ResourceConfiguration: {
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "crew" | "bay";
+            /** Label */
+            label: string;
+            /** Capabilities */
+            capabilities: string[];
+            /** Available */
+            available: number[][];
+            /** Aircraft Ids */
+            aircraft_ids?: string[];
+            /**
+             * Capacity
+             * @default 1
+             */
+            capacity: number;
+            /**
+             * Valid From
+             * @default 0
+             */
+            valid_from: number;
+            /**
+             * Valid Until
+             * @default 14
+             */
+            valid_until: number;
+            /** Expected Version */
+            expected_version?: number | null;
         };
         /** ScenarioResponse */
         ScenarioResponse: {
@@ -1182,6 +1417,77 @@ export interface components {
              * @default true
              */
             mandatory: boolean;
+        };
+        /** TrialCatalogResponse */
+        TrialCatalogResponse: {
+            /** Available */
+            available: boolean;
+            /** Reason */
+            reason: string;
+            /** Model Id */
+            model_id: string | null;
+            history: components["schemas"]["HistoryImport"] | null;
+            /** Source Sha256 */
+            source_sha256: string | null;
+        };
+        /** TrialRequest */
+        TrialRequest: {
+            /** Id */
+            id: string;
+            /** Aircraft Label */
+            aircraft_label: string;
+            /** Cutoff Cycle */
+            cutoff_cycle: number;
+            /** Cycles Per Day */
+            cycles_per_day: number;
+            /** Duration Slots */
+            duration_slots: number;
+            /** Deadline Slot */
+            deadline_slot: number;
+            /** Spare On Hand */
+            spare_on_hand: number;
+            /** Arrival Slot */
+            arrival_slot: number;
+            history?: components["schemas"]["HistoryImport"] | null;
+        };
+        /** TrialResponse */
+        TrialResponse: {
+            /** Id */
+            id: string;
+            /** Aircraft Label */
+            aircraft_label: string;
+            /** Component Id */
+            component_id: string;
+            /** Part Id */
+            part_id: string;
+            /** Import Id */
+            import_id: string;
+            /** Model Id */
+            model_id: string;
+            /** Cutoff Cycle */
+            cutoff_cycle: number;
+            /** Cycles Per Day */
+            cycles_per_day: number;
+            /** Duration Slots */
+            duration_slots: number;
+            /** Deadline Slot */
+            deadline_slot: number;
+            /** Spare On Hand */
+            spare_on_hand: number;
+            /** Arrival Slot */
+            arrival_slot: number;
+            /** Arrival Id */
+            arrival_id: string | null;
+            /** Baseline Scenario Id */
+            baseline_scenario_id: string;
+            /** Supply Scenario Id */
+            supply_scenario_id: string;
+            /** Engine Identity */
+            engine_identity: string;
+            /** History Sha256 */
+            history_sha256: string;
+            /** History Origin */
+            history_origin: string;
         };
         /** ValidationError */
         ValidationError: {
@@ -1426,6 +1732,242 @@ export interface operations {
             };
         };
     };
+    trial_catalog_api_demo_catalog_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-demo-user"?: string;
+                "x-demo-role"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TrialCatalogResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    trial_list_api_demo_trials_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-demo-user"?: string;
+                "x-demo-role"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TrialResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    trial_create_api_demo_trials_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-demo-user"?: string;
+                "x-demo-role"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TrialRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TrialResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    trial_detail_api_demo_trials__trial_id__get: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-demo-user"?: string;
+                "x-demo-role"?: string;
+            };
+            path: {
+                trial_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TrialResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    trial_plan_api_demo_trials__trial_id__planning_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-demo-user"?: string;
+                "x-demo-role"?: string;
+            };
+            path: {
+                trial_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    trial_jobs_api_demo_trials__trial_id__jobs_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-demo-user"?: string;
+                "x-demo-role"?: string;
+            };
+            path: {
+                trial_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    trial_history_api_demo_trials__trial_id__history_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-demo-user"?: string;
+                "x-demo-role"?: string;
+            };
+            path: {
+                trial_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HistoryImport"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     get_component_api_components__component_id__get: {
         parameters: {
             query?: never;
@@ -1628,9 +2170,47 @@ export interface operations {
             };
         };
     };
-    list_plans_api_plans_get: {
+    compare_saved_plan_api_plans__plan_id__comparison_post: {
         parameters: {
             query?: never;
+            header?: {
+                "x-demo-user"?: string;
+                "x-demo-role"?: string;
+            };
+            path: {
+                plan_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_plans_api_plans_get: {
+        parameters: {
+            query?: {
+                scope_component_id?: string | null;
+                limit?: number;
+                offset?: number;
+            };
             header?: {
                 "x-demo-user"?: string;
                 "x-demo-role"?: string;
@@ -1815,6 +2395,80 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PlanCommitmentResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    resources_api_resources_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-demo-user"?: string;
+                "x-demo-role"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    }[];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    configure_api_resources__resource_id__put: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-demo-user"?: string;
+                "x-demo-role"?: string;
+            };
+            path: {
+                resource_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ResourceConfiguration"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Validation Error */
@@ -2074,7 +2728,12 @@ export interface operations {
     };
     runs_api_scenarios_runs_all_get: {
         parameters: {
-            query?: never;
+            query?: {
+                plan_id?: string | null;
+                scenario_id?: string | null;
+                limit?: number;
+                offset?: number;
+            };
             header?: {
                 "x-demo-user"?: string;
                 "x-demo-role"?: string;
@@ -2144,7 +2803,11 @@ export interface operations {
     };
     jobs_api_jobs_get: {
         parameters: {
-            query?: never;
+            query?: {
+                kind?: string | null;
+                limit?: number;
+                offset?: number;
+            };
             header?: {
                 "x-demo-user"?: string;
                 "x-demo-role"?: string;
@@ -2464,6 +3127,46 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["WorkspaceFixture"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    import_csv_api_components__component_id__imports_csv_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-demo-user"?: string;
+                "x-demo-role"?: string;
+            };
+            path: {
+                component_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CsvImportRequest"];
             };
         };
         responses: {

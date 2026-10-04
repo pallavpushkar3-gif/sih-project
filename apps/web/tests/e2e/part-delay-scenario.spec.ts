@@ -2,7 +2,16 @@ import {expect,test} from '@playwright/test';
 test('supply revision creates a saved projected outcome without changing baseline',async({page})=>{
  test.setTimeout(60000);
  await page.goto('/scenarios');
+ await page.getByLabel('Scenario revision',{exact:true}).selectOption('scenario-baseline');
  const card=page.locator('[data-scenario-id="scenario-baseline"]');
+ // Create the comparison prerequisite explicitly; fresh workspaces have no saved run.
+ const baselineSubmitted=page.waitForResponse(response=>response.url().endsWith('/api/jobs/simulation/scenario-baseline')&&response.request().method()==='POST');
+ await card.getByRole('button',{name:'Run simulation',exact:true}).click();
+ const baselineJob=await (await baselineSubmitted).json();
+ await expect(page.locator(`[data-job-id="${baselineJob.id}"]`)).toContainText('Projection saved',{timeout:30000});
+ const beforeResponse=await page.request.get('/api/scenarios/runs/all');
+ const original=(await beforeResponse.json()).find((run:{scenario_id:string})=>run.scenario_id==='scenario-baseline');
+ expect(original).toBeTruthy();
  await card.getByRole('button',{name:'Revise assumptions',exact:true}).click();
  const name=`Synthetic supply delay browser check ${Date.now()}`;
  await card.getByLabel('Alternative name',{exact:true}).fill(name);
@@ -17,7 +26,7 @@ test('supply revision creates a saved projected outcome without changing baselin
  const job=await (await submitted).json();await expect(page.locator(`[data-job-id="${job.id}"]`)).toContainText('Projection saved',{timeout:30000});
  const runResponse=await page.request.get('/api/scenarios/runs/all');const runs=await runResponse.json();
  const result=runs.find((run:{scenario_id:string})=>run.scenario_id===revision.id);expect(result.metrics.part_wait_hours).toBe(10);
- const original=runs.find((run:{scenario_id:string})=>run.scenario_id==='scenario-baseline');expect(original).toBeTruthy();
+ expect(runs.find((run:{id:string})=>run.id===original.id)).toEqual(original);
  await page.locator('#baseline-run').selectOption(original.id);await page.locator('#alternative-run').selectOption(result.id);
  await expect(page.getByRole('img',{name:'Baseline and alternative simulated aircraft-time availability in percent'})).toBeVisible();
  await expect(page.getByText(/One deterministic run per revision/)).toBeVisible();

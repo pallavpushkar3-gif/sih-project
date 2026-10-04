@@ -216,3 +216,23 @@ def test_replay_position_requests_resync_for_missing_and_future_history(isolated
     isolated_session.execute(delete(OutboxEvent))
     isolated_session.commit()
     assert replay_position(50, factory) == (0, "history_unavailable")
+
+
+def test_transient_retries_are_fenced_and_bounded(isolated_session: Session, monkeypatch):
+    from fleet_maintenance.services.jobs import retry_transient
+    from fleet_maintenance.settings import get_settings
+
+    monkeypatch.setattr(get_settings(), "job_max_attempts", 2)
+    job = submit_job(isolated_session, "planning", {})
+    first = claim_job(isolated_session, job.id).attempt
+    assert (
+        retry_transient(isolated_session, job.id, first, "temporary_database_error").state
+        == "queued"
+    )
+    second = claim_job(isolated_session, job.id).attempt
+    with pytest.raises(JobConflict):
+        accept_result(isolated_session, job.id, first, {"plan_id": "late"})
+    assert (
+        retry_transient(isolated_session, job.id, second, "temporary_database_error").state
+        == "failed"
+    )

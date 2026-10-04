@@ -101,6 +101,16 @@ def train_baseline(
         "final_test_evaluated": False,
         "provenance": provenance or {},
     }
+    if table.feature_names[:3] == ("setting_1", "setting_2", "setting_3"):
+        fit_numbers = [int(identity.rsplit(":", 1)[1]) for identity in split.fit]
+        settings = table.features[np.isin(table.engine_numbers, fit_numbers), :3]
+        low, high = settings.min(axis=0), settings.max(axis=0)
+        padding = np.maximum(0.001, (high - low) * 0.05)
+        manifest["operating_settings_bounds"] = {
+            "method": "fit-min-max-plus-5pct-range-or-0.001-demo-envelope-v1",
+            "bounds": np.column_stack((low - padding, high + padding)).tolist(),
+            "qualification": "conservative demonstration envelope; no general OOD guarantee",
+        }
     (artifact_dir / "manifest.json").write_text(
         json.dumps(manifest, indent=2, sort_keys=True) + "\n"
     )

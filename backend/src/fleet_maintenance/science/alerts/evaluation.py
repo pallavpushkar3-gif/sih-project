@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from statistics import fmean
 
+from fleet_maintenance.services.alert_episodes import EpisodePolicy, EpisodeState, advance
 from fleet_maintenance.services.alert_policy import (
     AlertPolicy,
     AlertState,
@@ -23,6 +24,7 @@ class AlertHistory:
     history_id: str
     observations: tuple[AlertObservation, ...]
     reference_event_cycle: int | None
+    censored: bool = False
 
 
 @dataclass(frozen=True)
@@ -52,6 +54,7 @@ def evaluate_history(
     *,
     warning_horizon_cycles: int,
     hysteresis: bool,
+    episodes: bool = False,
 ) -> HistoryMetrics:
     if warning_horizon_cycles <= 0:
         raise ValueError("Warning horizon must be positive.")
@@ -64,6 +67,7 @@ def evaluate_history(
     recommendation_changes = 0
     duplicate_deliveries = 0
     actionable = False
+    episode_state = EpisodeState()
     window_start = (
         None
         if history.reference_event_cycle is None
@@ -89,6 +93,16 @@ def evaluate_history(
             observation.quality_state,
             policy,
         )
+        if episodes:
+            episode_state = advance(
+                episode_state,
+                observation.cycle,
+                observation.estimate_cycles,
+                observation.quality_state == "eligible",
+                observation.event_id,
+                EpisodePolicy(threshold=policy),
+            )
+            next_state = episode_state.state
         next_actionable = next_state in {"warning", "critical"}
         if next_state != state:
             recommendation_changes += 1
@@ -99,7 +113,11 @@ def evaluate_history(
                 and window_start <= observation.cycle <= history.reference_event_cycle
             ):
                 actionable_cycles.append(observation.cycle)
-            if not actionable and (window_start is None or observation.cycle < window_start):
+            if (
+                not actionable
+                and not (history.censored and window_start is None)
+                and (window_start is None or observation.cycle < window_start)
+            ):
                 false_alert_episodes += 1
         state = next_state
         actionable = next_actionable
@@ -141,6 +159,7 @@ def evaluate_policy(
     *,
     warning_horizon_cycles: int,
     hysteresis: bool,
+    episodes: bool = False,
 ) -> AggregateMetrics:
     return aggregate_metrics(
         tuple(
@@ -149,6 +168,7 @@ def evaluate_policy(
                 policy,
                 warning_horizon_cycles=warning_horizon_cycles,
                 hysteresis=hysteresis,
+                episodes=episodes,
             )
             for history in histories
         )

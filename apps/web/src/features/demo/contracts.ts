@@ -1,0 +1,11 @@
+import type { components } from '../../shared/api/generated/schema';
+import type { Validator } from '../../shared/api/client';
+export type Trial = components['schemas']['TrialResponse'];
+export type Catalog = components['schemas']['TrialCatalogResponse'];
+export type History = components['schemas']['HistoryImport'];
+const record = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null && !Array.isArray(v);
+const integer = (v: unknown): v is number => typeof v === 'number' && Number.isInteger(v) && v >= 0;
+export const isHistory: Validator<History> = (v): v is History => record(v) && typeof v.source_version === 'string' && /^[A-Za-z0-9_.-]{1,80}$/.test(v.source_version) && typeof v.engine_identity === 'string' && /^NASA_CMAPSS:FD001:(train|test):[1-9][0-9]*$/.test(v.engine_identity) && Array.isArray(v.rows) && v.rows.length > 0 && v.rows.length <= 10000 && (v.previous_id === undefined || v.previous_id === null) && v.rows.every((row, i) => record(row) && row.cycle === i + 1 && Array.isArray(row.values) && row.values.length === 24 && row.values.every(value => value === null || (typeof value === 'number' && Number.isFinite(value))));
+export const isCatalog: Validator<Catalog> = (v): v is Catalog => record(v) && typeof v.available === 'boolean' && typeof v.reason === 'string' && (v.model_id === null || typeof v.model_id === 'string') && (v.source_sha256 === null || typeof v.source_sha256 === 'string') && (v.history === null || isHistory(v.history));
+export const isTrial: Validator<Trial> = (v): v is Trial => record(v) && ['id', 'aircraft_label', 'component_id', 'part_id', 'import_id', 'model_id', 'baseline_scenario_id', 'supply_scenario_id', 'engine_identity', 'history_sha256', 'history_origin'].every(key => typeof v[key] === 'string') && ['cutoff_cycle', 'duration_slots', 'deadline_slot', 'spare_on_hand', 'arrival_slot'].every(key => integer(v[key])) && typeof v.cycles_per_day === 'number' && Number.isFinite(v.cycles_per_day) && v.cycles_per_day > 0 && (v.arrival_id === null || typeof v.arrival_id === 'string');
+export const asRecord = record;

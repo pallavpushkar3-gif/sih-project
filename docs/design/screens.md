@@ -2,10 +2,11 @@
 
 ## Navigation
 
-Primary navigation: Fleet, Alerts, Planning, Inventory, Scenarios. Component details are reached from fleet/alerts/tasks. Jobs appear contextually with a status drawer or linked page. Approval/work history is available from a plan.
+Primary navigation: Start, Fleet, Planning. More tools opens Alerts, Parts & deliveries, What-if comparisons and AI & evidence in the shared accessible navigation dialog. `/` opens `/overview`; Fleet navigation opens the searchable `/fleet/register`. The existing `/fleet` illustrative inspection view remains an alternative. Component details are reached from aircraft records/alerts. Jobs appear contextually in planning/scenarios; approval/work history is available from the exact selected plan. See [user flow](../product/user_flow.md).
 
 | Screen | Principal content | Actions |
 |---|---|---|
+| Start | Brief offer, three decision phases and API-backed aircraft with open work. | Start with fleet; review a component; learn how AI helps. |
 | Fleet | Searchable aircraft/component records, maintenance status, freshness and provenance. | Open component; filter. |
 | Component | Usage/sensor histories, assessment, quality, alerts and work history. | Choose cutoff; request assessment; inspect evidence. |
 | Evidence | Life estimate/interval, trends, influences and model/input versions. | Inspect provenance/evaluation. |
@@ -36,3 +37,5 @@ See [viewer](3d_viewer.md), [asset register](asset_register.md) and [verificatio
 The selected plan's Reservations & work history panel exposes retained part commitment rows and work outcomes/versions/consumption/timestamps. It does not derive reservations from assignments, and it refreshes only from server records after approval. No-row/proposed/error/mismatched identity states are explicit.
 
 Scenarios uses a retained-revision selector and one active editor so accumulating saved alternatives does not push comparisons behind a growing grid. Saving a new revision selects its actual new identity; older revisions and outcomes remain accessible in selectors.
+
+Customer trials (`/demo`) add four progressive decision stages: entered case and interactive aircraft, computed AI evidence, constrained schedule and matched supply projections, then explicit review/receipt/replanning/approval/work. Start now includes an aircraft poster and a prominent trial CTA; primary navigation is Start / Aircraft / Try demo / Planning. Supporting tools include the fleet register. Saved case inputs/results reopen by URL/library. Model evidence stays connected to entered cutoff and the recorded trial policy. See `docs/product/customer_trial.md` for behaviour and limitations.

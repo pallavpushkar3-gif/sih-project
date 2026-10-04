@@ -3,6 +3,9 @@ import { createBrowserRouter, Link, Navigate, useRouteError } from "react-router
 import { SessionGate } from "../features/access/SessionGate";
 import { ApplicationLayout } from "../layouts/ApplicationLayout";
 const InspectionPage = lazy(() => import("../features/inspection/InspectionPage").then((module) => ({ default: module.InspectionPage })));
+const OverviewPage = lazy(() => import("../features/fleet/OverviewPage").then((module) => ({ default: module.OverviewPage })));
+const CustomerTrialPage = lazy(() => import("../features/demo/CustomerTrialPage").then(module => ({ default: module.CustomerTrialPage })));
+const AIPage = lazy(() => import("../features/health/AIPage").then((module) => ({ default: module.AIPage })));
 const FleetPage = lazy(() => import("../features/fleet/FleetPage").then((module) => ({ default: module.FleetPage })));
 const ComponentPage = lazy(() => import("../features/components/ComponentPage").then((module) => ({ default: module.ComponentPage })));
 const AlertsPage = lazy(() => import("../features/alerts/AlertsPage").then((module) => ({ default: module.AlertsPage })));
@@ -16,8 +19,11 @@ function RouteFailure() {
 }
 const loading = <div className="async-state loading-state" role="status"><span className="spinner"/><strong>Opening workspace…</strong></div>;
 export const router = createBrowserRouter([{ path:"/", element:<SessionGate><ApplicationLayout/></SessionGate>, errorElement:<RouteFailure/>, children:[
-  { index:true, element:<Navigate to="/fleet" replace/> },
+  { index:true, element:<Navigate to="/overview" replace/> },
+  { path:"overview", element:<Suspense fallback={loading}><OverviewPage/></Suspense> },
   { path:"fleet", element:<Suspense fallback={loading}><InspectionPage/></Suspense> },
+  { path:"demo", element:<Suspense fallback={loading}><CustomerTrialPage/></Suspense> },
+  { path:"ai", element:<Suspense fallback={loading}><AIPage/></Suspense> },
   { path:"fleet/register", element:<Suspense fallback={loading}><FleetPage/></Suspense> },
   { path:"components/:componentId", element:<Suspense fallback={loading}><ComponentPage/></Suspense> },
   { path:"alerts", element:<Suspense fallback={loading}><AlertsPage/></Suspense> },

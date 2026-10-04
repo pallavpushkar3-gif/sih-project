@@ -25,3 +25,9 @@ Distinguish evaluated prediction uncertainty from invented logistics distributio
 ## Comparison
 
 Match fleet/horizon/usage and scenario versions across policies. Preserve event traces/reference cases and report poor outcomes. Store the exact assumption manifest with every run.
+
+## Exact-plan replay — 2026-10-05
+
+The new comparison consumes the full saved plan/input snapshot/assignments and SHA-256 identity. Its FIFO baseline has the same task release/deadline/precedence, aircraft, crew/bay calendars, qualification, capacity, stock/expected-delivery and fixed-work constraints. Planned starts, resource waits and completions are SimPy events; expected deliveries are included in the trace and are assumed to occur at recorded times. Each released maintenance task grounds its mapped aircraft until completion or the observation horizon; overlapping intervals count once per aircraft. The denominator is the aircraft represented by input tasks × recorded horizon, not the entire operational fleet. Waiting tasks remain grounded at the horizon.
+
+Declared duration, +25% and +50% overrun cases are deterministic sensitivity assumptions, not probabilities. Overruns can violate planned resource windows/deadlines; these are reported, not authorized as overtime. Cancelled/delayed deliveries or changed work require a new explicit proposal/comparison; this replay does not forecast future replanning. No failure-time distribution, maintenance reset effectiveness or airworthiness is inferred; cost remains null. Negative/zero/worse differences are retained. Existing parts-ready comparison is a separate logistics sensitivity, not the optimized-plan result.

@@ -1,6 +1,6 @@
 # Design system
 
-Aircraft inspection uses generous neutral space, a compact 64px header and five destinations: Fleet, Alerts, Planning, Inventory and Scenarios. The product name remains Aircraft maintenance / PS 26249. The existing backend records drive component identity, quality, evidence, task constraints, proposals, stock and outcomes.
+The workspace uses generous neutral space and a compact 64px header with three primary destinations: Start, Fleet and Planning. The shared navigation dialog groups supporting tools separately. The default Start page has a concise offer and one main action; it imports no chart or 3D renderer. The product name remains Aircraft maintenance / PS 26249. Existing backend records drive component identity, quality, evidence, task constraints, proposals, stock and outcomes.
 
 ## Semantic palette
 
@@ -23,3 +23,5 @@ Inter is served locally with its OFL notice. Body 15/24, navigation/buttons 14/2
 At desktop sizes the inspection model/evidence form a roughly 2:1 split with a minimum 340px evidence panel. Below 1200px they stack; below 768px gutters are 16px and the scene is 300px high. Supporting fleet selection and related decision links remain readable. Tables scroll inside their containers rather than widening the page. Dense quantitative evidence stays in 2D ECharts with tables/text alternatives. Reduced-motion preference disables nonessential transitions, and the camera is immediate in all modes.
 
 The single estimate uses a dot and whisker plus numerical interval endpoints. Interval level is shown only when actual assessment calibration metadata supplies it. A historical cutoff marker separates observed sensor values from unobserved future histories; no density curve, future sensor reconstruction or failure probability is fabricated. Sensitivities retain the server's reference/method/version and noncausal limitations.
+
+The customer trial uses one visible decision stage, a four-step accessible progress list, an aircraft/input split view and compact constraint/comparison results. Stage changes preserve the case URL; pending work shows actual durable job states. Card spacing, labelled manual cutoff input plus accessible range control, semantic token colours and mobile stacking apply. Start uses the local aircraft poster; 3D loads on Aircraft / Try demo. Technical hashes stay in expandable provenance; input origin, quality, units and assumption meaning stay visible.

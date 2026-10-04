@@ -160,6 +160,20 @@ def test_serving_cutoff_excludes_future_and_rejects_tampered_artifacts(tmp_path:
     history[4:] += 100000
     after = predict_history(tmp_path, history, 4)
     assert before == after
+    calibration_path = tmp_path / "calibration.json"
+    original = calibration_path.read_bytes()
+    calibration = json.loads(original)
+    calibration["model_artifacts"]["model.joblib"] = "0" * 64
+    calibration_path.write_text(json.dumps(calibration))
+    with pytest.raises(ValueError, match="Calibration does not match"):
+        predict_history(tmp_path, history, 4)
+    calibration_path.write_bytes(original)
+    transform_path = tmp_path / "standardizer.json"
+    original_transform = transform_path.read_bytes()
+    transform_path.write_bytes(original_transform + b"tampered")
+    with pytest.raises(ValueError, match="hash mismatch"):
+        BaselinePredictor.load(tmp_path)
+    transform_path.write_bytes(original_transform)
     model_path = tmp_path / "model.joblib"
     model_path.write_bytes(model_path.read_bytes() + b"tampered")
     with pytest.raises(ValueError, match="hash mismatch"):
