@@ -5,6 +5,7 @@
 .env.*
 !.env.example
 !.env.production.example
+!.env.tunnel.example
 
 # Frontend dependencies and build output
 node_modules/

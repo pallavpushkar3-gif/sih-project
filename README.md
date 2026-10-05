@@ -1,5 +1,9 @@
 # Aircraft Predictive Maintenance & Fleet Availability
 
+**[Open the product](https://pallavpushkar3-gif.github.io/sih-project/)** · [Startup and deployment guide](docs/operations/pages_and_tunnel.md).
+
+The React product is published through GitHub Pages. Its synthetic demo API runs in an isolated local Docker stack through an HTTPS tunnel. Pages checks backend readiness and opens the complete app on the tunnel origin to avoid third-party cookie restrictions. If the host or tunnel stops, Pages shows **Demo backend offline**.
+
 PS 26249 is a local decision-workspace demonstrator connecting labelled component records, maintenance constraints, inventory reservations and scenario-specific availability simulation. It is not an airworthiness, dispatch or operational-readiness system.
 
 ## Current implemented boundary
@@ -73,7 +77,7 @@ See `intent.md`, `scope.md`, `rule.md`, and `docs/product/acceptance_criteria.md
 
 `make explanation-evaluation` runs the validation-only sensitivity diagnostics. `make workload-diagnostic` uses the prepared host .venv313 environment against the local demo stack and creates labelled test job/result records; it is a measured diagnostic, not a production performance gate.
 
-Deployment preparation for the agreed single Ubuntu EC2 VM is documented in [EC2 deployment preparation](docs/operations/ec2_deployment.md). It uses `compose.ec2.yaml` and mandatory `DEPLOYMENT_DOMAIN`; no real host/domain or public deployment is currently configured. The [FD001 holdout audit](docs/research/fd001_alert_holdout_audit.md) records why complete-trajectory held-out alert evaluation remains blocked.
+Deployment preparation for the agreed single Ubuntu EC2 VM is documented in [EC2 deployment preparation](docs/operations/ec2_deployment.md). It uses `compose.ec2.yaml` and mandatory `DEPLOYMENT_DOMAIN`; the public demonstration now uses the separately documented [Pages/tunnel deployment](docs/operations/pages_and_tunnel.md); EC2 remains optional preparation. The [FD001 holdout audit](docs/research/fd001_alert_holdout_audit.md) records why complete-trajectory held-out alert evaluation remains blocked.
 
 ## Aircraft inspection redesign
 

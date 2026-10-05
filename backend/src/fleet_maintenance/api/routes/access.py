@@ -56,7 +56,7 @@ def create_session(
         token,
         httponly=True,
         secure=settings.secure_cookies,
-        samesite="strict",
+        samesite=settings.cookie_samesite,
         max_age=settings.session_hours * 3600,
         path=settings.api_prefix,
     )
@@ -81,4 +81,11 @@ def logout(
     if get_settings().authentication_mode == "session":
         database.delete(session_record(database, request))
         database.commit()
-    response.delete_cookie(COOKIE_NAME, path=get_settings().api_prefix)
+    settings = get_settings()
+    response.delete_cookie(
+        COOKIE_NAME,
+        path=settings.api_prefix,
+        secure=settings.secure_cookies,
+        httponly=True,
+        samesite=settings.cookie_samesite,
+    )

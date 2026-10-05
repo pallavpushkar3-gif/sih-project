@@ -25,3 +25,7 @@ Events invalidate/refetch relevant query data; they should not create independen
 ## Context and refresh — 2026-10-05
 
 Job events carry available component/scope/scenario/plan identifiers. The browser refreshes relevant job/result queries on terminal events; `alert.review_required` records opening/escalation, while `plan.approved` and work events refresh commitments. No automatic replan or approval follows an alert. Resync refreshes authoritative queries; periodic scoped reads remain the fallback. A shared-agency stream is not supported.
+
+## Pages and tunnel integration
+
+The browser uses the configured API base for EventSource and enables `withCredentials`, matching credentialed ordinary fetches. SSE still revalidates server sessions and query polling remains a fallback. Cross-origin access requires explicit allowed origins; no wildcard cookie access is enabled. The selected public path opens the complete app on the tunnel origin.

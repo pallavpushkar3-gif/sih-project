@@ -1,4 +1,4 @@
-"""Customer rehearsal is deliberately restricted to local demo authentication."""
+"""Customer rehearsal runs in local or explicitly isolated tunnel demonstrations."""
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import or_, select
@@ -28,8 +28,10 @@ from fleet_maintenance.settings import get_settings
 
 def local_demo() -> None:
     settings = get_settings()
-    if settings.environment != "development" or settings.authentication_mode != "demo":
-        raise HTTPException(403, "Customer trials are available only in the local demonstrator.")
+    local = settings.environment == "development" and settings.authentication_mode == "demo"
+    tunnel = settings.environment == "tunnel_demo" and settings.authentication_mode == "session"
+    if not (local or tunnel):
+        raise HTTPException(403, "Customer trials are available only in a configured demonstrator.")
 
 
 router = APIRouter(prefix="/demo", tags=["customer trials"], dependencies=[Depends(local_demo)])

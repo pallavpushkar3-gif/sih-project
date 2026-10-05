@@ -1,5 +1,5 @@
 import { lazy, Suspense } from "react";
-import { createBrowserRouter, Link, Navigate, useRouteError } from "react-router-dom";
+import { createBrowserRouter, createHashRouter, Link, Navigate, useRouteError } from "react-router-dom";
 import { SessionGate } from "../features/access/SessionGate";
 import { ApplicationLayout } from "../layouts/ApplicationLayout";
 const InspectionPage = lazy(() => import("../features/inspection/InspectionPage").then((module) => ({ default: module.InspectionPage })));
@@ -18,8 +18,9 @@ function RouteFailure() {
   return <div className="page"><div className="async-state empty-state"><h1>{missing ? "Page not found" : "This view couldn’t open"}</h1><p>{missing ? "The page address is not part of this workspace." : "Please reload the page. Your saved records remain on the server."}</p><Link className="button" to="/fleet">Return to fleet</Link></div></div>;
 }
 const loading = <div className="async-state loading-state" role="status"><span className="spinner"/><strong>Opening workspace…</strong></div>;
-export const router = createBrowserRouter([{ path:"/", element:<SessionGate><ApplicationLayout/></SessionGate>, errorElement:<RouteFailure/>, children:[
-  { index:true, element:<Navigate to="/overview" replace/> },
+const createRouter = import.meta.env.VITE_PAGES === 'true' ? createHashRouter : createBrowserRouter;
+export const router = createRouter([{ path:"/", element:<SessionGate><ApplicationLayout/></SessionGate>, errorElement:<RouteFailure/>, children:[
+  { index:true, element:<Navigate to={import.meta.env.VITE_PAGES === 'true' ? '/demo' : '/overview'} replace/> },
   { path:"overview", element:<Suspense fallback={loading}><OverviewPage/></Suspense> },
   { path:"fleet", element:<Suspense fallback={loading}><InspectionPage/></Suspense> },
   { path:"demo", element:<Suspense fallback={loading}><CustomerTrialPage/></Suspense> },

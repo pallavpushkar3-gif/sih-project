@@ -1,5 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
+import { apiUrl } from './client';
 
 const eventTypes = ['resync', 'job.queued', 'job.running', 'job.requeued', 'job.cancellation_requested', 'job.cancelled', 'job.failed', 'job.succeeded', 'alert.review_required', 'plan.approved', 'work.start', 'work.complete', 'work.cancel'] as const;
 const object = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null && !Array.isArray(v);
@@ -7,7 +8,7 @@ const object = (v: unknown): v is Record<string, unknown> => typeof v === 'objec
 export function EventStreamBridge() {
   const client = useQueryClient();
   useEffect(() => {
-    const source = new EventSource('/api/events');
+    const source = new EventSource(apiUrl('/events'), { withCredentials: true });
     const refresh = (event: MessageEvent<string>) => {
       if (event.type === 'resync') { void client.invalidateQueries(); return; }
       let value: unknown;

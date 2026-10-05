@@ -1,8 +1,10 @@
 from functools import lru_cache
 from pathlib import Path
+from typing import Literal
 
 from pydantic import Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from sqlalchemy.engine import make_url
 
 
 class Settings(BaseSettings):
@@ -20,6 +22,7 @@ class Settings(BaseSettings):
     authentication_mode: str = "demo"
     session_hours: int = Field(default=8, ge=1, le=24)
     secure_cookies: bool = False
+    cookie_samesite: Literal["strict", "none"] = "strict"
     allowed_origins: list[str] = ["http://localhost:5173", "http://localhost:8080"]
     job_lease_seconds: int = Field(default=300, ge=30, le=3600)
     job_max_attempts: int = Field(default=3, ge=1, le=10)
@@ -34,6 +37,24 @@ class Settings(BaseSettings):
             raise ValueError("Only isolated single-agency deployments are supported")
         if self.authentication_mode not in {"demo", "session"}:
             raise ValueError("authentication_mode must be demo or session")
+        if self.cookie_samesite == "none" and self.environment != "tunnel_demo":
+            raise ValueError("Cross-site cookies are supported only for the tunnel demonstration")
+        if self.environment == "tunnel_demo":
+            if self.authentication_mode != "session" or not self.secure_cookies:
+                raise ValueError("Tunnel demo requires secure server sessions")
+            if make_url(self.database_url).database != "fleet_public_demo" or not (
+                self.database_url.startswith("postgresql")
+            ):
+                raise ValueError(
+                    "Tunnel demo requires the isolated fleet_public_demo PostgreSQL DB"
+                )
+            if self.auto_create_schema or self.auto_seed_demo:
+                raise ValueError("Tunnel demo requires explicit migrations and bootstrap")
+            if not self.allowed_origins or any(
+                not origin.startswith("https://") or origin == "https://*"
+                for origin in self.allowed_origins
+            ):
+                raise ValueError("Tunnel demo requires explicit HTTPS origins")
         if self.environment == "production":
             if self.authentication_mode != "session" or not self.secure_cookies:
                 raise ValueError("Production requires session authentication and secure cookies")

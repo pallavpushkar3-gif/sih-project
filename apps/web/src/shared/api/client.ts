@@ -13,12 +13,19 @@ export type Job = components["schemas"]["JobResponse"];
 
 export type Validator<T> = (value: unknown) => value is T;
 
+export const pagesDeployment = import.meta.env.VITE_PAGES === "true";
+export const apiBase = (import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || (pagesDeployment ? "" : "/api")).replace(/\/$/, "");
+export const fullAppUrl = import.meta.env.VITE_FULL_APP_URL || "";
+export function apiUrl(path: string) {
+  if (!apiBase) throw new Error("Demo backend offline");
+  return `${apiBase}${path}`;
+}
+
 let csrfToken: string | null = null;
 export function setCsrfToken(token: string | null) { csrfToken = token; }
 export class ApiError extends Error {
   constructor(message: string, public readonly status: number) { super(message); }
 }
-const base = import.meta.env.VITE_API_BASE_URL ?? "/api";
 
 function record(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -177,9 +184,10 @@ export async function api<T>(
   init?: RequestInit,
   validate?: Validator<T>,
 ): Promise<T> {
-  const response = await fetch(`${base}${path}`, {
+  const response = await fetch(apiUrl(path), {
     ...init,
     credentials: "include",
+    signal: init?.signal ?? AbortSignal.timeout(12_000),
     headers: {
       "Content-Type": "application/json",
       "X-Demo-Role": "supervisor",

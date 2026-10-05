@@ -15,7 +15,7 @@ class SceneBoundary extends Component<{ children: ReactNode; fallback: ReactNode
 function AircraftModel({ onLoaded }: { onLoaded: () => void }) {
   // This registered asset has no Draco or Meshopt extensions. Avoid initializing
   // unused external/WASM decoders under the application's strict local CSP.
-  const gltf = useGLTF('/models/aircraft.glb', false, false);
+  const gltf = useGLTF(`${import.meta.env.BASE_URL}models/aircraft.glb`, false, false);
   useEffect(onLoaded, [onLoaded]);
   const model = useMemo(() => {
     const clone = gltf.scene.clone(true);
@@ -68,7 +68,7 @@ export function AircraftScene({ components, selected, onSelect }: Props) {
   const onLoaded = useCallback(() => setLoaded(true), []), onLost = useCallback(() => setFailed(true), []);
   const onAnchors = useCallback((next: Anchor[]) => setAnchors(previous => previous.length === next.length && previous.every((a, i) => Math.abs(a.x - next[i].x) < .5 && Math.abs(a.y - next[i].y) < .5 && a.visible === next[i].visible) ? previous : next), []);
   useEffect(() => { if (loaded) return; const timer = setTimeout(onLost, 20000); return () => clearTimeout(timer); }, [loaded, onLost]);
-  const fallback = <div className="scene-fallback"><img src="/models/aircraft-poster.png" alt="Illustrative twin-propeller aircraft" /><strong>3D view unavailable</strong><p>Use the mapped component buttons to inspect evidence. No data or permissions change.</p></div>;
+  const fallback = <div className="scene-fallback"><img src={`${import.meta.env.BASE_URL}models/aircraft-poster.png`} alt="Illustrative twin-propeller aircraft" /><strong>3D view unavailable</strong><p>Use the mapped component buttons to inspect evidence. No data or permissions change.</p></div>;
   return <div className="aircraft-stage"><div className="aircraft-canvas">
     {failed ? fallback : <SceneBoundary fallback={fallback} onFailed={onLost}><Canvas frameloop="demand" dpr={[1, 1.5]} shadows camera={{ position: [7, 4, 7], fov: 30 }} fallback={fallback} gl={{ antialias: true }}>
       <color attach="background" args={[semanticColor('bg-stage')]} /><ambientLight intensity={1.7} /><hemisphereLight args={[semanticColor('bg-surface'), semanticColor('text-muted'), 1.5]} />

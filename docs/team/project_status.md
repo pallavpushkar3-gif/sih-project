@@ -1,5 +1,11 @@
 # Project status — 2026-10-05
 
+## Public demonstration integration — 2026-10-05
+
+The original React product now has a GitHub Pages deployment workflow and repository deployment link: **https://pallavpushkar3-gif.github.io/sih-project/**. Pages opens an isolated, session-authenticated local Docker demo over an HTTPS tunnel, using the complete-app origin to avoid third-party cookie restrictions. It shows **Demo backend offline** when the backend is unavailable. This is an intermittent demonstration, not a continuously hosted government deployment. Startup and URL rotation are documented in [Pages and tunnel deployment](../operations/pages_and_tunnel.md).
+
+Executed preparation checks: frontend lint/type/build and six unit tests; backend Ruff/mypy plus 69 unit/verification/security tests; five TLS customer journeys; Chrome login and SSE across two TLS origins, and actual third-party-cookie blocking with the complete-app fallback. Public URL validation follows publication. No scientific results changed.
+
 ## Current implementation update — 2026-10-05
 
 The research-backed assignment now adds qualified crew/bay scheduling and database-enforced bookings, causal review episodes and a separately retrained lifecycle benchmark, exact saved-plan/FIFO simulation, conservative import/quality handling, bounded recovery, scoped queries/events, fresh installation and database-plus-artifact restore tooling. The original release is still **not fully accepted or government-qualified**. Use [the current eight-workstream acceptance ledger](release_acceptance.md) and [scientific report](../research/release_evaluation.md) for final executed evidence; the audit below is historical.

@@ -20,12 +20,23 @@ def run(*args: str) -> bytes:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True)
-    parser.add_argument("--compose", default="compose.yaml")
+    parser.add_argument("--compose", action="append")
+    parser.add_argument("--env-file")
+    parser.add_argument("--project-name")
+    parser.add_argument("--database", default="fleet")
+    parser.add_argument("--source-revision")
     args = parser.parse_args()
     destination = args.output.resolve()
     destination.mkdir(mode=0o700, parents=True, exist_ok=False)
     os.chmod(destination, 0o700)
-    compose = ["docker", "compose", "-f", args.compose]
+    compose_files = args.compose or ["compose.yaml"]
+    compose = ["docker", "compose"]
+    if args.env_file:
+        compose += ["--env-file", args.env_file]
+    if args.project_name:
+        compose += ["--project-name", args.project_name]
+    for file in compose_files:
+        compose += ["-f", file]
     services = ["api", "worker", "outbox", "web"]
     active = run(*compose, "ps", "--status", "running", "--services").decode().splitlines()
     restart = [service for service in services if service in active]
@@ -44,7 +55,7 @@ def main() -> None:
                     "-U",
                     "fleet",
                     "-d",
-                    "fleet",
+                    args.database,
                     "-Fc",
                     "--no-owner",
                     "--no-acl",
@@ -81,7 +92,7 @@ def main() -> None:
                 "-U",
                 "fleet",
                 "-d",
-                "fleet",
+                args.database,
                 "-Atc",
                 "SELECT version_num FROM alembic_version",
             )
@@ -97,7 +108,7 @@ def main() -> None:
                 "-U",
                 "fleet",
                 "-d",
-                "fleet",
+                args.database,
                 "-Atc",
                 "SELECT tablename FROM pg_tables WHERE schemaname='public' ORDER BY tablename",
             )
@@ -109,9 +120,7 @@ def main() -> None:
             quoted = '"' + table.replace('"', '""') + '"'
             query = (
                 "SELECT count(*),md5(coalesce(string_agg(to_jsonb(t)::text,E'\\n' "
-                "ORDER BY to_jsonb(t)::text),'')) FROM "
-                + quoted
-                + " t"
+                "ORDER BY to_jsonb(t)::text),'')) FROM " + quoted + " t"
             )
             fingerprints[table] = (
                 run(
@@ -122,7 +131,7 @@ def main() -> None:
                     "-U",
                     "fleet",
                     "-d",
-                    "fleet",
+                    args.database,
                     "-Atc",
                     query,
                 )
@@ -140,10 +149,14 @@ def main() -> None:
             "schema": schema,
             "table_fingerprints": fingerprints,
             "files": inventory,
-            "source_head": run("git", "rev-parse", "HEAD").decode().strip(),
+            "source_head": args.source_revision or run("git", "rev-parse", "HEAD").decode().strip(),
             "working_tree": "uncommitted; preserve release source manifest separately",
             "configuration": {
-                "compose_sha256": hashlib.sha256(Path(args.compose).read_bytes()).hexdigest(),
+                "compose_sha256": {
+                    file: hashlib.sha256(Path(file).read_bytes()).hexdigest()
+                    for file in compose_files
+                },
+                "database": args.database,
                 "scope": "single_agency",
                 "secrets": "retained separately",
             },

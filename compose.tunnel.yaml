@@ -1,0 +1,32 @@
+# docker compose --env-file .env.tunnel -f compose.yaml -f compose.production.yaml -f compose.tunnel.yaml
+name: fleet-tunnel-demo
+services:
+  postgres:
+    environment:
+      POSTGRES_DB: fleet_public_demo
+    healthcheck:
+      test: [CMD-SHELL, pg_isready -U fleet -d fleet_public_demo]
+  rabbitmq:
+    volumes:
+      - tunnel-broker-data:/var/lib/rabbitmq
+  api:
+    environment: &tunnel_environment
+      FLEET_ENVIRONMENT: tunnel_demo
+      FLEET_AUTHENTICATION_MODE: session
+      FLEET_SECURE_COOKIES: 'true'
+      FLEET_COOKIE_SAMESITE: ${FLEET_COOKIE_SAMESITE:-strict}
+      FLEET_AUTO_CREATE_SCHEMA: 'false'
+      FLEET_AUTO_SEED_DEMO: 'false'
+      FLEET_DATABASE_URL: ${FLEET_RELEASE_DATABASE_URL:?Set the dedicated demo DB URL}
+      FLEET_BROKER_URL: ${FLEET_RELEASE_BROKER_URL:?Set the dedicated demo broker URL}
+      FLEET_ALLOWED_ORIGINS: ${FLEET_ALLOWED_ORIGINS:?Set the Pages and tunnel HTTPS origins}
+      FLEET_ARTIFACT_ROOT: /var/lib/fleet-maintenance/artifacts
+  worker:
+    environment: *tunnel_environment
+    command: [celery, -A, fleet_maintenance.workers.celery_app:app, worker, --loglevel=INFO, --concurrency=1, --without-mingle, --without-gossip]
+  outbox:
+    environment: *tunnel_environment
+  web:
+    ports: !override ["127.0.0.1:18080:80"]
+volumes:
+  tunnel-broker-data:

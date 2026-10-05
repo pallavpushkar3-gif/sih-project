@@ -12,6 +12,7 @@ from fleet_maintenance.persistence.models import (
     PartArrival,
     User,
 )
+from fleet_maintenance.settings import get_settings
 
 router = APIRouter(prefix="/health", tags=["health"])
 
@@ -33,4 +34,20 @@ def ready(session: Session = Depends(get_session)) -> dict[str, str]:
         session.execute(select(Alert.episode_id).limit(1))
     except Exception as exc:
         raise HTTPException(503, "database unavailable") from exc
+    if get_settings().environment == "tunnel_demo":
+        from fleet_maintenance.artifacts.storage import artifact_directory, verify_hashes
+        from fleet_maintenance.persistence.models import ModelRegistration
+        from fleet_maintenance.services.customer_trials import MODEL_ID, catalog
+
+        try:
+            if not catalog(session).available:
+                raise ValueError("Missing public demo bundle")
+            model = session.get(ModelRegistration, MODEL_ID)
+            assert model is not None
+            verify_hashes(
+                artifact_directory(get_settings().artifact_root, model.artifact_directory),
+                model.hashes,
+            )
+        except Exception as exc:
+            raise HTTPException(503, "Demo model/history bundle is unavailable") from exc
     return {"status": "ready", "database": "ok"}

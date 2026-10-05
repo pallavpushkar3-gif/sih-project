@@ -23,7 +23,7 @@ Every protected router authenticates on the server. Version checks and role chec
 
 Audit records retain actors, UTC timestamps, versions and reasons for material changes. These controls do not establish regulatory certification or aircraft maintenance authority.
 
-Customer-trial `/demo` routes additionally require development environment and demo authentication; production and server-session configurations return 403. Trial creation/planning requires planner or supervisor. Assessments, delivery outcomes, approval and work retain their existing engineer/logistics/supervisor checks. Offline model installation uses administrator registration; a customer cannot upload executable model weights. Actions in the guided customer trial mutate only its dedicated synthetic records.
+Customer-trial `/demo` routes require local development/demo authentication or the explicit `tunnel_demo` environment with server sessions. Production still rejects them. Tunnel mode requires a separate `fleet_public_demo` PostgreSQL database, secure cookies, explicit HTTPS origins and explicit migrations/bootstrap. It cannot use header identities. `FLEET_COOKIE_SAMESITE=none` permits the cross-site Pages experiment; `strict` is the default and production setting. Cookie blocking still applies to `none`; Pages uses the complete-app origin for reliable sessions. Trial creation/planning requires planner or supervisor. Assessments, delivery outcomes, approval and work retain their existing engineer/logistics/supervisor checks. Offline model installation uses administrator registration; a customer cannot upload executable model weights. Actions in the guided customer trial mutate only its dedicated synthetic records.
 
 ## Release scope — 2026-10-05
 
