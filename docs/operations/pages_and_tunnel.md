@@ -20,7 +20,9 @@ The runtime requires the verified model/sample bundle; a source clone alone has 
 docker run --rm -v "$PWD:/workspace" -w /workspace -e PYTHONPATH=/workspace/backend/src fleet-maintenance-test python scripts/demo_bundle.py package --model artifacts/models/customer-trial-v1 --sample artifacts/release-v2/public-demo-sample.json --output artifacts/demo-bundle.tar.gz
 ```
 
-Install the trusted bundle (or the published demo bundle referenced in this release's status), then provision a supervisor with the existing interactive account tool:
+Download the published [verified demo bundle](https://github.com/pallavpushkar3-gif/sih-project/releases/download/demo-bundle-2026-10-05/demo-bundle.tar.gz) to `artifacts/demo-bundle.tar.gz`. Verify its SHA-256 is `18b0e5ae0791aff50a2dc5a77c4b5aec16144fff4fff4a374c018b423e9fef26` (`shasum -a 256 artifacts/demo-bundle.tar.gz` on macOS). This release asset supplies the retained bytes for a fresh clone; no NASA bulk dataset is needed for serving.
+
+Install that trusted bundle, then provision a supervisor with the existing interactive account tool:
 
 ```sh
 docker compose --env-file .env.tunnel -f compose.yaml -f compose.production.yaml -f compose.tunnel.yaml run --rm --no-deps -v "$PWD:/workspace:ro" api python /workspace/scripts/demo_bundle.py install --bundle /workspace/artifacts/demo-bundle.tar.gz
@@ -77,3 +79,13 @@ docker compose --env-file .env.tunnel -f compose.yaml -f compose.production.yaml
 ```
 
 Stop SSH when finished. Do not use `down -v` unless intentionally deleting the demo database and artifacts. Backups, secrets and runtime state remain outside Git.
+
+## Reproduce public browser verification
+
+After installing web dependencies and Chrome, the repository includes a verification entry point. It asserts trusted TLS, Pages redirection, exact credentialed CORS, rejection of untrusted origins/missing CSRF, secure session-cookie attributes, an actual `connected` SSE event and the offline display. It never prints a cookie or CSRF token.
+
+```sh
+FLEET_CHECK_FRONTEND=https://pallavpushkar3-gif.github.io/sih-project/ FLEET_CHECK_BACKEND=https://YOUR-TUNNEL-HOST node scripts/verify_demo_deployment.mjs
+```
+
+The published synthetic login is `demo-supervisor` / `AeroCare-Demo-2026!`; it gives only the supervisor role in this shared synthetic workspace. Replace the account/password for any controlled customer rehearsal using `FLEET_CHECK_USER` and `FLEET_CHECK_PASSWORD`. `FLEET_CHECK_LOCAL_TLS=1` accepts self-signed test certificates **only** when both URL hosts are localhost/127.0.0.1; it cannot disable verification for a public origin. Optional `FLEET_CHECK_STORAGE_PATH` retains a private local browser-state file for the live customer-trial suite.

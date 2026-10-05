@@ -32,7 +32,7 @@ try {
   await page.getByLabel('Account ID').fill(process.env.FLEET_CHECK_USER || 'demo-supervisor');
   await page.getByLabel('Password', { exact: true }).fill(process.env.FLEET_CHECK_PASSWORD || 'AeroCare-Demo-2026!');
   await page.getByRole('button', { name: 'Sign in', exact: true }).click();
-  await expect(page.getByRole('button', { name: 'Calculate AI assessment', exact: true })).toBeVisible({timeout:20_000});
+  await expect(page.getByRole('button', { name: 'Create my trial', exact: true })).toBeVisible({timeout:20_000});
   const identity = await context.request.get(`${api}/access/session`);
   expect(identity.status()).toBe(200);
   const session = await identity.json();
