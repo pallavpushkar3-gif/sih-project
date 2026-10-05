@@ -27,6 +27,13 @@ services:
   outbox:
     environment: *tunnel_environment
   web:
+    build:
+      args:
+        VITE_BASE_PATH: ${FLEET_PUBLIC_ASSET_BASE:-https://pallavpushkar3-gif.github.io/sih-project/full-app/}
+    environment:
+      FLEET_ASSET_ORIGIN: https://pallavpushkar3-gif.github.io
+    volumes:
+      - ./infra/proxy/tunnel.conf.template:/etc/nginx/templates/default.conf.template:ro
     ports: !override ["127.0.0.1:18080:80"]
 volumes:
   tunnel-broker-data:
