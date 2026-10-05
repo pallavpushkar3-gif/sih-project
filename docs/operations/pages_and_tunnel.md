@@ -1,6 +1,6 @@
 # GitHub Pages and local HTTPS demo
 
-Open **https://pallavpushkar3-gif.github.io/sih-project/**. This publishes the original React application, including its local aircraft assets, through `.github/workflows/deploy-pages.yml`. Hash navigation supports refreshes on Pages under `/sih-project/`.
+Open **https://pallavpushkar3-gif.github.io/sih-project/**. This publishes the original React application and aircraft assets, through `.github/workflows/deploy-pages.yml`. Hash navigation supports refreshes on Pages under `/sih-project/`. The workflow also publishes `/full-app/` static assets for the single-origin fallback; the tunneled HTML uses these CDN assets while API requests and cookies stay on its own origin. The tunnel proxy permits only this explicit asset origin in its content security policy and compresses API JSON.
 
 The backend remains local: FastAPI, PostgreSQL, RabbitMQ, Celery and outbox dispatcher. `compose.tunnel.yaml` uses separate `fleet-tunnel-demo` volumes and the `fleet_public_demo` database. It exposes only the web proxy on **127.0.0.1:18080**, with no public database, broker or API ports. Do not tunnel the ordinary local development installation.
 
@@ -39,7 +39,7 @@ The installer checks file paths, bounded regular files, checksums, model/transfo
 The current demonstration uses localhost.run. Keep its SSH process running:
 
 ```sh
-ssh -T -o StrictHostKeyChecking=accept-new -o ServerAliveInterval=30 -o ExitOnForwardFailure=yes -R 80:127.0.0.1:18080 nokey@localhost.run
+ssh -nT -o StrictHostKeyChecking=accept-new -o ServerAliveInterval=30 -o ExitOnForwardFailure=yes -R 80:127.0.0.1:18080 nokey@localhost.run
 ```
 
 Copy the generated **HTTPS** origin into `.env.tunnel`'s allowed origins. Recreate the API and reload the proxy after changing it:
@@ -89,3 +89,5 @@ FLEET_CHECK_FRONTEND=https://pallavpushkar3-gif.github.io/sih-project/ FLEET_CHE
 ```
 
 The published synthetic login is `demo-supervisor` / `AeroCare-Demo-2026!`; it gives only the supervisor role in this shared synthetic workspace. Replace the account/password for any controlled customer rehearsal using `FLEET_CHECK_USER` and `FLEET_CHECK_PASSWORD`. `FLEET_CHECK_LOCAL_TLS=1` accepts self-signed test certificates **only** when both URL hosts are localhost/127.0.0.1; it cannot disable verification for a public origin. Optional `FLEET_CHECK_STORAGE_PATH` retains a private local browser-state file for the live customer-trial suite.
+
+Final executed public verification on 2026-10-05: the standalone deployment check passed all assertions and all five live `customer-trial.spec.ts` journeys passed through the trusted public tunnel in 2.0 minutes after asset optimization. The initial unoptimized public run retained four load-timing failures; no single uninterrupted pass across both builds is claimed.
