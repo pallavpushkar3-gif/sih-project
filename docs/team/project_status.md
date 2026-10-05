@@ -10,6 +10,10 @@ Remaining acceptance work concerns representative customer data/integrations, ap
 
 Final executed local checks: frontend lint/type/build and six unit tests; 110 backend/scientific tests with Ruff/full mypy; 49 integration tests including real PostgreSQL concurrency cases (overlapping counts); 37 browser checks on final images; eight actual broker/worker/reconnect recovery checks; five customer journeys on restored final images. Twenty-seven restored table fingerprints and registered artifact hashes matched. The final small isolated workload completed 200 reads with zero failures and both planning/simulation jobs succeeded. Scientific reproduction and limitations are indexed in the current ledger; original external release gates remain open.
 
+## Planning approval error correction
+
+An approval attempt encountered active historical work without crew/bay bookings. The snapshot raised an expected precondition error outside approval's conflict handler, producing HTTP 500. Approval now translates it to HTTP 409 with the existing reconciliation guidance, matching planning and revision endpoints. Empty optimal schedules no longer appear ready for approval or comparison; the server independently rejects empty approval. Historical records and reservations are preserved. Targeted backend checks passed 24 cases, with Ruff/mypy; frontend lint/types/build and six unit cases passed. All 17 workspace browser cases passed on the rebuilt local images. Two approval attempts against the exact affected PostgreSQL plan returned 409 with unchanged plans/work/inventory; the actual page showed disabled empty approval, no internal-error banner and no page exceptions. Evidence: `artifacts/release-v2/planning-fix-{backend-final,web,browser,build}.log`, `planning-fix-live.json`, `planning-fix-page.json` and `planning-fix-live.png`. Initial test formatting failure was corrected before rerunning; original release gates remain separate.
+
 ## Earlier source/presentation audit (retained history)
 
 

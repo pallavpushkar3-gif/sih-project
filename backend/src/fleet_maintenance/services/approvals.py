@@ -35,16 +35,20 @@ def approve_plan(session: Session, plan_id: str, actor: str) -> Plan:
     scope = str(scope_value) if scope_value is not None else None
     try:
         tasks, parts = planning_records(session, scope, lock=True)
+        resources = resource_records(session, scope, lock=True)
+        snapshot = planning_snapshot(session, scope)
     except ValueError as exc:
         raise ApprovalConflict(str(exc)) from exc
-    resources = resource_records(session, scope, lock=True)
-    snapshot = planning_snapshot(session, scope)
     if snapshot["input_version"] != plan.input_version:
         raise ApprovalConflict("Plan inputs changed; generate a new proposal.")
     part_by_id = {p.id: p for p in parts}
     task_by_id = {t.id: t for t in tasks}
     assigned_ids = [str(a["task_id"]) for a in plan.assignments]
-    if not assigned_ids or len(set(assigned_ids)) != len(assigned_ids):
+    if not assigned_ids:
+        raise ApprovalConflict(
+            "Plan contains no scheduled work; review open tasks and calculate a new proposal."
+        )
+    if len(set(assigned_ids)) != len(assigned_ids):
         raise ApprovalConflict("Plan must have unique task assignments.")
     if any(task_id not in task_by_id for task_id in assigned_ids):
         raise ApprovalConflict("Plan contains unavailable tasks.")

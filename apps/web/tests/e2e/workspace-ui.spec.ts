@@ -223,6 +223,26 @@ test("stale proposal conflict never displays committed approval",async({page})=>
  await expect(page.getByText('Plan approved',{exact:true})).toHaveCount(0);
 });
 
+test('empty optimal proposal is not presented as approvable work', async ({ page }) => {
+ await page.route('**/api/plans', route => route.fulfill({ json: [{ ...plan, assignments: [] }] }));
+ await page.goto('/planning');
+ await expect(page.getByText('No approvable schedule', { exact: true })).toBeVisible();
+ await expect(page.getByText('This proposal contains no scheduled work.', { exact: false })).toBeVisible();
+ await expect(page.getByRole('button', { name: 'Review & approve', exact: true })).toBeDisabled();
+ await expect(page.getByText('Constraint-checked', { exact: true })).toHaveCount(0);
+ await expect(page.getByRole('button', { name: 'Compare this saved plan', exact: true })).toHaveCount(0);
+});
+
+test('legacy work approval conflict explains the blocker and preserves review', async ({ page }) => {
+ await page.route('**/api/plans/plan-ui/approve', route => route.fulfill({ status: 409, json: { detail: 'Active legacy work has no crew/bay booking. Reconcile or finish that work before creating a resource-aware proposal.' } }));
+ await page.goto('/planning');
+ await page.getByRole('button', { name: 'Review & approve', exact: true }).click();
+ await page.getByRole('button', { name: 'Approve & reserve parts', exact: true }).click();
+ await expect(page.getByRole('alert')).toContainText('Active legacy work has no crew/bay booking');
+ await expect(page.getByText('Plan approved', { exact: true })).toHaveCount(0);
+ await expect(page.getByRole('button', { name: 'Review & approve', exact: true })).toBeEnabled();
+});
+
 test('successful exact-plan approval refreshes retained reservation and work history',async({page})=>{
  let current:Record<string,unknown>=plan;
  await page.route('**/api/plans',route=>route.fulfill({json:[current]}));

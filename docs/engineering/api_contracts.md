@@ -98,4 +98,6 @@ A tagged immutable Scenario JSON record stores trial relationships/request hash;
 - Delivery outcomes additionally accept quarantine/reject, with no usable-stock increase. Assessments explicitly return withheld and actionable quality reasons.
 - Request bodies are bounded at 4 MB, including streamed bodies. Forbidden roles fail on the server; stale approval/configuration remains a 409 conflict. No shared-agency scope is accepted.
 
+Approval also treats snapshot precondition failures (including active pre-resource work without crew/bay bookings) as HTTP 409, matching proposal/revision/job submission. It returns the actionable blocker, preserves the proposed plan and creates no reservations/work/audit/outbox effects. Empty schedules cannot be approved and return a no-scheduled-work conflict; the browser disables their approval/comparison controls. Repeated approval of an already accepted plan remains idempotent, including historical plans.
+
 OpenAPI and browser declarations are generated from implemented routes; runtime validation remains required.

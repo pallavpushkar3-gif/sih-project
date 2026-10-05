@@ -23,7 +23,7 @@ export function PlanningPage() {
   const propose = useMutation({ mutationFn: () => api<Job>("/jobs/planning", { method: "POST" }, isJob), onSuccess: () => client.invalidateQueries({ queryKey: ["jobs"] }) });
   const approve = useMutation({ mutationFn: (id: string) => api<Plan>(`/plans/${id}/approve`, { method: "POST" }, isPlan), onSuccess: () => { void client.invalidateQueries({ queryKey: ["plans"] }); void client.invalidateQueries({ queryKey: ["inventory"] }); void client.invalidateQueries({queryKey:["plan-commitment"]}); } });
   const selected = query.data?.find((plan) => plan.id === selectedId) ?? query.data?.[0];
-  const usable = selected && ["optimal", "feasible"].includes(selected.solver_status);
+  const usable = selected && selected.assignments.length > 0 && ["optimal", "feasible"].includes(selected.solver_status);
   const proposedCount = query.data?.filter((plan) => plan.status === "proposed").length;
   const approvedCount = query.data?.filter((plan) => plan.status === "approved").length;
   return <section>

@@ -2,6 +2,8 @@
 
 2026-10-05. This replaces the earlier working ledger. The original release criteria remain **partially accepted**; operational/government qualification is **externally blocked**. No completion percentage, procurement prediction or measured aircraft benefit is justified. States are **verified**, **partial**, **failed**, **pending**, or **externally blocked**. Verified bounded checks do not accept an entire workstream.
 
+Subsequent Planning correction: approval snapshot precondition failures now return an actionable 409 instead of 500; empty schedules cannot be approved in either UI or API. Targeted verification: 24 backend cases, Ruff/mypy, frontend checks/six unit cases, 17 workspace browser cases and two real PostgreSQL approval retries against the reported plan with no plan/work/stock changes. See the `planning-fix-*` evidence and current project status. Earlier full-suite and source archive records below remain the evidence for their recorded revision, not a new full-suite run for this correction.
+
 ## Eight workstreams
 
 Implementation paths are relative to `backend/src/fleet_maintenance/` unless stated otherwise.
