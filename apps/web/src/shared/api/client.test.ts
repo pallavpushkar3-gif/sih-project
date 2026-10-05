@@ -1,6 +1,28 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { arrayOf, isComponentDetail, isFleetItem, isHealth, isInventoryPart, isJob, isSimulationRun } from "./client";
+import { api, ApiError, arrayOf, isComponentDetail, isFleetItem, isHealth, isInventoryPart, isJob, isSimulationRun } from "./client";
+
+describe("rate-limited API requests", () => {
+  afterEach(() => { vi.unstubAllGlobals(); vi.restoreAllMocks(); });
+
+  it.each([
+    ["60", 60],
+    ["Mon, 05 Oct 2026 08:00:45 GMT", 45],
+    ["invalid", 30],
+    [null, 30],
+  ])("handles Retry-After %s without automatically resubmitting credentials", async (header, seconds) => {
+    vi.spyOn(Date, "now").mockReturnValue(Date.parse("2026-10-05T08:00:00Z"));
+    const fetch = vi.fn().mockResolvedValue(new Response("<html>Too Many Requests</html>", {
+      status: 429, headers: header ? { "Retry-After": header } : {},
+    }));
+    vi.stubGlobal("fetch", fetch);
+    const error = await api("/access/session", { method: "POST", body: "{}" }).catch((cause: unknown) => cause);
+    expect(error).toBeInstanceOf(ApiError);
+    expect(error).toMatchObject({ status: 429, retryAfterSeconds: seconds });
+    expect((error as ApiError).message).toContain("Please wait");
+    expect(fetch).toHaveBeenCalledTimes(1);
+  });
+});
 
 describe("API runtime validators", () => {
   it("accepts a valid fleet collection", () => {

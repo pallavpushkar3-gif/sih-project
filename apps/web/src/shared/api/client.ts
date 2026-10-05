@@ -24,7 +24,7 @@ export function apiUrl(path: string) {
 let csrfToken: string | null = null;
 export function setCsrfToken(token: string | null) { csrfToken = token; }
 export class ApiError extends Error {
-  constructor(message: string, public readonly status: number) { super(message); }
+  constructor(message: string, public readonly status: number, public readonly retryAfterSeconds: number | null = null) { super(message); }
 }
 
 function record(value: unknown): value is Record<string, unknown> {
@@ -198,9 +198,19 @@ export async function api<T>(
   });
   if (!response.ok) {
     const body: unknown = await response.json().catch(() => null);
-    const message = record(body) && string(body.detail) ? body.detail : record(body) && string(body.message) ? body.message : `Request failed (${response.status}). Please try again.`;
+    let retryAfterSeconds: number | null = null;
+    if (response.status === 429) {
+      const header = response.headers.get("Retry-After");
+      const seconds = header && /^\d+$/.test(header) ? Number(header)
+        : header ? Math.ceil((Date.parse(header) - Date.now()) / 1000) : Number.NaN;
+      retryAfterSeconds = Number.isFinite(seconds) && seconds > 0 ? Math.min(seconds, 3600) : 30;
+    }
+    const fallback = response.status === 429
+      ? "Too many attempts. Please wait before trying again."
+      : `Request failed (${response.status}). Please try again.`;
+    const message = record(body) && string(body.detail) ? body.detail : record(body) && string(body.message) ? body.message : fallback;
     if (response.status === 401 && path !== "/access/session") window.dispatchEvent(new Event("fleet:session-expired"));
-    throw new ApiError(message, response.status);
+    throw new ApiError(message, response.status, retryAfterSeconds);
   }
   if (response.status === 204) return undefined as T;
   const payload: unknown = await response.json();

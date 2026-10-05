@@ -29,8 +29,67 @@ export function SessionGate({ children }: { children: ReactNode }) {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  const [creatingAccount, setCreatingAccount] = useState(false);
+  const [displayName, setDisplayName] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [notice, setNotice] = useState("");
+  const [retryAt, setRetryAt] = useState(0);
+  const [clockNow, setClockNow] = useState(Date.now);
+  const retrySeconds = Math.max(0, Math.ceil((retryAt - clockNow) / 1000));
+  useEffect(() => {
+    if (!retryAt) return;
+    const timer = window.setInterval(() => {
+      const now = Date.now();
+      setClockNow(now);
+      if (now >= retryAt) window.clearInterval(timer);
+    }, 1000);
+    return () => window.clearInterval(timer);
+  }, [retryAt]);
+  function showAccessError(cause: unknown, fallback: string) {
+    if (cause instanceof ApiError && cause.status === 429) {
+      const now = Date.now();
+      setClockNow(now); setRetryAt(now + (cause.retryAfterSeconds ?? 30) * 1000);
+    }
+    setError(cause instanceof Error ? cause.message : fallback);
+  }
+  const signInRequired = expired || session.error instanceof ApiError && session.error.status === 401;
+  const registration = useQuery({
+    queryKey: ["registration-options"], enabled: signInRequired, retry: false,
+    queryFn: () => api<{ enabled: boolean }>("/access/registration", undefined,
+      (value): value is { enabled: boolean } => typeof value === "object" && value !== null &&
+        "enabled" in value && typeof value.enabled === "boolean"),
+  });
+  function changeMode(create: boolean) {
+    setCreatingAccount(create); setError(""); setNotice("");
+    setPassword(""); setConfirmPassword("");
+  }
+  async function register(event: FormEvent) {
+    event.preventDefault();
+    if (busy || Date.now() < retryAt) return;
+    setError(""); setNotice("");
+    if (password !== confirmPassword) { setError("Passwords do not match."); return; }
+    setBusy(true);
+    try {
+      const account = await api<{ id: string; role: string }>("/access/registration", {
+        method: "POST", body: JSON.stringify({
+          user_id: user.trim().toLowerCase(), display_name: displayName.trim(), password,
+        }),
+      }, (value): value is { id: string; role: string } => typeof value === "object" &&
+        value !== null && "id" in value && typeof value.id === "string" &&
+        "role" in value && value.role === "viewer");
+      setUser(account.id); setPassword(""); setConfirmPassword("");
+      setCreatingAccount(false);
+      setNotice("Account created. Sign in with your account ID and password.");
+    } catch (cause) {
+      if (cause instanceof ApiError && cause.status === 422) {
+        setError("Check your name, account ID and password requirements.");
+      } else { showAccessError(cause, "Account creation failed"); }
+    } finally { setBusy(false); }
+  }
   async function login(event: FormEvent) {
-    event.preventDefault(); setBusy(true); setError("");
+    event.preventDefault();
+    if (busy || Date.now() < retryAt) return;
+    setBusy(true); setError(""); setNotice("");
     try {
       const value = await api<SessionInfo>("/access/session", { method: "POST", body: JSON.stringify({ user_id: user, password }) });
       setCsrfToken(value.csrf_token);
@@ -40,12 +99,34 @@ export function SessionGate({ children }: { children: ReactNode }) {
       }
       setPassword(""); setExpired(false);
       queryClient.clear(); queryClient.setQueryData(["session"], value);
-    } catch (cause) { setError(cause instanceof Error ? cause.message : "Sign in failed"); }
+    } catch (cause) { showAccessError(cause, "Sign in failed"); }
     finally { setBusy(false); }
   }
   if (session.data && !expired) return <SessionContext.Provider value={session.data}><EventStreamBridge/>{children}</SessionContext.Provider>;
   if (session.isPending && !expired) return <div className="async-state loading-state" role="status"><span className="spinner"/><strong>Opening your workspace…</strong></div>;
-  const signInRequired = expired || session.error instanceof ApiError && session.error.status === 401;
   if (!signInRequired) return <main className="login-shell"><section className="login-card" role="alert"><span className="brand-mark"><Icon name="aircraft" size={28}/></span><h1>Demo backend offline</h1><p>Aircraft maintenance connects AI engine-health evidence with parts, crew, a checked schedule and human approval.</p><p>The demo server is currently unreachable. Its host needs to keep Docker and the HTTPS tunnel running. No calculations are available while disconnected.</p><button onClick={() => void session.refetch()}>Try again</button>{fullAppUrl && <p><a className="button-secondary" href={`${fullAppUrl.replace(/\/$/, '')}/demo`}>Open complete demo</a></p>}</section></main>;
-  return <main className="login-shell"><section className="login-card"><span className="brand-mark"><Icon name="aircraft" size={28}/></span><h1>Sign in to Aircraft maintenance</h1><p>Use your assigned maintenance workspace account.</p>{pagesDeployment && fullAppUrl && <p><a className="button-secondary" href={`${fullAppUrl.replace(/\/$/, '')}/demo`}>Open complete demo</a><small>Use this when your browser blocks cross-site sign-in.</small></p>}<form onSubmit={(event) => void login(event)}><label>Account ID<input autoComplete="username" value={user} onChange={(event) => setUser(event.target.value)} required maxLength={64}/></label><label>Password<input type="password" autoComplete="current-password" value={password} onChange={(event) => setPassword(event.target.value)} required maxLength={256}/></label>{error && <p role="alert" className="form-error">{error}</p>}<button className="button" disabled={busy}>{busy ? "Signing in…" : "Sign in"}</button></form>{pagesDeployment && fullAppUrl && <a className="button-secondary" href={`${fullAppUrl.replace(/\/$/, '')}/demo`}>Open the complete demo</a>}<small>Evidence supports human review.</small></section></main>;
+  return <main className="login-shell"><section className="login-card">
+    <span className="brand-mark"><Icon name="aircraft" size={28}/></span>
+    <h1>{creatingAccount ? "Create your account" : "Sign in to Aircraft maintenance"}</h1>
+    <p>{creatingAccount ? "Create an account to explore the maintenance workspace." : "Use your maintenance workspace account."}</p>
+    {pagesDeployment && fullAppUrl && <p><a className="button-secondary" href={`${fullAppUrl.replace(/\/$/, '')}/demo`}>Open complete demo</a><small>Use this when your browser blocks cross-site sign-in.</small></p>}
+    {notice && <p role="status" className="form-success">{notice}</p>}
+    <form onSubmit={(event) => void (creatingAccount ? register(event) : login(event))}>
+      {creatingAccount && <label>Display name<input autoComplete="name" value={displayName} onChange={(event) => setDisplayName(event.target.value)} required maxLength={120}/></label>}
+      <label>Account ID<input autoComplete="username" autoCapitalize="none" spellCheck={false} value={user} onChange={(event) => setUser(event.target.value)} required minLength={creatingAccount ? 3 : undefined} maxLength={64} pattern={creatingAccount ? "[a-zA-Z0-9][a-zA-Z0-9._-]*" : undefined}/>
+        {creatingAccount && <small>3–64 letters, numbers, dots, underscores or hyphens. Starts with a letter or number; saved in lowercase.</small>}
+      </label>
+      <label>Password<input type="password" autoComplete={creatingAccount ? "new-password" : "current-password"} value={password} onChange={(event) => setPassword(event.target.value)} required minLength={creatingAccount ? 14 : undefined} maxLength={256}/>
+        {creatingAccount && <small>Use at least 14 characters.</small>}
+      </label>
+      {creatingAccount && <label>Confirm password<input type="password" autoComplete="new-password" value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} required minLength={14} maxLength={256}/></label>}
+      {error && <p role="alert" className="form-error">{error}</p>}
+      {retrySeconds > 0 && <p role="status">Try again in {retrySeconds} seconds.</p>}
+      <button className="button" disabled={busy || retrySeconds > 0}>{busy ? creatingAccount ? "Creating account…" : "Signing in…" : retrySeconds > 0 ? `Wait ${retrySeconds}s` : creatingAccount ? "Create account" : "Sign in"}</button>
+    </form>
+    {registration.data?.enabled && <p className="account-switch">{creatingAccount ? "Already have an account? " : "New here? "}<button type="button" className="account-switch-button" disabled={busy || retrySeconds > 0} onClick={() => changeMode(!creatingAccount)}>{creatingAccount ? "Sign in" : "Create account"}</button></p>}
+    {creatingAccount && <p className="signup-access-note">New accounts can view the shared demonstration workspace. Contact the administrator for planning or approval access.</p>}
+    {pagesDeployment && fullAppUrl && <a className="button-secondary" href={`${fullAppUrl.replace(/\/$/, '')}/demo`}>Open the complete demo</a>}
+    <small>Evidence supports human review.</small>
+  </section></main>;
 }

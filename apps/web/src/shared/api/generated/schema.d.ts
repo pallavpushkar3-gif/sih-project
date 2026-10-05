@@ -38,6 +38,24 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/access/registration": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Registration Options */
+        get: operations["registration_options_api_access_registration_get"];
+        put?: never;
+        /** Create Account */
+        post: operations["create_account_api_access_registration_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/access/session": {
         parameters: {
             query?: never;
@@ -1255,6 +1273,29 @@ export interface components {
             /** Directory */
             directory: string;
         };
+        /** RegistrationInfo */
+        RegistrationInfo: {
+            /** Id */
+            id: string;
+            /** Display Name */
+            display_name: string;
+            /** Role */
+            role: string;
+        };
+        /** RegistrationOptions */
+        RegistrationOptions: {
+            /** Enabled */
+            enabled: boolean;
+        };
+        /** RegistrationRequest */
+        RegistrationRequest: {
+            /** User Id */
+            user_id: string;
+            /** Display Name */
+            display_name: string;
+            /** Password */
+            password: string;
+        };
         /** ReservationHistoryResponse */
         ReservationHistoryResponse: {
             /** Id */
@@ -1601,6 +1642,59 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HealthResponse"];
+                };
+            };
+        };
+    };
+    registration_options_api_access_registration_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RegistrationOptions"];
+                };
+            };
+        };
+    };
+    create_account_api_access_registration_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RegistrationRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RegistrationInfo"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

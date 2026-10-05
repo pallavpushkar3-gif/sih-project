@@ -7,9 +7,10 @@ from datetime import UTC, datetime, timedelta
 from fastapi import HTTPException, Request
 from pwdlib import PasswordHash
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from fleet_maintenance.persistence.models import LoginSession, User
+from fleet_maintenance.persistence.models import AuditEvent, LoginSession, User
 from fleet_maintenance.settings import get_settings
 
 passwords = PasswordHash.recommended()
@@ -23,6 +24,35 @@ def utc(value: datetime) -> datetime:
 
 def token_hash(token: str) -> str:
     return hashlib.sha256(token.encode()).hexdigest()
+
+
+def register(session: Session, user_id: str, display_name: str, password: str) -> User:
+    """Self-registration never assigns mutation or approval permissions."""
+    if session.get(User, user_id) is not None:
+        raise HTTPException(409, "Account ID is already in use. Choose another or sign in.")
+    user = User(
+        id=user_id,
+        display_name=display_name,
+        role="viewer",
+        password_hash=passwords.hash(password),
+    )
+    session.add(user)
+    session.add(
+        AuditEvent(
+            actor=user_id,
+            action="account.registered",
+            subject_id=user_id,
+            details={"role": "viewer"},
+        )
+    )
+    try:
+        session.commit()
+    except IntegrityError as exc:
+        session.rollback()
+        raise HTTPException(
+            409, "Account ID is already in use. Choose another or sign in."
+        ) from exc
+    return user
 
 
 def login(session: Session, user_id: str, password: str) -> tuple[str, LoginSession]:

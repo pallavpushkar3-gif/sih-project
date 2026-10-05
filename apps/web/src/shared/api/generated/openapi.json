@@ -47,6 +47,66 @@
         }
       }
     },
+    "/api/access/registration": {
+      "get": {
+        "tags": [
+          "access"
+        ],
+        "summary": "Registration Options",
+        "operationId": "registration_options_api_access_registration_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegistrationOptions"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "access"
+        ],
+        "summary": "Create Account",
+        "operationId": "create_account_api_access_registration_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegistrationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegistrationInfo"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/access/session": {
       "get": {
         "tags": [
@@ -4549,6 +4609,73 @@
           "directory"
         ],
         "title": "Registration"
+      },
+      "RegistrationInfo": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "display_name": {
+            "type": "string",
+            "title": "Display Name"
+          },
+          "role": {
+            "type": "string",
+            "title": "Role"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "display_name",
+          "role"
+        ],
+        "title": "RegistrationInfo"
+      },
+      "RegistrationOptions": {
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled"
+          }
+        },
+        "type": "object",
+        "required": [
+          "enabled"
+        ],
+        "title": "RegistrationOptions"
+      },
+      "RegistrationRequest": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 3,
+            "pattern": "^[a-z0-9][a-z0-9._-]*$",
+            "title": "User Id"
+          },
+          "display_name": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Display Name"
+          },
+          "password": {
+            "type": "string",
+            "maxLength": 256,
+            "minLength": 14,
+            "title": "Password"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "user_id",
+          "display_name",
+          "password"
+        ],
+        "title": "RegistrationRequest"
       },
       "ReservationHistoryResponse": {
         "properties": {

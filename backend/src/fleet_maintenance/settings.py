@@ -20,6 +20,7 @@ class Settings(BaseSettings):
     auto_create_schema: bool = False
     auto_seed_demo: bool = True
     authentication_mode: str = "demo"
+    allow_signup: bool = False
     session_hours: int = Field(default=8, ge=1, le=24)
     secure_cookies: bool = False
     cookie_samesite: Literal["strict", "none"] = "strict"

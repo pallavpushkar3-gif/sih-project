@@ -250,6 +250,13 @@ th,.table-footer,.asset-cell small,.table-subtitle,.count-label,.chart-caption,.
 .login-card label { display: grid; gap: 8px; font-weight: 600; font-size: 13px; }
 .login-card input { width: 100%; padding: 12px; border: 1px solid #ccd5e0; border-radius: 7px; }
 .login-card small { color: #69778b; }
+.account-switch { text-align: center; }
+.login-card .account-switch-button { padding: 0; border: 0; background: transparent; color: #265ac3; font: inherit; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; transition: color 160ms ease; }
+.login-card .account-switch-button:hover,
+.login-card .account-switch-button:active { background: transparent; color: #1d469b; }
+.login-card .account-switch-button:disabled { cursor: wait; opacity: .6; }
+.login-card .signup-access-note { font-size: 13px; }
+.login-card .form-success { color: #176447; }
 
 .deliveries-card { margin-bottom: 20px; }
 .delivery-form { border-top: 1px solid var(--border); margin-top: 20px; padding-top: 20px; }

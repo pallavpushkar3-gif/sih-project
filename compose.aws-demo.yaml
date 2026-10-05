@@ -1,0 +1,24 @@
+# Isolated synthetic demo on EC2. Use after compose.production.yaml,
+# followed by compose.ec2.yaml. The web service alone publishes 80/443.
+name: fleet-aws-demo
+services:
+  postgres:
+    environment:
+      POSTGRES_DB: fleet_public_demo
+    healthcheck:
+      test: [CMD-SHELL, pg_isready -U fleet -d fleet_public_demo]
+  rabbitmq:
+    volumes:
+      - aws-broker-data:/var/lib/rabbitmq
+  api:
+    environment: &aws_demo_environment
+      FLEET_ENVIRONMENT: tunnel_demo
+      FLEET_COOKIE_SAMESITE: strict
+      FLEET_ALLOW_SIGNUP: "true"
+  worker:
+    environment: *aws_demo_environment
+    command: [celery, -A, fleet_maintenance.workers.celery_app:app, worker, --loglevel=INFO, --concurrency=2, --without-mingle, --without-gossip]
+  outbox:
+    environment: *aws_demo_environment
+volumes:
+  aws-broker-data:

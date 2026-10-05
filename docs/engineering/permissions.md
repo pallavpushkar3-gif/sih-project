@@ -17,7 +17,24 @@ Every protected router authenticates on the server. Version checks and role chec
 
 `FLEET_AUTHENTICATION_MODE=session` uses Argon2 password hashes through pwdlib and opaque random server-side sessions. Only SHA-256 session-token hashes are stored. Cookies are HttpOnly, SameSite=Strict, scoped to `/api`, and Secure in production. Sessions expire after eight hours by default. Mutations require the returned CSRF token and an allowed Origin. Login origin checks, per-account lockout after five failures for fifteen minutes, and proxy login rate limits are implemented. Logout deletes the server session; disabling/resetting an account prevents its previous sessions being used.
 
-`GET/POST/DELETE /api/access/session` provide identity, login and logout. The browser keeps the CSRF token in memory and returns to sign-in after session expiry. Provision/reset an account using `scripts/provision_user.py` with a configured database and the installable backend package; passwords are prompted twice, require fourteen characters, and never appear in arguments or logs. Provisioning resets sessions and adds an audit event. No real accounts have been provisioned by the agent.
+`GET/POST/DELETE /api/access/session` provide identity, login and logout. The browser keeps the CSRF token in memory and returns to sign-in after session expiry. Provision/reset an account using `scripts/provision_user.py` with a configured database and the installable backend package; passwords are prompted twice, require fourteen characters, and never appear in arguments or logs. Provisioning resets sessions and adds an audit event.
+
+## Optional self-registration
+
+`FLEET_ALLOW_SIGNUP` defaults to false. When explicitly enabled with session
+authentication, `GET /api/access/registration` advertises signup and `POST` creates
+an account with an allowed Origin. Account IDs are normalized to lowercase and
+must contain 3–64 ASCII letters, digits, dots, underscores or hyphens, starting
+with a letter or digit. Display names are trimmed and passwords require 14–256
+characters. Duplicate account IDs return 409 and never reset an existing account.
+Passwords are Argon2 hashes; registration is audited without credentials.
+
+Every self-registered account has the **viewer** role. Role input is rejected.
+Registration does not create a session: the user signs in after success. An
+administrator provisions additional roles separately. Viewers can read the
+shared synthetic workspace; no record/tenant isolation or email verification is
+claimed. The EC2 HTTPS proxy limits signup POSTs to five per minute per source IP
+with a burst of three. AWS demonstration signup is enabled by its compose overlay.
 
 `demo` mode reads `X-Demo-User` and `X-Demo-Role` for labelled local fixtures only. Session mode ignores these headers. Production settings reject demo authentication, insecure cookies, automatic schema creation/seeding, non-PostgreSQL storage and non-HTTPS origins.
 

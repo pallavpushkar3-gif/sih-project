@@ -2,6 +2,12 @@
 
 Status: proposed API semantics. Generate final OpenAPI from implemented FastAPI routes and keep this document aligned.
 
+Implemented self-registration: `GET /api/access/registration` reports `enabled`;
+`POST` accepts `user_id`, `display_name`, and `password`, returning 201 with the
+normalized ID, display name and viewer role. Duplicate IDs return 409, invalid
+fields or role injection 422, missing/untrusted Origin 403, and disabled signup
+404. No session is issued until a subsequent login. See `permissions.md`.
+
 ## Conventions
 
 Prefix application routes with `/api/v1`. Use opaque identifiers, explicit versions/units, timezone-aware timestamps and structured quality/provenance. Paginate collections and bound history windows. A success response must not imply unperformed validation.
