@@ -23,6 +23,9 @@ export function apiUrl(path: string) {
 
 let csrfToken: string | null = null;
 export function setCsrfToken(token: string | null) { csrfToken = token; }
+// Local demo mode only: the role chosen in the workspace. Session mode ignores these headers.
+let demoRole = "supervisor";
+export function setDemoRole(role: string) { demoRole = role; }
 export class ApiError extends Error {
   constructor(message: string, public readonly status: number, public readonly retryAfterSeconds: number | null = null) { super(message); }
 }
@@ -190,8 +193,8 @@ export async function api<T>(
     signal: init?.signal ?? AbortSignal.timeout(12_000),
     headers: {
       "Content-Type": "application/json",
-      "X-Demo-Role": "supervisor",
-      "X-Demo-User": "demo-supervisor",
+      "X-Demo-Role": demoRole,
+      "X-Demo-User": `demo-${demoRole.replace("_", "-")}`,
       ...(csrfToken ? { "X-CSRF-Token": csrfToken } : {}),
       ...(init?.headers ?? {}),
     },

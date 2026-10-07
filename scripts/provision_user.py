@@ -21,6 +21,7 @@ def main() -> None:
         required=True,
         choices=[
             "viewer",
+            "fleet_manager",
             "planner",
             "engineer",
             "logistics",

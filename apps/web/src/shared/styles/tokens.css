@@ -13,3 +13,17 @@
   --accent-dark:var(--accent-hover); --navy:var(--text-primary); --teal:var(--success);
   --shadow:0 8px 24px rgba(24,33,43,.06);
 }
+
+:root[data-theme="dark"] {
+  /* Same values as the fleet-health dark tokens in features/ops/ops.css. */
+  color-scheme: dark;
+  --bg-page:#0B101E; --bg-surface:#161D2C; --bg-stage:#1A2232;
+  --text-primary:#F8FAFC; --text-secondary:#CBD5E1; --text-muted:#94A3B8;
+  --border-subtle:#2A3441; --border-control:#3A4657;
+  --accent:#2563EB; --accent-hover:#3B82F6; --accent-soft:rgba(37,99,235,.15);
+  --success:#2FD08B; --success-soft:rgba(47,208,139,.13);
+  --warning:#FF9B45; --warning-soft:rgba(255,155,69,.14);
+  --danger:#FF5D5F; --danger-soft:rgba(255,93,95,.14);
+  --unknown:#8F9AB0; --unknown-soft:#172238; --focus:#6F8DFF;
+  --shadow:0 10px 30px rgba(0,0,0,.35);
+}

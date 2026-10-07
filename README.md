@@ -6,6 +6,15 @@ The React product is published through GitHub Pages. Its synthetic demo API runs
 
 PS 26249 is a local decision-workspace demonstrator connecting labelled component records, maintenance constraints, inventory reservations and scenario-specific availability simulation. It is not an airworthiness, dispatch or operational-readiness system.
 
+## Fleet-health workspace (docs/plan.md)
+
+The default entry is now the **fleet dashboard** (`/dashboard`) of a synthetic 40-aircraft, 7-system, 20-component-type fleet built from [`docs/plan.md`](docs/plan.md). It includes:
+- the dashboard, aircraft digital twins with a replay control, component health evidence and the predictive risk queue;
+- planning and work orders, spares intelligence and a Monte Carlo scenario simulator;
+- analytics with honest model-vs-baseline evaluation, data integration and alerts.
+
+On first start the worker builds and verifies the engine bundle, which takes about 30 s. The C-MAPSS screens below remain available under **Engine RUL lab** in the sidebar. Design, substitutions and limitations: [ADR 0006](docs/decisions/0006-fleet-health-workspace.md).
+
 ## Current implemented boundary
 
 The default local entry now opens **Start**, with a concise offer and the flow **Review a component → Check maintenance options → Review approval & work**. Primary navigation is Start, Fleet and Planning; supporting tools are grouped under More tools. See the [defined user flow](docs/product/user_flow.md) for screen responsibilities, exception paths and implementation limits.

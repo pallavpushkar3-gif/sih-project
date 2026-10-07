@@ -3252,10 +3252,2564 @@
           }
         }
       }
+    },
+    "/api/fleet-health/engine": {
+      "get": {
+        "tags": [
+          "fleet-health"
+        ],
+        "summary": "Engine",
+        "operationId": "engine_api_fleet_health_engine_get",
+        "parameters": [
+          {
+            "name": "x-demo-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "demo-planner",
+              "title": "X-Demo-User"
+            }
+          },
+          {
+            "name": "x-demo-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "planner",
+              "title": "X-Demo-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EngineStatusResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/fleet-health/engine/runs": {
+      "post": {
+        "tags": [
+          "fleet-health"
+        ],
+        "summary": "Request Run",
+        "operationId": "request_run_api_fleet_health_engine_runs_post",
+        "parameters": [
+          {
+            "name": "x-demo-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "demo-planner",
+              "title": "X-Demo-User"
+            }
+          },
+          {
+            "name": "x-demo-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "planner",
+              "title": "X-Demo-Role"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EngineRunRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EngineStatusResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/fleet-health/engine/cannibalize-strategy": {
+      "get": {
+        "tags": [
+          "fleet-health"
+        ],
+        "summary": "Cannibalize Strategy",
+        "description": "Part swaps between grounded aircraft that unblock the most aircraft for the least\nlabour. Read-only: it proposes a plan and records nothing.",
+        "operationId": "cannibalize_strategy_api_fleet_health_engine_cannibalize_strategy_get",
+        "parameters": [
+          {
+            "name": "as_of",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Replay date within the last 120 days",
+              "title": "As Of"
+            },
+            "description": "Replay date within the last 120 days"
+          },
+          {
+            "name": "x-demo-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "demo-planner",
+              "title": "X-Demo-User"
+            }
+          },
+          {
+            "name": "x-demo-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "planner",
+              "title": "X-Demo-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CannibalizeStrategyResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/fleet-health/summary": {
+      "get": {
+        "tags": [
+          "fleet-health"
+        ],
+        "summary": "Summary",
+        "operationId": "summary_api_fleet_health_summary_get",
+        "parameters": [
+          {
+            "name": "as_of",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Replay date within the last 120 days",
+              "title": "As Of"
+            },
+            "description": "Replay date within the last 120 days"
+          },
+          {
+            "name": "x-demo-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "demo-planner",
+              "title": "X-Demo-User"
+            }
+          },
+          {
+            "name": "x-demo-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "planner",
+              "title": "X-Demo-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FleetSummaryResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/fleet-health/availability/trend": {
+      "get": {
+        "tags": [
+          "fleet-health"
+        ],
+        "summary": "Trend",
+        "operationId": "trend_api_fleet_health_availability_trend_get",
+        "parameters": [
+          {
+            "name": "as_of",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Replay date within the last 120 days",
+              "title": "As Of"
+            },
+            "description": "Replay date within the last 120 days"
+          },
+          {
+            "name": "x-demo-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "demo-planner",
+              "title": "X-Demo-User"
+            }
+          },
+          {
+            "name": "x-demo-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "planner",
+              "title": "X-Demo-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AvailabilityTrendResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/fleet-health/heatgrid": {
+      "get": {
+        "tags": [
+          "fleet-health"
+        ],
+        "summary": "Heatgrid",
+        "operationId": "heatgrid_api_fleet_health_heatgrid_get",
+        "parameters": [
+          {
+            "name": "as_of",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Replay date within the last 120 days",
+              "title": "As Of"
+            },
+            "description": "Replay date within the last 120 days"
+          },
+          {
+            "name": "x-demo-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "demo-planner",
+              "title": "X-Demo-User"
+            }
+          },
+          {
+            "name": "x-demo-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "planner",
+              "title": "X-Demo-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HeatGridResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/fleet-health/aircraft": {
+      "get": {
+        "tags": [
+          "fleet-health"
+        ],
+        "summary": "Aircraft",
+        "operationId": "aircraft_api_fleet_health_aircraft_get",
+        "parameters": [
+          {
+            "name": "as_of",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Replay date within the last 120 days",
+              "title": "As Of"
+            },
+            "description": "Replay date within the last 120 days"
+          },
+          {
+            "name": "x-demo-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "demo-planner",
+              "title": "X-Demo-User"
+            }
+          },
+          {
+            "name": "x-demo-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "planner",
+              "title": "X-Demo-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AircraftListItem"
+                  },
+                  "title": "Response Aircraft Api Fleet Health Aircraft Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/fleet-health/aircraft/{aircraft_id}": {
+      "get": {
+        "tags": [
+          "fleet-health"
+        ],
+        "summary": "Aircraft Detail",
+        "operationId": "aircraft_detail_api_fleet_health_aircraft__aircraft_id__get",
+        "parameters": [
+          {
+            "name": "aircraft_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Aircraft Id"
+            }
+          },
+          {
+            "name": "as_of",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Replay date within the last 120 days",
+              "title": "As Of"
+            },
+            "description": "Replay date within the last 120 days"
+          },
+          {
+            "name": "x-demo-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "demo-planner",
+              "title": "X-Demo-User"
+            }
+          },
+          {
+            "name": "x-demo-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "planner",
+              "title": "X-Demo-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AircraftDetailResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/fleet-health/components/{component_id}": {
+      "get": {
+        "tags": [
+          "fleet-health"
+        ],
+        "summary": "Component",
+        "operationId": "component_api_fleet_health_components__component_id__get",
+        "parameters": [
+          {
+            "name": "component_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Component Id"
+            }
+          },
+          {
+            "name": "as_of",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Replay date within the last 120 days",
+              "title": "As Of"
+            },
+            "description": "Replay date within the last 120 days"
+          },
+          {
+            "name": "days",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 365,
+              "minimum": 30,
+              "default": 180,
+              "title": "Days"
+            }
+          },
+          {
+            "name": "x-demo-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "demo-planner",
+              "title": "X-Demo-User"
+            }
+          },
+          {
+            "name": "x-demo-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "planner",
+              "title": "X-Demo-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ComponentHealthResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/fleet-health/advisories": {
+      "get": {
+        "tags": [
+          "fleet-health"
+        ],
+        "summary": "Advisories",
+        "operationId": "advisories_api_fleet_health_advisories_get",
+        "parameters": [
+          {
+            "name": "as_of",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Replay date within the last 120 days",
+              "title": "As Of"
+            },
+            "description": "Replay date within the last 120 days"
+          },
+          {
+            "name": "priority",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Priority"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "name": "system",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "System"
+            }
+          },
+          {
+            "name": "spare_status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Spare Status"
+            }
+          },
+          {
+            "name": "aircraft",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Aircraft"
+            }
+          },
+          {
+            "name": "x-demo-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "demo-planner",
+              "title": "X-Demo-User"
+            }
+          },
+          {
+            "name": "x-demo-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "planner",
+              "title": "X-Demo-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AdvisoryResponse"
+                  },
+                  "title": "Response Advisories Api Fleet Health Advisories Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/fleet-health/advisories/{advisory_id}": {
+      "patch": {
+        "tags": [
+          "fleet-health"
+        ],
+        "summary": "Update Advisory",
+        "operationId": "update_advisory_api_fleet_health_advisories__advisory_id__patch",
+        "parameters": [
+          {
+            "name": "advisory_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Advisory Id"
+            }
+          },
+          {
+            "name": "x-demo-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "demo-planner",
+              "title": "X-Demo-User"
+            }
+          },
+          {
+            "name": "x-demo-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "planner",
+              "title": "X-Demo-Role"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdvisoryUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdvisoryResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/fleet-health/work-orders": {
+      "get": {
+        "tags": [
+          "fleet-health"
+        ],
+        "summary": "Work Orders",
+        "operationId": "work_orders_api_fleet_health_work_orders_get",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "name": "aircraft",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Aircraft"
+            }
+          },
+          {
+            "name": "agency",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Agency"
+            }
+          },
+          {
+            "name": "x-demo-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "demo-planner",
+              "title": "X-Demo-User"
+            }
+          },
+          {
+            "name": "x-demo-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "planner",
+              "title": "X-Demo-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkOrdersResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "fleet-health"
+        ],
+        "summary": "Create Work Order",
+        "operationId": "create_work_order_api_fleet_health_work_orders_post",
+        "parameters": [
+          {
+            "name": "x-demo-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "demo-planner",
+              "title": "X-Demo-User"
+            }
+          },
+          {
+            "name": "x-demo-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "planner",
+              "title": "X-Demo-Role"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WorkOrderCreateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlannedWorkOrderResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/fleet-health/work-orders/{work_order_id}": {
+      "patch": {
+        "tags": [
+          "fleet-health"
+        ],
+        "summary": "Update Work Order",
+        "operationId": "update_work_order_api_fleet_health_work_orders__work_order_id__patch",
+        "parameters": [
+          {
+            "name": "work_order_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Work Order Id"
+            }
+          },
+          {
+            "name": "x-demo-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "demo-planner",
+              "title": "X-Demo-User"
+            }
+          },
+          {
+            "name": "x-demo-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "planner",
+              "title": "X-Demo-Role"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WorkOrderUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlannedWorkOrderResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/fleet-health/maintenance/schedule": {
+      "get": {
+        "tags": [
+          "fleet-health"
+        ],
+        "summary": "Schedule",
+        "operationId": "schedule_api_fleet_health_maintenance_schedule_get",
+        "parameters": [
+          {
+            "name": "x-demo-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "demo-planner",
+              "title": "X-Demo-User"
+            }
+          },
+          {
+            "name": "x-demo-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "planner",
+              "title": "X-Demo-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScheduleResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/fleet-health/maintenance/tasks": {
+      "get": {
+        "tags": [
+          "fleet-health"
+        ],
+        "summary": "Tasks",
+        "operationId": "tasks_api_fleet_health_maintenance_tasks_get",
+        "parameters": [
+          {
+            "name": "x-demo-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "demo-planner",
+              "title": "X-Demo-User"
+            }
+          },
+          {
+            "name": "x-demo-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "planner",
+              "title": "X-Demo-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TasksResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/fleet-health/inventory": {
+      "get": {
+        "tags": [
+          "fleet-health"
+        ],
+        "summary": "Inventory",
+        "operationId": "inventory_api_fleet_health_inventory_get",
+        "parameters": [
+          {
+            "name": "as_of",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Replay date within the last 120 days",
+              "title": "As Of"
+            },
+            "description": "Replay date within the last 120 days"
+          },
+          {
+            "name": "x-demo-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "demo-planner",
+              "title": "X-Demo-User"
+            }
+          },
+          {
+            "name": "x-demo-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "planner",
+              "title": "X-Demo-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/InventoryItem"
+                  },
+                  "title": "Response Inventory Api Fleet Health Inventory Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/fleet-health/inventory/{part_number}/forecast": {
+      "get": {
+        "tags": [
+          "fleet-health"
+        ],
+        "summary": "Demand",
+        "operationId": "demand_api_fleet_health_inventory__part_number__forecast_get",
+        "parameters": [
+          {
+            "name": "part_number",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Part Number"
+            }
+          },
+          {
+            "name": "horizon",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 120,
+              "minimum": 7,
+              "default": 30,
+              "title": "Horizon"
+            }
+          },
+          {
+            "name": "x-demo-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "demo-planner",
+              "title": "X-Demo-User"
+            }
+          },
+          {
+            "name": "x-demo-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "planner",
+              "title": "X-Demo-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DemandForecastResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/fleet-health/alerts": {
+      "get": {
+        "tags": [
+          "fleet-health"
+        ],
+        "summary": "Alerts",
+        "operationId": "alerts_api_fleet_health_alerts_get",
+        "parameters": [
+          {
+            "name": "x-demo-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "demo-planner",
+              "title": "X-Demo-User"
+            }
+          },
+          {
+            "name": "x-demo-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "planner",
+              "title": "X-Demo-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/FleetAlertResponse"
+                  },
+                  "title": "Response Alerts Api Fleet Health Alerts Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/fleet-health/alerts/{alert_key}/acknowledge": {
+      "post": {
+        "tags": [
+          "fleet-health"
+        ],
+        "summary": "Acknowledge",
+        "operationId": "acknowledge_api_fleet_health_alerts__alert_key__acknowledge_post",
+        "parameters": [
+          {
+            "name": "alert_key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Alert Key"
+            }
+          },
+          {
+            "name": "x-demo-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "demo-planner",
+              "title": "X-Demo-User"
+            }
+          },
+          {
+            "name": "x-demo-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "planner",
+              "title": "X-Demo-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/FleetAlertResponse"
+                  },
+                  "title": "Response Acknowledge Api Fleet Health Alerts  Alert Key  Acknowledge Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/fleet-health/kpis": {
+      "get": {
+        "tags": [
+          "fleet-health"
+        ],
+        "summary": "Kpis",
+        "operationId": "kpis_api_fleet_health_kpis_get",
+        "parameters": [
+          {
+            "name": "x-demo-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "demo-planner",
+              "title": "X-Demo-User"
+            }
+          },
+          {
+            "name": "x-demo-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "planner",
+              "title": "X-Demo-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Kpis Api Fleet Health Kpis Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/fleet-health/models": {
+      "get": {
+        "tags": [
+          "fleet-health"
+        ],
+        "summary": "Models",
+        "operationId": "models_api_fleet_health_models_get",
+        "parameters": [
+          {
+            "name": "x-demo-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "demo-planner",
+              "title": "X-Demo-User"
+            }
+          },
+          {
+            "name": "x-demo-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "planner",
+              "title": "X-Demo-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Models Api Fleet Health Models Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/fleet-health/scenarios": {
+      "get": {
+        "tags": [
+          "fleet-health"
+        ],
+        "summary": "Scenarios",
+        "operationId": "scenarios_api_fleet_health_scenarios_get",
+        "parameters": [
+          {
+            "name": "x-demo-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "demo-planner",
+              "title": "X-Demo-User"
+            }
+          },
+          {
+            "name": "x-demo-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "planner",
+              "title": "X-Demo-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/FleetScenarioResponse"
+                  },
+                  "title": "Response Scenarios Api Fleet Health Scenarios Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/fleet-health/scenarios/run": {
+      "post": {
+        "tags": [
+          "fleet-health"
+        ],
+        "summary": "Run Scenario",
+        "operationId": "run_scenario_api_fleet_health_scenarios_run_post",
+        "parameters": [
+          {
+            "name": "x-demo-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "demo-planner",
+              "title": "X-Demo-User"
+            }
+          },
+          {
+            "name": "x-demo-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "planner",
+              "title": "X-Demo-Role"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FleetScenarioRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FleetScenarioResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/fleet-health/data/sources": {
+      "get": {
+        "tags": [
+          "fleet-health"
+        ],
+        "summary": "Data Sources",
+        "operationId": "data_sources_api_fleet_health_data_sources_get",
+        "parameters": [
+          {
+            "name": "x-demo-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "demo-planner",
+              "title": "X-Demo-User"
+            }
+          },
+          {
+            "name": "x-demo-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "planner",
+              "title": "X-Demo-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataSourcesResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/fleet-health/ingest/sensor-readings": {
+      "post": {
+        "tags": [
+          "fleet-health"
+        ],
+        "summary": "Ingest",
+        "operationId": "ingest_api_fleet_health_ingest_sensor_readings_post",
+        "parameters": [
+          {
+            "name": "x-demo-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "demo-planner",
+              "title": "X-Demo-User"
+            }
+          },
+          {
+            "name": "x-demo-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "planner",
+              "title": "X-Demo-Role"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IngestRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IngestBatchResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/fleet-health/part-requests": {
+      "get": {
+        "tags": [
+          "fleet-health"
+        ],
+        "summary": "Part Requests",
+        "operationId": "part_requests_api_fleet_health_part_requests_get",
+        "parameters": [
+          {
+            "name": "include_closed",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Include Closed"
+            }
+          },
+          {
+            "name": "x-demo-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "demo-planner",
+              "title": "X-Demo-User"
+            }
+          },
+          {
+            "name": "x-demo-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "planner",
+              "title": "X-Demo-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PartRequestResponse"
+                  },
+                  "title": "Response Part Requests Api Fleet Health Part Requests Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/fleet-health/part-requests/{request_id}": {
+      "patch": {
+        "tags": [
+          "fleet-health"
+        ],
+        "summary": "Update Part Request",
+        "operationId": "update_part_request_api_fleet_health_part_requests__request_id__patch",
+        "parameters": [
+          {
+            "name": "request_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Request Id"
+            }
+          },
+          {
+            "name": "x-demo-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "demo-planner",
+              "title": "X-Demo-User"
+            }
+          },
+          {
+            "name": "x-demo-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "planner",
+              "title": "X-Demo-Role"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PartRequestUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PartRequestResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/fleet-health/work-orders/recorded/{work_order_id}/return-to-service": {
+      "post": {
+        "tags": [
+          "fleet-health"
+        ],
+        "summary": "Return To Service",
+        "operationId": "return_to_service_api_fleet_health_work_orders_recorded__work_order_id__return_to_service_post",
+        "parameters": [
+          {
+            "name": "work_order_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Work Order Id"
+            }
+          },
+          {
+            "name": "x-demo-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "demo-planner",
+              "title": "X-Demo-User"
+            }
+          },
+          {
+            "name": "x-demo-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "planner",
+              "title": "X-Demo-Role"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReturnToServiceRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkOrdersResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/fleet-health/work-orders/{work_order_id}/schedule": {
+      "patch": {
+        "tags": [
+          "fleet-health"
+        ],
+        "summary": "Reschedule Work Order",
+        "operationId": "reschedule_work_order_api_fleet_health_work_orders__work_order_id__schedule_patch",
+        "parameters": [
+          {
+            "name": "work_order_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Work Order Id"
+            }
+          },
+          {
+            "name": "x-demo-user",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "demo-planner",
+              "title": "X-Demo-User"
+            }
+          },
+          {
+            "name": "x-demo-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "planner",
+              "title": "X-Demo-Role"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WorkOrderRescheduleRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlannedWorkOrderResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
+      "Action": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "ground_now",
+              "replace_within",
+              "inspect",
+              "monitor"
+            ],
+            "title": "Code"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "within_days": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Within Days"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "label",
+          "within_days"
+        ],
+        "title": "Action"
+      },
+      "AdvisoryResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "component_id": {
+            "type": "string",
+            "title": "Component Id"
+          },
+          "aircraft": {
+            "type": "string",
+            "title": "Aircraft"
+          },
+          "system": {
+            "type": "string",
+            "title": "System"
+          },
+          "system_name": {
+            "type": "string",
+            "title": "System Name"
+          },
+          "component_type": {
+            "type": "string",
+            "title": "Component Type"
+          },
+          "component_name": {
+            "type": "string",
+            "title": "Component Name"
+          },
+          "serial": {
+            "type": "string",
+            "title": "Serial"
+          },
+          "criticality": {
+            "type": "integer",
+            "title": "Criticality"
+          },
+          "as_of": {
+            "type": "string",
+            "title": "As Of"
+          },
+          "health_state": {
+            "type": "string",
+            "enum": [
+              "healthy",
+              "watch",
+              "degraded",
+              "critical",
+              "failed",
+              "under_maintenance"
+            ],
+            "title": "Health State"
+          },
+          "health_index": {
+            "type": "number",
+            "title": "Health Index"
+          },
+          "health_index_20d_ago": {
+            "type": "number",
+            "title": "Health Index 20D Ago"
+          },
+          "risk_14d": {
+            "type": "number",
+            "title": "Risk 14D"
+          },
+          "risk_30d": {
+            "type": "number",
+            "title": "Risk 30D"
+          },
+          "risk_band": {
+            "type": "string",
+            "enum": [
+              "low",
+              "watch",
+              "high",
+              "critical"
+            ],
+            "title": "Risk Band"
+          },
+          "rul_days": {
+            "$ref": "#/components/schemas/Quantiles"
+          },
+          "anomaly_score": {
+            "type": "number",
+            "title": "Anomaly Score"
+          },
+          "anomaly_sustained": {
+            "type": "boolean",
+            "title": "Anomaly Sustained"
+          },
+          "contributing_parameters": {
+            "items": {
+              "$ref": "#/components/schemas/ContributingParameter"
+            },
+            "type": "array",
+            "title": "Contributing Parameters"
+          },
+          "attribution": {
+            "items": {
+              "$ref": "#/components/schemas/Attribution"
+            },
+            "type": "array",
+            "title": "Attribution"
+          },
+          "action": {
+            "$ref": "#/components/schemas/Action"
+          },
+          "priority": {
+            "$ref": "#/components/schemas/Priority"
+          },
+          "spare": {
+            "$ref": "#/components/schemas/SpareCheck"
+          },
+          "downtime": {
+            "$ref": "#/components/schemas/Downtime"
+          },
+          "availability_impact": {
+            "$ref": "#/components/schemas/AvailabilityImpact"
+          },
+          "confidence": {
+            "$ref": "#/components/schemas/Confidence"
+          },
+          "explanation": {
+            "type": "string",
+            "title": "Explanation"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "proposed",
+              "accepted",
+              "scheduled",
+              "completed",
+              "dismissed"
+            ],
+            "title": "Status"
+          },
+          "status_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status Reason"
+          },
+          "status_actor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status Actor"
+          },
+          "status_updated_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status Updated At"
+          },
+          "work_order_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Work Order Id"
+          },
+          "parts_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parts Status"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "component_id",
+          "aircraft",
+          "system",
+          "system_name",
+          "component_type",
+          "component_name",
+          "serial",
+          "criticality",
+          "as_of",
+          "health_state",
+          "health_index",
+          "health_index_20d_ago",
+          "risk_14d",
+          "risk_30d",
+          "risk_band",
+          "rul_days",
+          "anomaly_score",
+          "anomaly_sustained",
+          "contributing_parameters",
+          "attribution",
+          "action",
+          "priority",
+          "spare",
+          "downtime",
+          "availability_impact",
+          "confidence",
+          "explanation",
+          "status",
+          "status_reason",
+          "status_actor",
+          "status_updated_at",
+          "work_order_id"
+        ],
+        "title": "AdvisoryResponse"
+      },
+      "AdvisoryUpdateRequest": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "proposed",
+              "accepted",
+              "scheduled",
+              "completed",
+              "dismissed"
+            ],
+            "title": "Status"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "expected_status": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "proposed",
+                  "accepted",
+                  "scheduled",
+                  "completed",
+                  "dismissed"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expected Status"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status"
+        ],
+        "title": "AdvisoryUpdateRequest"
+      },
+      "AircraftDetailResponse": {
+        "properties": {
+          "aircraft": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Aircraft"
+          },
+          "as_of": {
+            "type": "string",
+            "title": "As Of"
+          },
+          "replay": {
+            "type": "boolean",
+            "title": "Replay"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "healthy",
+              "watch",
+              "degraded",
+              "critical",
+              "failed",
+              "under_maintenance"
+            ],
+            "title": "State"
+          },
+          "availability_state": {
+            "type": "string",
+            "title": "Availability State"
+          },
+          "health_index": {
+            "type": "number",
+            "title": "Health Index"
+          },
+          "driver": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Driver"
+          },
+          "systems": {
+            "items": {
+              "$ref": "#/components/schemas/TwinSystem"
+            },
+            "type": "array",
+            "title": "Systems"
+          },
+          "advisories": {
+            "items": {
+              "$ref": "#/components/schemas/AdvisoryResponse"
+            },
+            "type": "array",
+            "title": "Advisories"
+          },
+          "work_orders": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Work Orders"
+          },
+          "timeline": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Timeline"
+          },
+          "availability_90d": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Availability 90D"
+          },
+          "tasks": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Tasks"
+          }
+        },
+        "type": "object",
+        "required": [
+          "aircraft",
+          "as_of",
+          "replay",
+          "state",
+          "availability_state",
+          "health_index",
+          "driver",
+          "systems",
+          "advisories",
+          "work_orders",
+          "timeline",
+          "availability_90d",
+          "tasks"
+        ],
+        "title": "AircraftDetailResponse"
+      },
       "AircraftFixture": {
         "properties": {
           "id": {
@@ -3286,6 +5840,86 @@
           "label"
         ],
         "title": "AircraftFixture"
+      },
+      "AircraftListItem": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "base": {
+            "type": "string",
+            "title": "Base"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "healthy",
+              "watch",
+              "degraded",
+              "critical",
+              "failed",
+              "under_maintenance"
+            ],
+            "title": "State"
+          },
+          "availability_state": {
+            "type": "string",
+            "title": "Availability State"
+          },
+          "health_index": {
+            "type": "number",
+            "title": "Health Index"
+          },
+          "driver": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Driver"
+          },
+          "open_advisories": {
+            "type": "integer",
+            "title": "Open Advisories"
+          },
+          "top_priority": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Top Priority"
+          },
+          "total_flight_hours": {
+            "type": "number",
+            "title": "Total Flight Hours"
+          },
+          "utilisation_flights_per_day": {
+            "type": "number",
+            "title": "Utilisation Flights Per Day"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "base",
+          "state",
+          "availability_state",
+          "health_index",
+          "driver",
+          "open_advisories",
+          "top_priority",
+          "total_flight_hours",
+          "utilisation_flights_per_day"
+        ],
+        "title": "AircraftListItem"
       },
       "AlertAcknowledgementResponse": {
         "properties": {
@@ -3761,6 +6395,652 @@
         ],
         "title": "AssessmentSummaryResponse"
       },
+      "Attribution": {
+        "properties": {
+          "factor": {
+            "type": "string",
+            "title": "Factor"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "contribution": {
+            "type": "number",
+            "title": "Contribution"
+          }
+        },
+        "type": "object",
+        "required": [
+          "factor",
+          "label",
+          "contribution"
+        ],
+        "title": "Attribution"
+      },
+      "AvailabilityImpact": {
+        "properties": {
+          "act_now_aircraft_days": {
+            "type": "number",
+            "title": "Act Now Aircraft Days"
+          },
+          "run_to_failure_expected_aircraft_days": {
+            "type": "number",
+            "title": "Run To Failure Expected Aircraft Days"
+          }
+        },
+        "type": "object",
+        "required": [
+          "act_now_aircraft_days",
+          "run_to_failure_expected_aircraft_days"
+        ],
+        "title": "AvailabilityImpact"
+      },
+      "AvailabilityPoint": {
+        "properties": {
+          "date": {
+            "type": "string",
+            "title": "Date"
+          },
+          "availability": {
+            "type": "number",
+            "title": "Availability"
+          },
+          "scheduled_maintenance": {
+            "type": "integer",
+            "title": "Scheduled Maintenance"
+          },
+          "unscheduled_repair": {
+            "type": "integer",
+            "title": "Unscheduled Repair"
+          },
+          "awaiting_spares": {
+            "type": "integer",
+            "title": "Awaiting Spares"
+          },
+          "awaiting_agency": {
+            "type": "integer",
+            "title": "Awaiting Agency"
+          }
+        },
+        "type": "object",
+        "required": [
+          "date",
+          "availability",
+          "scheduled_maintenance",
+          "unscheduled_repair",
+          "awaiting_spares",
+          "awaiting_agency"
+        ],
+        "title": "AvailabilityPoint"
+      },
+      "AvailabilityTrendResponse": {
+        "properties": {
+          "history": {
+            "items": {
+              "$ref": "#/components/schemas/AvailabilityPoint"
+            },
+            "type": "array",
+            "title": "History"
+          },
+          "forecast": {
+            "items": {
+              "$ref": "#/components/schemas/ForecastBand"
+            },
+            "type": "array",
+            "title": "Forecast"
+          },
+          "downtime_by_month": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Downtime By Month"
+          },
+          "definition": {
+            "type": "string",
+            "title": "Definition"
+          }
+        },
+        "type": "object",
+        "required": [
+          "history",
+          "forecast",
+          "downtime_by_month",
+          "definition"
+        ],
+        "title": "AvailabilityTrendResponse"
+      },
+      "Backlog": {
+        "properties": {
+          "open_work_orders": {
+            "type": "integer",
+            "title": "Open Work Orders"
+          },
+          "recorded_open": {
+            "type": "integer",
+            "title": "Recorded Open"
+          },
+          "planned_from_advisories": {
+            "type": "integer",
+            "title": "Planned From Advisories"
+          },
+          "man_hours": {
+            "type": "number",
+            "title": "Man Hours"
+          },
+          "man_hours_assumption": {
+            "type": "string",
+            "title": "Man Hours Assumption"
+          }
+        },
+        "type": "object",
+        "required": [
+          "open_work_orders",
+          "recorded_open",
+          "planned_from_advisories",
+          "man_hours",
+          "man_hours_assumption"
+        ],
+        "title": "Backlog"
+      },
+      "CannibalizeForge": {
+        "properties": {
+          "aircraft": {
+            "type": "string",
+            "title": "Aircraft"
+          },
+          "part_number": {
+            "type": "string",
+            "title": "Part Number"
+          },
+          "component_name": {
+            "type": "string",
+            "title": "Component Name"
+          },
+          "work_order": {
+            "type": "string",
+            "title": "Work Order"
+          },
+          "print_days": {
+            "type": "integer",
+            "title": "Print Days"
+          }
+        },
+        "type": "object",
+        "required": [
+          "aircraft",
+          "part_number",
+          "component_name",
+          "work_order",
+          "print_days"
+        ],
+        "title": "CannibalizeForge"
+      },
+      "CannibalizeGrounded": {
+        "properties": {
+          "aircraft": {
+            "type": "string",
+            "title": "Aircraft"
+          },
+          "state": {
+            "type": "string",
+            "title": "State"
+          },
+          "base": {
+            "type": "string",
+            "title": "Base"
+          },
+          "waiting_for": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Waiting For"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "recipient",
+              "donor",
+              "blocked",
+              "other"
+            ],
+            "title": "Role"
+          }
+        },
+        "type": "object",
+        "required": [
+          "aircraft",
+          "state",
+          "base",
+          "waiting_for",
+          "role"
+        ],
+        "title": "CannibalizeGrounded"
+      },
+      "CannibalizeHangarQueen": {
+        "properties": {
+          "aircraft": {
+            "type": "string",
+            "title": "Aircraft"
+          },
+          "components_removed": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Components Removed"
+          }
+        },
+        "type": "object",
+        "required": [
+          "aircraft",
+          "components_removed"
+        ],
+        "title": "CannibalizeHangarQueen"
+      },
+      "CannibalizeStep": {
+        "properties": {
+          "step": {
+            "type": "integer",
+            "title": "Step"
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "remove",
+              "transfer",
+              "install"
+            ],
+            "title": "Action"
+          },
+          "aircraft": {
+            "type": "string",
+            "title": "Aircraft"
+          },
+          "component_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Component Id"
+          },
+          "part_number": {
+            "type": "string",
+            "title": "Part Number"
+          },
+          "component_name": {
+            "type": "string",
+            "title": "Component Name"
+          },
+          "labor_hours": {
+            "type": "number",
+            "title": "Labor Hours"
+          },
+          "swap": {
+            "type": "integer",
+            "title": "Swap"
+          }
+        },
+        "type": "object",
+        "required": [
+          "step",
+          "action",
+          "aircraft",
+          "component_id",
+          "part_number",
+          "component_name",
+          "labor_hours",
+          "swap"
+        ],
+        "title": "CannibalizeStep"
+      },
+      "CannibalizeStrategyResponse": {
+        "properties": {
+          "as_of": {
+            "type": "string",
+            "title": "As Of"
+          },
+          "replay": {
+            "type": "boolean",
+            "title": "Replay"
+          },
+          "fleet_size": {
+            "type": "integer",
+            "title": "Fleet Size"
+          },
+          "available_now": {
+            "type": "integer",
+            "title": "Available Now"
+          },
+          "grounded": {
+            "items": {
+              "$ref": "#/components/schemas/CannibalizeGrounded"
+            },
+            "type": "array",
+            "title": "Grounded"
+          },
+          "aircraft_unblocked": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Aircraft Unblocked"
+          },
+          "available_after_repairs": {
+            "type": "integer",
+            "title": "Available After Repairs"
+          },
+          "total_labor_hours": {
+            "type": "number",
+            "title": "Total Labor Hours"
+          },
+          "swaps": {
+            "items": {
+              "$ref": "#/components/schemas/CannibalizeSwap"
+            },
+            "type": "array",
+            "title": "Swaps"
+          },
+          "sequence": {
+            "items": {
+              "$ref": "#/components/schemas/CannibalizeStep"
+            },
+            "type": "array",
+            "title": "Sequence"
+          },
+          "hangar_queens": {
+            "items": {
+              "$ref": "#/components/schemas/CannibalizeHangarQueen"
+            },
+            "type": "array",
+            "title": "Hangar Queens"
+          },
+          "forge": {
+            "items": {
+              "$ref": "#/components/schemas/CannibalizeForge"
+            },
+            "type": "array",
+            "title": "Forge"
+          },
+          "unmet": {
+            "items": {
+              "$ref": "#/components/schemas/CannibalizeUnmet"
+            },
+            "type": "array",
+            "title": "Unmet"
+          },
+          "verification": {
+            "$ref": "#/components/schemas/CannibalizeVerification"
+          },
+          "days_with_blocked_aircraft": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Days With Blocked Aircraft"
+          },
+          "method": {
+            "type": "string",
+            "title": "Method"
+          },
+          "assumptions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Assumptions"
+          }
+        },
+        "type": "object",
+        "required": [
+          "as_of",
+          "replay",
+          "fleet_size",
+          "available_now",
+          "grounded",
+          "aircraft_unblocked",
+          "available_after_repairs",
+          "total_labor_hours",
+          "swaps",
+          "sequence",
+          "hangar_queens",
+          "forge",
+          "unmet",
+          "verification",
+          "days_with_blocked_aircraft",
+          "method",
+          "assumptions"
+        ],
+        "title": "CannibalizeStrategyResponse"
+      },
+      "CannibalizeSwap": {
+        "properties": {
+          "swap": {
+            "type": "integer",
+            "title": "Swap"
+          },
+          "part_number": {
+            "type": "string",
+            "title": "Part Number"
+          },
+          "component_type": {
+            "type": "string",
+            "title": "Component Type"
+          },
+          "component_name": {
+            "type": "string",
+            "title": "Component Name"
+          },
+          "donor": {
+            "type": "string",
+            "title": "Donor"
+          },
+          "donor_component": {
+            "type": "string",
+            "title": "Donor Component"
+          },
+          "donor_health_index": {
+            "type": "number",
+            "title": "Donor Health Index"
+          },
+          "recipient": {
+            "type": "string",
+            "title": "Recipient"
+          },
+          "recipient_component": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Recipient Component"
+          },
+          "work_order": {
+            "type": "string",
+            "title": "Work Order"
+          },
+          "labor_hours": {
+            "type": "number",
+            "title": "Labor Hours"
+          },
+          "cross_base": {
+            "type": "boolean",
+            "title": "Cross Base"
+          },
+          "supply_wait_avoided_days": {
+            "type": "number",
+            "title": "Supply Wait Avoided Days"
+          },
+          "donor_new_wait_days": {
+            "type": "number",
+            "title": "Donor New Wait Days"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text"
+          }
+        },
+        "type": "object",
+        "required": [
+          "swap",
+          "part_number",
+          "component_type",
+          "component_name",
+          "donor",
+          "donor_component",
+          "donor_health_index",
+          "recipient",
+          "recipient_component",
+          "work_order",
+          "labor_hours",
+          "cross_base",
+          "supply_wait_avoided_days",
+          "donor_new_wait_days",
+          "text"
+        ],
+        "title": "CannibalizeSwap"
+      },
+      "CannibalizeUnmet": {
+        "properties": {
+          "aircraft": {
+            "type": "string",
+            "title": "Aircraft"
+          },
+          "part_number": {
+            "type": "string",
+            "title": "Part Number"
+          },
+          "component_name": {
+            "type": "string",
+            "title": "Component Name"
+          },
+          "work_order": {
+            "type": "string",
+            "title": "Work Order"
+          },
+          "supply_wait_days": {
+            "type": "number",
+            "title": "Supply Wait Days"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "aircraft",
+          "part_number",
+          "component_name",
+          "work_order",
+          "supply_wait_days",
+          "reason"
+        ],
+        "title": "CannibalizeUnmet"
+      },
+      "CannibalizeVerification": {
+        "properties": {
+          "no_unit_used_twice": {
+            "type": "boolean",
+            "title": "No Unit Used Twice"
+          },
+          "types_match": {
+            "type": "boolean",
+            "title": "Types Match"
+          },
+          "donors_grounded": {
+            "type": "boolean",
+            "title": "Donors Grounded"
+          },
+          "donors_not_unblocked": {
+            "type": "boolean",
+            "title": "Donors Not Unblocked"
+          },
+          "recipients_fully_covered": {
+            "type": "boolean",
+            "title": "Recipients Fully Covered"
+          },
+          "greedy_unblocked": {
+            "type": "integer",
+            "title": "Greedy Unblocked"
+          },
+          "greedy_labor_hours": {
+            "type": "number",
+            "title": "Greedy Labor Hours"
+          },
+          "optimal_unblocked": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Optimal Unblocked"
+          },
+          "optimal_labor_hours": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Optimal Labor Hours"
+          },
+          "greedy_is_optimal": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Greedy Is Optimal"
+          },
+          "plan_source": {
+            "type": "string",
+            "enum": [
+              "greedy",
+              "exact"
+            ],
+            "title": "Plan Source"
+          },
+          "exact_method": {
+            "type": "string",
+            "title": "Exact Method"
+          }
+        },
+        "type": "object",
+        "required": [
+          "no_unit_used_twice",
+          "types_match",
+          "donors_grounded",
+          "donors_not_unblocked",
+          "recipients_fully_covered",
+          "greedy_unblocked",
+          "greedy_labor_hours",
+          "optimal_unblocked",
+          "optimal_labor_hours",
+          "greedy_is_optimal",
+          "plan_source",
+          "exact_method"
+        ],
+        "title": "CannibalizeVerification"
+      },
       "ComponentDetailResponse": {
         "properties": {
           "id": {
@@ -3856,6 +7136,174 @@
         ],
         "title": "ComponentFixture"
       },
+      "ComponentHealthResponse": {
+        "properties": {
+          "component": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Component"
+          },
+          "as_of": {
+            "type": "string",
+            "title": "As Of"
+          },
+          "replay": {
+            "type": "boolean",
+            "title": "Replay"
+          },
+          "dates": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Dates"
+          },
+          "sensors": {
+            "items": {
+              "$ref": "#/components/schemas/SensorSeries"
+            },
+            "type": "array",
+            "title": "Sensors"
+          },
+          "ambient": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Ambient"
+          },
+          "health_index": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array",
+            "title": "Health Index"
+          },
+          "replay_dates": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Replay Dates"
+          },
+          "risk14": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array",
+            "title": "Risk14"
+          },
+          "risk30": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array",
+            "title": "Risk30"
+          },
+          "rul": {
+            "items": {
+              "$ref": "#/components/schemas/Quantiles"
+            },
+            "type": "array",
+            "title": "Rul"
+          },
+          "anomaly": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array",
+            "title": "Anomaly"
+          },
+          "anomaly_alert": {
+            "items": {
+              "type": "boolean"
+            },
+            "type": "array",
+            "title": "Anomaly Alert"
+          },
+          "anomaly_threshold": {
+            "type": "number",
+            "title": "Anomaly Threshold"
+          },
+          "advisory": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AdvisoryResponse"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "healthy",
+              "watch",
+              "degraded",
+              "critical",
+              "failed",
+              "under_maintenance"
+            ],
+            "title": "State"
+          },
+          "history": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "History"
+          },
+          "projection": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Projection"
+          },
+          "simulation_truth": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Simulation Truth"
+          }
+        },
+        "type": "object",
+        "required": [
+          "component",
+          "as_of",
+          "replay",
+          "dates",
+          "sensors",
+          "ambient",
+          "health_index",
+          "replay_dates",
+          "risk14",
+          "risk30",
+          "rul",
+          "anomaly",
+          "anomaly_alert",
+          "anomaly_threshold",
+          "advisory",
+          "state",
+          "history",
+          "projection",
+          "simulation_truth"
+        ],
+        "title": "ComponentHealthResponse"
+      },
       "ComponentMaintenanceResponse": {
         "properties": {
           "component_id": {
@@ -3881,6 +7329,55 @@
           "tasks"
         ],
         "title": "ComponentMaintenanceResponse"
+      },
+      "Confidence": {
+        "properties": {
+          "level": {
+            "type": "string",
+            "enum": [
+              "low",
+              "moderate",
+              "high"
+            ],
+            "title": "Level"
+          },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Notes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "level",
+          "notes"
+        ],
+        "title": "Confidence"
+      },
+      "ContributingParameter": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "unit": {
+            "type": "string",
+            "title": "Unit"
+          },
+          "deviation_sigma": {
+            "type": "number",
+            "title": "Deviation Sigma"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "unit",
+          "deviation_sigma"
+        ],
+        "title": "ContributingParameter"
       },
       "Credentials": {
         "properties": {
@@ -3944,6 +7441,300 @@
         ],
         "title": "CsvImportRequest"
       },
+      "DataSourcesResponse": {
+        "properties": {
+          "integration": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Integration"
+          },
+          "batches": {
+            "items": {
+              "$ref": "#/components/schemas/IngestBatchResponse"
+            },
+            "type": "array",
+            "title": "Batches"
+          },
+          "ingested_readings": {
+            "type": "integer",
+            "title": "Ingested Readings"
+          }
+        },
+        "type": "object",
+        "required": [
+          "integration",
+          "batches",
+          "ingested_readings"
+        ],
+        "title": "DataSourcesResponse"
+      },
+      "DemandForecastResponse": {
+        "properties": {
+          "part_number": {
+            "type": "string",
+            "title": "Part Number"
+          },
+          "horizon_days": {
+            "type": "integer",
+            "title": "Horizon Days"
+          },
+          "expected": {
+            "type": "number",
+            "title": "Expected"
+          },
+          "p10": {
+            "type": "number",
+            "title": "P10"
+          },
+          "p90": {
+            "type": "number",
+            "title": "P90"
+          },
+          "predicted_failure_demand": {
+            "type": "number",
+            "title": "Predicted Failure Demand"
+          },
+          "scheduled_demand": {
+            "type": "integer",
+            "title": "Scheduled Demand"
+          },
+          "baseline_moving_average": {
+            "type": "number",
+            "title": "Baseline Moving Average"
+          },
+          "supply_within_horizon": {
+            "type": "integer",
+            "title": "Supply Within Horizon"
+          },
+          "shortfall_probability": {
+            "type": "number",
+            "title": "Shortfall Probability"
+          },
+          "contributors": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Contributors"
+          },
+          "method": {
+            "type": "string",
+            "title": "Method"
+          }
+        },
+        "type": "object",
+        "required": [
+          "part_number",
+          "horizon_days",
+          "expected",
+          "p10",
+          "p90",
+          "predicted_failure_demand",
+          "scheduled_demand",
+          "baseline_moving_average",
+          "supply_within_horizon",
+          "shortfall_probability",
+          "contributors",
+          "method"
+        ],
+        "title": "DemandForecastResponse"
+      },
+      "Downtime": {
+        "properties": {
+          "act_now_days": {
+            "type": "number",
+            "title": "Act Now Days"
+          },
+          "run_to_failure_days": {
+            "type": "number",
+            "title": "Run To Failure Days"
+          },
+          "queue_days": {
+            "type": "number",
+            "title": "Queue Days"
+          },
+          "spare_wait_days": {
+            "type": "number",
+            "title": "Spare Wait Days"
+          }
+        },
+        "type": "object",
+        "required": [
+          "act_now_days",
+          "run_to_failure_days",
+          "queue_days",
+          "spare_wait_days"
+        ],
+        "title": "Downtime"
+      },
+      "EngineRunRequest": {
+        "properties": {
+          "seed": {
+            "type": "integer",
+            "maximum": 1000000.0,
+            "minimum": 0.0,
+            "title": "Seed",
+            "default": 42
+          }
+        },
+        "type": "object",
+        "title": "EngineRunRequest"
+      },
+      "EngineRunResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "state": {
+            "type": "string",
+            "title": "State"
+          },
+          "seed": {
+            "type": "integer",
+            "title": "Seed"
+          },
+          "as_of": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "As Of"
+          },
+          "job_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Job Id"
+          },
+          "summary": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Summary"
+          },
+          "requested_by": {
+            "type": "string",
+            "title": "Requested By"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          },
+          "completed_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completed At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "state",
+          "seed",
+          "as_of",
+          "job_id",
+          "summary",
+          "requested_by",
+          "created_at",
+          "completed_at"
+        ],
+        "title": "EngineRunResponse"
+      },
+      "EngineStatusResponse": {
+        "properties": {
+          "ready": {
+            "type": "boolean",
+            "title": "Ready"
+          },
+          "active_run": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EngineRunResponse"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "pending_run": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EngineRunResponse"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "runs": {
+            "items": {
+              "$ref": "#/components/schemas/EngineRunResponse"
+            },
+            "type": "array",
+            "title": "Runs"
+          },
+          "data": {
+            "type": "string",
+            "title": "Data"
+          },
+          "replay_from": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Replay From"
+          },
+          "replay_to": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Replay To"
+          },
+          "scripted": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Scripted",
+            "default": []
+          }
+        },
+        "type": "object",
+        "required": [
+          "ready",
+          "active_run",
+          "pending_run",
+          "runs",
+          "data"
+        ],
+        "title": "EngineStatusResponse"
+      },
       "ExplanationStateResponse": {
         "properties": {
           "state": {
@@ -3961,6 +7752,109 @@
           "reason"
         ],
         "title": "ExplanationStateResponse"
+      },
+      "FleetAlertResponse": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type"
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "critical",
+              "warning",
+              "info"
+            ],
+            "title": "Severity"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "aircraft": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Aircraft"
+          },
+          "component_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Component Id"
+          },
+          "advisory_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Advisory Id"
+          },
+          "created_on": {
+            "type": "string",
+            "title": "Created On"
+          },
+          "acknowledged_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Acknowledged By"
+          },
+          "acknowledged_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Acknowledged At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "type",
+          "severity",
+          "title",
+          "message",
+          "aircraft",
+          "component_id",
+          "advisory_id",
+          "created_on",
+          "acknowledged_by",
+          "acknowledged_at"
+        ],
+        "title": "FleetAlertResponse"
       },
       "FleetItemResponse": {
         "properties": {
@@ -4010,6 +7904,247 @@
         ],
         "title": "FleetItemResponse"
       },
+      "FleetScenarioRequest": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "schedule_maintenance",
+              "spare_unavailable",
+              "early_replacement",
+              "extra_capacity"
+            ],
+            "title": "Kind"
+          },
+          "params": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Params",
+            "default": {}
+          },
+          "horizon_days": {
+            "type": "integer",
+            "maximum": 60.0,
+            "minimum": 7.0,
+            "title": "Horizon Days",
+            "default": 30
+          },
+          "runs": {
+            "type": "integer",
+            "maximum": 500.0,
+            "minimum": 50.0,
+            "title": "Runs",
+            "default": 300
+          },
+          "seed": {
+            "type": "integer",
+            "maximum": 1000000.0,
+            "minimum": 0.0,
+            "title": "Seed",
+            "default": 7
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "kind"
+        ],
+        "title": "FleetScenarioRequest"
+      },
+      "FleetScenarioResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "engine_run_id": {
+            "type": "string",
+            "title": "Engine Run Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "params": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Params"
+          },
+          "horizon_days": {
+            "type": "integer",
+            "title": "Horizon Days"
+          },
+          "runs": {
+            "type": "integer",
+            "title": "Runs"
+          },
+          "seed": {
+            "type": "integer",
+            "title": "Seed"
+          },
+          "results": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Results"
+          },
+          "created_by": {
+            "type": "string",
+            "title": "Created By"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "engine_run_id",
+          "name",
+          "kind",
+          "params",
+          "horizon_days",
+          "runs",
+          "seed",
+          "results",
+          "created_by",
+          "created_at"
+        ],
+        "title": "FleetScenarioResponse"
+      },
+      "FleetSummaryResponse": {
+        "properties": {
+          "as_of": {
+            "type": "string",
+            "title": "As Of"
+          },
+          "aircraft": {
+            "type": "integer",
+            "title": "Aircraft"
+          },
+          "availability_today": {
+            "type": "number",
+            "title": "Availability Today"
+          },
+          "availability_7d": {
+            "type": "number",
+            "title": "Availability 7D"
+          },
+          "availability_30d": {
+            "type": "number",
+            "title": "Availability 30D"
+          },
+          "by_availability_state": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "By Availability State"
+          },
+          "by_health_state": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "By Health State"
+          },
+          "open_advisories": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Open Advisories"
+          },
+          "readiness_proxy": {
+            "type": "number",
+            "title": "Readiness Proxy"
+          },
+          "readiness_proxy_definition": {
+            "type": "string",
+            "title": "Readiness Proxy Definition"
+          },
+          "backlog": {
+            "$ref": "#/components/schemas/Backlog"
+          },
+          "parts_at_risk": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Parts At Risk"
+          },
+          "forecast_30d": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Forecast 30D"
+          },
+          "alerts_open": {
+            "type": "integer",
+            "title": "Alerts Open"
+          }
+        },
+        "type": "object",
+        "required": [
+          "as_of",
+          "aircraft",
+          "availability_today",
+          "availability_7d",
+          "availability_30d",
+          "by_availability_state",
+          "by_health_state",
+          "open_advisories",
+          "readiness_proxy",
+          "readiness_proxy_definition",
+          "backlog",
+          "parts_at_risk",
+          "forecast_30d",
+          "alerts_open"
+        ],
+        "title": "FleetSummaryResponse"
+      },
+      "ForecastBand": {
+        "properties": {
+          "date": {
+            "type": "string",
+            "title": "Date"
+          },
+          "p10": {
+            "type": "number",
+            "title": "P10"
+          },
+          "p50": {
+            "type": "number",
+            "title": "P50"
+          },
+          "p90": {
+            "type": "number",
+            "title": "P90"
+          },
+          "mean": {
+            "type": "number",
+            "title": "Mean"
+          }
+        },
+        "type": "object",
+        "required": [
+          "date",
+          "p10",
+          "p50",
+          "p90",
+          "mean"
+        ],
+        "title": "ForecastBand"
+      },
       "HTTPValidationError": {
         "properties": {
           "detail": {
@@ -4046,6 +8181,129 @@
           "status"
         ],
         "title": "HealthResponse"
+      },
+      "HeatCell": {
+        "properties": {
+          "system": {
+            "type": "string",
+            "title": "System"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "healthy",
+              "watch",
+              "degraded",
+              "critical",
+              "failed",
+              "under_maintenance"
+            ],
+            "title": "State"
+          },
+          "health_index": {
+            "type": "number",
+            "title": "Health Index"
+          },
+          "driver": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Driver"
+          }
+        },
+        "type": "object",
+        "required": [
+          "system",
+          "state",
+          "health_index",
+          "driver"
+        ],
+        "title": "HeatCell"
+      },
+      "HeatGridResponse": {
+        "properties": {
+          "systems": {
+            "items": {
+              "$ref": "#/components/schemas/SystemRef"
+            },
+            "type": "array",
+            "title": "Systems"
+          },
+          "rows": {
+            "items": {
+              "$ref": "#/components/schemas/HeatRow"
+            },
+            "type": "array",
+            "title": "Rows"
+          }
+        },
+        "type": "object",
+        "required": [
+          "systems",
+          "rows"
+        ],
+        "title": "HeatGridResponse"
+      },
+      "HeatRow": {
+        "properties": {
+          "aircraft": {
+            "type": "string",
+            "title": "Aircraft"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "healthy",
+              "watch",
+              "degraded",
+              "critical",
+              "failed",
+              "under_maintenance"
+            ],
+            "title": "State"
+          },
+          "availability_state": {
+            "type": "string",
+            "title": "Availability State"
+          },
+          "health_index": {
+            "type": "number",
+            "title": "Health Index"
+          },
+          "driver": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Driver"
+          },
+          "cells": {
+            "items": {
+              "$ref": "#/components/schemas/HeatCell"
+            },
+            "type": "array",
+            "title": "Cells"
+          }
+        },
+        "type": "object",
+        "required": [
+          "aircraft",
+          "state",
+          "availability_state",
+          "health_index",
+          "driver",
+          "cells"
+        ],
+        "title": "HeatRow"
       },
       "HistoryImport": {
         "properties": {
@@ -4125,6 +8383,78 @@
         ],
         "title": "HistoryRow"
       },
+      "IngestBatchResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source"
+          },
+          "accepted": {
+            "type": "integer",
+            "title": "Accepted"
+          },
+          "rejected": {
+            "type": "integer",
+            "title": "Rejected"
+          },
+          "errors": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Errors"
+          },
+          "actor": {
+            "type": "string",
+            "title": "Actor"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "source",
+          "accepted",
+          "rejected",
+          "errors",
+          "actor",
+          "created_at"
+        ],
+        "title": "IngestBatchResponse"
+      },
+      "IngestRequest": {
+        "properties": {
+          "source": {
+            "type": "string",
+            "maxLength": 64,
+            "title": "Source",
+            "default": "health_monitoring"
+          },
+          "readings": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "maxItems": 5000,
+            "minItems": 1,
+            "title": "Readings"
+          }
+        },
+        "type": "object",
+        "required": [
+          "readings"
+        ],
+        "title": "IngestRequest"
+      },
       "InspectionTaskResponse": {
         "properties": {
           "id": {
@@ -4201,6 +8531,133 @@
           "version"
         ],
         "title": "InspectionTaskResponse"
+      },
+      "InventoryItem": {
+        "properties": {
+          "part_number": {
+            "type": "string",
+            "title": "Part Number"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "system": {
+            "type": "string",
+            "title": "System"
+          },
+          "criticality": {
+            "type": "integer",
+            "title": "Criticality"
+          },
+          "unit_cost": {
+            "type": "integer",
+            "title": "Unit Cost"
+          },
+          "repairable": {
+            "type": "boolean",
+            "title": "Repairable"
+          },
+          "on_hand": {
+            "type": "integer",
+            "title": "On Hand"
+          },
+          "reserved": {
+            "type": "integer",
+            "title": "Reserved"
+          },
+          "available": {
+            "type": "integer",
+            "title": "Available"
+          },
+          "on_order": {
+            "type": "integer",
+            "title": "On Order"
+          },
+          "next_receipt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Receipt"
+          },
+          "next_receipt_in_days": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Receipt In Days"
+          },
+          "lead_time_days": {
+            "type": "integer",
+            "title": "Lead Time Days"
+          },
+          "reorder_level": {
+            "type": "integer",
+            "title": "Reorder Level"
+          },
+          "demand": {
+            "additionalProperties": {
+              "additionalProperties": {
+                "type": "number"
+              },
+              "type": "object"
+            },
+            "type": "object",
+            "title": "Demand"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ok",
+              "at_risk",
+              "short",
+              "print"
+            ],
+            "title": "Status"
+          },
+          "additive_printable": {
+            "type": "boolean",
+            "title": "Additive Printable",
+            "default": false
+          },
+          "competing_components": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Competing Components"
+          }
+        },
+        "type": "object",
+        "required": [
+          "part_number",
+          "description",
+          "system",
+          "criticality",
+          "unit_cost",
+          "repairable",
+          "on_hand",
+          "reserved",
+          "available",
+          "on_order",
+          "next_receipt",
+          "next_receipt_in_days",
+          "lead_time_days",
+          "reorder_level",
+          "demand",
+          "status",
+          "competing_components"
+        ],
+        "title": "InventoryItem"
       },
       "InventoryPartResponse": {
         "properties": {
@@ -4362,6 +8819,178 @@
           "on_hand"
         ],
         "title": "PartFixture"
+      },
+      "PartRequestResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "work_order_id": {
+            "type": "string",
+            "title": "Work Order Id"
+          },
+          "aircraft": {
+            "type": "string",
+            "title": "Aircraft"
+          },
+          "component_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Component Id"
+          },
+          "component_name": {
+            "type": "string",
+            "title": "Component Name"
+          },
+          "part": {
+            "type": "string",
+            "title": "Part"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "quantity": {
+            "type": "integer",
+            "title": "Quantity"
+          },
+          "needed_by": {
+            "type": "string",
+            "title": "Needed By"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "open",
+              "reserved",
+              "ordered",
+              "received",
+              "cancelled"
+            ],
+            "title": "Status"
+          },
+          "eta": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Eta"
+          },
+          "note": {
+            "type": "string",
+            "title": "Note"
+          },
+          "available_now": {
+            "type": "integer",
+            "title": "Available Now"
+          },
+          "lead_time_days": {
+            "type": "integer",
+            "title": "Lead Time Days"
+          },
+          "earliest_order_arrival": {
+            "type": "string",
+            "title": "Earliest Order Arrival"
+          },
+          "additive_printable": {
+            "type": "boolean",
+            "title": "Additive Printable",
+            "default": false
+          },
+          "at_risk": {
+            "type": "boolean",
+            "title": "At Risk"
+          },
+          "updated_by": {
+            "type": "string",
+            "title": "Updated By"
+          },
+          "updated_at": {
+            "type": "string",
+            "title": "Updated At"
+          },
+          "version": {
+            "type": "integer",
+            "title": "Version"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "work_order_id",
+          "aircraft",
+          "component_id",
+          "component_name",
+          "part",
+          "description",
+          "quantity",
+          "needed_by",
+          "status",
+          "eta",
+          "note",
+          "available_now",
+          "lead_time_days",
+          "earliest_order_arrival",
+          "at_risk",
+          "updated_by",
+          "updated_at",
+          "version"
+        ],
+        "title": "PartRequestResponse"
+      },
+      "PartRequestUpdateRequest": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "reserved",
+              "ordered",
+              "received",
+              "cancelled"
+            ],
+            "title": "Status"
+          },
+          "eta": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Eta"
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 300,
+            "title": "Note",
+            "default": ""
+          },
+          "expected_version": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Expected Version"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "expected_version"
+        ],
+        "title": "PartRequestUpdateRequest"
       },
       "PlanAssignmentResponse": {
         "properties": {
@@ -4564,6 +9193,188 @@
         ],
         "title": "PlanResponse"
       },
+      "PlannedWorkOrderResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "advisory_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Advisory Id"
+          },
+          "aircraft": {
+            "type": "string",
+            "title": "Aircraft"
+          },
+          "component_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Component Id"
+          },
+          "agency_id": {
+            "type": "string",
+            "title": "Agency Id"
+          },
+          "part": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Part"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "planned_start": {
+            "type": "string",
+            "title": "Planned Start"
+          },
+          "duration_days": {
+            "type": "number",
+            "title": "Duration Days"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "priority": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Priority"
+          },
+          "impact": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Impact"
+          },
+          "notes": {
+            "type": "string",
+            "title": "Notes"
+          },
+          "created_by": {
+            "type": "string",
+            "title": "Created By"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          },
+          "version": {
+            "type": "integer",
+            "title": "Version"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source",
+            "default": "planned"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "advisory_id",
+          "aircraft",
+          "component_id",
+          "agency_id",
+          "part",
+          "title",
+          "planned_start",
+          "duration_days",
+          "status",
+          "priority",
+          "impact",
+          "notes",
+          "created_by",
+          "created_at",
+          "version"
+        ],
+        "title": "PlannedWorkOrderResponse"
+      },
+      "Priority": {
+        "properties": {
+          "level": {
+            "type": "string",
+            "enum": [
+              "P1",
+              "P2",
+              "P3",
+              "P4"
+            ],
+            "title": "Level"
+          },
+          "score": {
+            "type": "number",
+            "title": "Score"
+          },
+          "factors": {
+            "items": {
+              "$ref": "#/components/schemas/PriorityFactor"
+            },
+            "type": "array",
+            "title": "Factors"
+          }
+        },
+        "type": "object",
+        "required": [
+          "level",
+          "score",
+          "factors"
+        ],
+        "title": "Priority"
+      },
+      "PriorityFactor": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "weight": {
+            "type": "number",
+            "title": "Weight"
+          },
+          "value": {
+            "type": "number",
+            "title": "Value"
+          },
+          "points": {
+            "type": "number",
+            "title": "Points"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "weight",
+          "value",
+          "points"
+        ],
+        "title": "PriorityFactor"
+      },
       "QualityFindingResponse": {
         "properties": {
           "code": {
@@ -4586,6 +9397,29 @@
           "message"
         ],
         "title": "QualityFindingResponse"
+      },
+      "Quantiles": {
+        "properties": {
+          "p10": {
+            "type": "number",
+            "title": "P10"
+          },
+          "p50": {
+            "type": "number",
+            "title": "P50"
+          },
+          "p90": {
+            "type": "number",
+            "title": "P90"
+          }
+        },
+        "type": "object",
+        "required": [
+          "p10",
+          "p50",
+          "p90"
+        ],
+        "title": "Quantiles"
       },
       "Registration": {
         "properties": {
@@ -4793,6 +9627,18 @@
         ],
         "title": "ResourceConfiguration"
       },
+      "ReturnToServiceRequest": {
+        "properties": {
+          "note": {
+            "type": "string",
+            "maxLength": 300,
+            "title": "Note",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "title": "ReturnToServiceRequest"
+      },
       "ScenarioResponse": {
         "properties": {
           "id": {
@@ -4895,6 +9741,117 @@
         ],
         "title": "ScenarioRevision"
       },
+      "ScheduleResponse": {
+        "properties": {
+          "from": {
+            "type": "string",
+            "title": "From"
+          },
+          "to": {
+            "type": "string",
+            "title": "To"
+          },
+          "today": {
+            "type": "string",
+            "title": "Today"
+          },
+          "agencies": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Agencies"
+          },
+          "bars": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Bars"
+          },
+          "tasks_due": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Tasks Due"
+          }
+        },
+        "type": "object",
+        "required": [
+          "from",
+          "to",
+          "today",
+          "agencies",
+          "bars",
+          "tasks_due"
+        ],
+        "title": "ScheduleResponse"
+      },
+      "SensorSeries": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "unit": {
+            "type": "string",
+            "title": "Unit"
+          },
+          "direction": {
+            "type": "integer",
+            "title": "Direction"
+          },
+          "values": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Values"
+          },
+          "normalised": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Normalised"
+          },
+          "cleaned": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "Cleaned"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "unit",
+          "direction",
+          "values",
+          "normalised",
+          "cleaned"
+        ],
+        "title": "SensorSeries"
+      },
       "SessionInfo": {
         "properties": {
           "id": {
@@ -4970,6 +9927,126 @@
         ],
         "title": "SimulationRunResponse"
       },
+      "SpareCheck": {
+        "properties": {
+          "part_number": {
+            "type": "string",
+            "title": "Part Number"
+          },
+          "on_hand": {
+            "type": "integer",
+            "title": "On Hand"
+          },
+          "reserved": {
+            "type": "integer",
+            "title": "Reserved"
+          },
+          "available": {
+            "type": "integer",
+            "title": "Available"
+          },
+          "on_order": {
+            "type": "integer",
+            "title": "On Order"
+          },
+          "next_receipt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Receipt"
+          },
+          "lead_time_days": {
+            "type": "integer",
+            "title": "Lead Time Days"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "available",
+              "contested",
+              "short",
+              "additive_print"
+            ],
+            "title": "Status"
+          },
+          "supplier_lead_time_days": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Supplier Lead Time Days"
+          },
+          "additive_printable": {
+            "type": "boolean",
+            "title": "Additive Printable",
+            "default": false
+          },
+          "queue_position": {
+            "type": "integer",
+            "title": "Queue Position"
+          },
+          "fleet_demand_30d": {
+            "type": "integer",
+            "title": "Fleet Demand 30D"
+          },
+          "fleet_shortfall": {
+            "type": "boolean",
+            "title": "Fleet Shortfall"
+          },
+          "lead_time_exceeds_rul": {
+            "type": "boolean",
+            "title": "Lead Time Exceeds Rul"
+          },
+          "shortfall_in_days": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Shortfall In Days"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          }
+        },
+        "type": "object",
+        "required": [
+          "part_number",
+          "on_hand",
+          "reserved",
+          "available",
+          "on_order",
+          "next_receipt",
+          "lead_time_days",
+          "status",
+          "queue_position",
+          "fleet_demand_30d",
+          "fleet_shortfall",
+          "lead_time_exceeds_rul",
+          "note"
+        ],
+        "title": "SpareCheck"
+      },
       "StockAdjustment": {
         "properties": {
           "delta_free_stock": {
@@ -5004,6 +10081,24 @@
           "command_id"
         ],
         "title": "StockAdjustment"
+      },
+      "SystemRef": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "name"
+        ],
+        "title": "SystemRef"
       },
       "TaskFixture": {
         "properties": {
@@ -5119,6 +10214,23 @@
           "deadline_slot"
         ],
         "title": "TaskFixture"
+      },
+      "TasksResponse": {
+        "properties": {
+          "tasks": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Tasks"
+          }
+        },
+        "type": "object",
+        "required": [
+          "tasks"
+        ],
+        "title": "TasksResponse"
       },
       "TrialCatalogResponse": {
         "properties": {
@@ -5352,6 +10464,159 @@
         ],
         "title": "TrialResponse"
       },
+      "TwinComponent": {
+        "properties": {
+          "slot": {
+            "type": "integer",
+            "title": "Slot"
+          },
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "aircraft": {
+            "type": "string",
+            "title": "Aircraft"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "criticality": {
+            "type": "integer",
+            "title": "Criticality"
+          },
+          "serial": {
+            "type": "string",
+            "title": "Serial"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "healthy",
+              "watch",
+              "degraded",
+              "critical",
+              "failed",
+              "under_maintenance"
+            ],
+            "title": "State"
+          },
+          "hi": {
+            "type": "number",
+            "title": "Hi"
+          },
+          "risk14": {
+            "type": "number",
+            "title": "Risk14"
+          },
+          "risk30": {
+            "type": "number",
+            "title": "Risk30"
+          },
+          "rul": {
+            "$ref": "#/components/schemas/Quantiles"
+          },
+          "anomaly": {
+            "type": "number",
+            "title": "Anomaly"
+          },
+          "anomaly_sustained": {
+            "type": "boolean",
+            "title": "Anomaly Sustained"
+          },
+          "work_order": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Work Order"
+          }
+        },
+        "type": "object",
+        "required": [
+          "slot",
+          "id",
+          "aircraft",
+          "type",
+          "name",
+          "criticality",
+          "serial",
+          "state",
+          "hi",
+          "risk14",
+          "risk30",
+          "rul",
+          "anomaly",
+          "anomaly_sustained",
+          "work_order"
+        ],
+        "title": "TwinComponent"
+      },
+      "TwinSystem": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "healthy",
+              "watch",
+              "degraded",
+              "critical",
+              "failed",
+              "under_maintenance"
+            ],
+            "title": "State"
+          },
+          "health_index": {
+            "type": "number",
+            "title": "Health Index"
+          },
+          "driver": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Driver"
+          },
+          "components": {
+            "items": {
+              "$ref": "#/components/schemas/TwinComponent"
+            },
+            "type": "array",
+            "title": "Components"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "name",
+          "state",
+          "health_index",
+          "driver",
+          "components"
+        ],
+        "title": "TwinSystem"
+      },
       "ValidationError": {
         "properties": {
           "loc": {
@@ -5455,6 +10720,143 @@
           "completed_at"
         ],
         "title": "WorkHistoryResponse"
+      },
+      "WorkOrderCreateRequest": {
+        "properties": {
+          "component_id": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 3,
+            "title": "Component Id"
+          },
+          "advisory_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 96
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Advisory Id"
+          },
+          "agency_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 16
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Agency Id"
+          },
+          "planned_start": {
+            "type": "string",
+            "format": "date",
+            "title": "Planned Start"
+          },
+          "notes": {
+            "type": "string",
+            "maxLength": 500,
+            "title": "Notes",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "required": [
+          "component_id",
+          "planned_start"
+        ],
+        "title": "WorkOrderCreateRequest"
+      },
+      "WorkOrderRescheduleRequest": {
+        "properties": {
+          "planned_start": {
+            "type": "string",
+            "format": "date",
+            "title": "Planned Start"
+          },
+          "agency_id": {
+            "type": "string",
+            "maxLength": 16,
+            "title": "Agency Id"
+          },
+          "expected_version": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Expected Version"
+          }
+        },
+        "type": "object",
+        "required": [
+          "planned_start",
+          "agency_id",
+          "expected_version"
+        ],
+        "title": "WorkOrderRescheduleRequest"
+      },
+      "WorkOrderUpdateRequest": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "in_progress",
+              "completed",
+              "cancelled"
+            ],
+            "title": "Status"
+          },
+          "expected_version": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Expected Version"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "expected_version"
+        ],
+        "title": "WorkOrderUpdateRequest"
+      },
+      "WorkOrdersResponse": {
+        "properties": {
+          "as_of": {
+            "type": "string",
+            "title": "As Of"
+          },
+          "recorded": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Recorded"
+          },
+          "planned": {
+            "items": {
+              "$ref": "#/components/schemas/PlannedWorkOrderResponse"
+            },
+            "type": "array",
+            "title": "Planned"
+          },
+          "kpis": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Kpis"
+          }
+        },
+        "type": "object",
+        "required": [
+          "as_of",
+          "recorded",
+          "planned",
+          "kpis"
+        ],
+        "title": "WorkOrdersResponse"
       },
       "WorkOutcome": {
         "properties": {

@@ -92,6 +92,23 @@ def execute(job_id: str) -> None:
                         session, payload, computed_comparison, f"sim-for-{job_id}"
                     ).id
                 }
+            elif kind == "fleet_engine":
+                from fleet_maintenance.artifacts.storage import artifact_directory
+                from fleet_maintenance.science.fleet.engine import run_engine
+                from fleet_maintenance.services.fleet_health import complete_engine_run
+                from fleet_maintenance.settings import get_settings
+
+                engine_run_id = str(payload["engine_run_id"])
+                directory = artifact_directory(
+                    get_settings().artifact_root, f"fleet-engine/{engine_run_id}"
+                )
+                # The engine runs outside any database transaction; its bundle is registered
+                # only after every file and the manifest are written.
+                computed_engine = run_engine(
+                    directory, engine_run_id, int(str(payload.get("seed", 42)))
+                )
+                complete_engine_run(session, engine_run_id, computed_engine)
+                result = {"engine_run_id": engine_run_id, "as_of": computed_engine["as_of"]}
             elif kind == "assessment":
                 import numpy as np
 

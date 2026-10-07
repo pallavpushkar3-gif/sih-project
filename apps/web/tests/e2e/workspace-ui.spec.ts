@@ -31,7 +31,8 @@ test('start page explains the offer and leads through fleet, evidence and mainte
   const requests: string[] = [];
   page.on('request', request => requests.push(request.url()));
   await page.goto('/');
-  await expect(page).toHaveURL(/\/overview$/);
+  await expect(page).toHaveURL(/\/welcome$/);
+  await page.goto('/overview');
   await expect(page.getByRole('heading', { name: /Know what needs attention.*Plan what happens next/ })).toBeVisible();
   await expect(page.getByRole('list', { name: 'Maintenance decision flow' })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Review SYN-001' })).toHaveAttribute('href', '/components/cmp-eng-01');
@@ -47,9 +48,8 @@ test('start page explains the offer and leads through fleet, evidence and mainte
 });
 
 test('supporting tools keep keyboard focus and a route back to the main journey', async ({ page }) => {
+  await page.setViewportSize({ width:390, height:844 });
   await page.goto('/overview');
-  const navigation = page.getByRole('navigation', { name: 'Primary navigation' });
-  await expect(navigation.getByRole('link')).toHaveCount(4);
   const trigger = page.getByRole('button', { name: 'Open navigation' });
   await trigger.click();
   const dialog = page.getByRole('dialog', { name: 'Workspace navigation' });
@@ -176,9 +176,9 @@ test("session sign-in shows denied credentials and opens the authenticated works
   await expect(page.getByRole("alert")).toContainText("Invalid credentials");
   await page.getByLabel("Password", { exact: true }).fill("test-account-password");
   await page.getByRole("button", { name: "Sign in", exact: true }).click();
-  await page.locator(".account-menu summary").click();
+  await page.locator(".o-profile summary").click();
   await expect(page.getByText("test-reviewer", { exact: true })).toBeVisible();
-  await expect(page.getByText("SIGNED IN", { exact: true })).toBeVisible();
+  await expect(page.getByText(/signed in/)).toBeVisible();
 });
 
 test("delivery receipt updates inventory and retains the reviewed quantity", async ({ page }) => {

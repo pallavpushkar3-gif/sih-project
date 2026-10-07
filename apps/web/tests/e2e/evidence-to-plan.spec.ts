@@ -7,7 +7,7 @@ test("evidence remains honest before planning", async ({ page }) => {
   await page.getByRole("link", { name: "SYN-001", exact:true }).click();
   await expect(page.getByRole("heading",{name:"ENG-SYN-001",exact:true})).toBeVisible();
   await expect(page.getByRole("heading",{name:"Quality & applicability"})).toBeVisible();
-  await page.getByRole("navigation").getByRole("link", { name: "Planning" }).click();
+  await page.getByRole("navigation", { name: "Primary" }).getByRole("link", { name: "Constraint planner" }).click();
   await expect(page.getByRole("heading", { name: "Maintenance planning" })).toBeVisible();
   const submitted = page.waitForResponse(
     (response) =>

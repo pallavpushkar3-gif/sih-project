@@ -202,3 +202,7 @@ If a requested feature changes this boundary, update the relevant specifications
 ## Current bounded implementation — 2026-10-05
 
 Resource-aware scheduling supports fourteen eight-hour relative slots, crew skill and bay/component compatibility, capacity units, aircraft restrictions, qualification validity, excluded shift/closure windows, precedence, fixed bookings and mandatory deadlines. UTC/calendar conversion rounds available windows inward; the browser configures the relative grid. Exact saved-plan simulation compares matched FIFO/duration assumptions. Expected deliveries remain provisional; received usable stock is required for approval. Quarantine/rejection add no usable stock. Only isolated single-agency deployment is supported. These are demonstrator capabilities; real rosters, telemetry, approved policies and operational validation remain external.
+
+## Scope extension — 2026-10-06
+
+The synthetic fleet-health workspace from `docs/plan.md` is added as a labelled extension: a whole-fleet software twin (structure, state and prediction, not physics) and predicted-failure spare demand on synthetic data only. The extension gates in section 6 still apply to any real-data or operational claim. See ADR 0006.

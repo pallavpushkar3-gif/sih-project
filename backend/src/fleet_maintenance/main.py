@@ -8,6 +8,7 @@ from fleet_maintenance.api.errors import RequestContextMiddleware, install_error
 from fleet_maintenance.api.router import router
 from fleet_maintenance.logging_config import configure_logging
 from fleet_maintenance.persistence.database import SessionLocal, create_schema
+from fleet_maintenance.services.fleet_health import backfill_part_requests, ensure_engine_run
 from fleet_maintenance.services.records import seed_demo
 from fleet_maintenance.settings import get_settings
 
@@ -22,6 +23,10 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
     if settings.auto_seed_demo:
         with SessionLocal() as session:
             seed_demo(session)
+        with SessionLocal() as session:
+            # Queue the synthetic fleet-health engine on a fresh installation.
+            ensure_engine_run(session)
+            backfill_part_requests(session)
     yield
 
 

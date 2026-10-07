@@ -825,10 +825,647 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/fleet-health/engine": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Engine */
+        get: operations["engine_api_fleet_health_engine_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/fleet-health/engine/runs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Request Run */
+        post: operations["request_run_api_fleet_health_engine_runs_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/fleet-health/engine/cannibalize-strategy": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Cannibalize Strategy
+         * @description Part swaps between grounded aircraft that unblock the most aircraft for the least
+         *     labour. Read-only: it proposes a plan and records nothing.
+         */
+        get: operations["cannibalize_strategy_api_fleet_health_engine_cannibalize_strategy_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/fleet-health/summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Summary */
+        get: operations["summary_api_fleet_health_summary_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/fleet-health/availability/trend": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Trend */
+        get: operations["trend_api_fleet_health_availability_trend_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/fleet-health/heatgrid": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Heatgrid */
+        get: operations["heatgrid_api_fleet_health_heatgrid_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/fleet-health/aircraft": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Aircraft */
+        get: operations["aircraft_api_fleet_health_aircraft_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/fleet-health/aircraft/{aircraft_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Aircraft Detail */
+        get: operations["aircraft_detail_api_fleet_health_aircraft__aircraft_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/fleet-health/components/{component_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Component */
+        get: operations["component_api_fleet_health_components__component_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/fleet-health/advisories": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Advisories */
+        get: operations["advisories_api_fleet_health_advisories_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/fleet-health/advisories/{advisory_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Advisory */
+        patch: operations["update_advisory_api_fleet_health_advisories__advisory_id__patch"];
+        trace?: never;
+    };
+    "/api/fleet-health/work-orders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Work Orders */
+        get: operations["work_orders_api_fleet_health_work_orders_get"];
+        put?: never;
+        /** Create Work Order */
+        post: operations["create_work_order_api_fleet_health_work_orders_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/fleet-health/work-orders/{work_order_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Work Order */
+        patch: operations["update_work_order_api_fleet_health_work_orders__work_order_id__patch"];
+        trace?: never;
+    };
+    "/api/fleet-health/maintenance/schedule": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Schedule */
+        get: operations["schedule_api_fleet_health_maintenance_schedule_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/fleet-health/maintenance/tasks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Tasks */
+        get: operations["tasks_api_fleet_health_maintenance_tasks_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/fleet-health/inventory": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Inventory */
+        get: operations["inventory_api_fleet_health_inventory_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/fleet-health/inventory/{part_number}/forecast": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Demand */
+        get: operations["demand_api_fleet_health_inventory__part_number__forecast_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/fleet-health/alerts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Alerts */
+        get: operations["alerts_api_fleet_health_alerts_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/fleet-health/alerts/{alert_key}/acknowledge": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Acknowledge */
+        post: operations["acknowledge_api_fleet_health_alerts__alert_key__acknowledge_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/fleet-health/kpis": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Kpis */
+        get: operations["kpis_api_fleet_health_kpis_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/fleet-health/models": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Models */
+        get: operations["models_api_fleet_health_models_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/fleet-health/scenarios": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Scenarios */
+        get: operations["scenarios_api_fleet_health_scenarios_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/fleet-health/scenarios/run": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Run Scenario */
+        post: operations["run_scenario_api_fleet_health_scenarios_run_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/fleet-health/data/sources": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Data Sources */
+        get: operations["data_sources_api_fleet_health_data_sources_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/fleet-health/ingest/sensor-readings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Ingest */
+        post: operations["ingest_api_fleet_health_ingest_sensor_readings_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/fleet-health/part-requests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Part Requests */
+        get: operations["part_requests_api_fleet_health_part_requests_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/fleet-health/part-requests/{request_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Part Request */
+        patch: operations["update_part_request_api_fleet_health_part_requests__request_id__patch"];
+        trace?: never;
+    };
+    "/api/fleet-health/work-orders/recorded/{work_order_id}/return-to-service": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Return To Service */
+        post: operations["return_to_service_api_fleet_health_work_orders_recorded__work_order_id__return_to_service_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/fleet-health/work-orders/{work_order_id}/schedule": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Reschedule Work Order */
+        patch: operations["reschedule_work_order_api_fleet_health_work_orders__work_order_id__schedule_patch"];
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** Action */
+        Action: {
+            /**
+             * Code
+             * @enum {string}
+             */
+            code: "ground_now" | "replace_within" | "inspect" | "monitor";
+            /** Label */
+            label: string;
+            /** Within Days */
+            within_days: number | null;
+        };
+        /** AdvisoryResponse */
+        AdvisoryResponse: {
+            /** Id */
+            id: string;
+            /** Component Id */
+            component_id: string;
+            /** Aircraft */
+            aircraft: string;
+            /** System */
+            system: string;
+            /** System Name */
+            system_name: string;
+            /** Component Type */
+            component_type: string;
+            /** Component Name */
+            component_name: string;
+            /** Serial */
+            serial: string;
+            /** Criticality */
+            criticality: number;
+            /** As Of */
+            as_of: string;
+            /**
+             * Health State
+             * @enum {string}
+             */
+            health_state: "healthy" | "watch" | "degraded" | "critical" | "failed" | "under_maintenance";
+            /** Health Index */
+            health_index: number;
+            /** Health Index 20D Ago */
+            health_index_20d_ago: number;
+            /** Risk 14D */
+            risk_14d: number;
+            /** Risk 30D */
+            risk_30d: number;
+            /**
+             * Risk Band
+             * @enum {string}
+             */
+            risk_band: "low" | "watch" | "high" | "critical";
+            rul_days: components["schemas"]["Quantiles"];
+            /** Anomaly Score */
+            anomaly_score: number;
+            /** Anomaly Sustained */
+            anomaly_sustained: boolean;
+            /** Contributing Parameters */
+            contributing_parameters: components["schemas"]["ContributingParameter"][];
+            /** Attribution */
+            attribution: components["schemas"]["Attribution"][];
+            action: components["schemas"]["Action"];
+            priority: components["schemas"]["Priority"];
+            spare: components["schemas"]["SpareCheck"];
+            downtime: components["schemas"]["Downtime"];
+            availability_impact: components["schemas"]["AvailabilityImpact"];
+            confidence: components["schemas"]["Confidence"];
+            /** Explanation */
+            explanation: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "proposed" | "accepted" | "scheduled" | "completed" | "dismissed";
+            /** Status Reason */
+            status_reason: string | null;
+            /** Status Actor */
+            status_actor: string | null;
+            /** Status Updated At */
+            status_updated_at: string | null;
+            /** Work Order Id */
+            work_order_id: string | null;
+            /** Parts Status */
+            parts_status?: string | null;
+        };
+        /** AdvisoryUpdateRequest */
+        AdvisoryUpdateRequest: {
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "proposed" | "accepted" | "scheduled" | "completed" | "dismissed";
+            /** Reason */
+            reason?: string | null;
+            /** Expected Status */
+            expected_status?: ("proposed" | "accepted" | "scheduled" | "completed" | "dismissed") | null;
+        };
+        /** AircraftDetailResponse */
+        AircraftDetailResponse: {
+            /** Aircraft */
+            aircraft: {
+                [key: string]: unknown;
+            };
+            /** As Of */
+            as_of: string;
+            /** Replay */
+            replay: boolean;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "healthy" | "watch" | "degraded" | "critical" | "failed" | "under_maintenance";
+            /** Availability State */
+            availability_state: string;
+            /** Health Index */
+            health_index: number;
+            /** Driver */
+            driver: string | null;
+            /** Systems */
+            systems: components["schemas"]["TwinSystem"][];
+            /** Advisories */
+            advisories: components["schemas"]["AdvisoryResponse"][];
+            /** Work Orders */
+            work_orders: {
+                [key: string]: unknown;
+            }[];
+            /** Timeline */
+            timeline: {
+                [key: string]: unknown;
+            }[];
+            /** Availability 90D */
+            availability_90d: {
+                [key: string]: unknown;
+            }[];
+            /** Tasks */
+            tasks: {
+                [key: string]: unknown;
+            }[];
+        };
         /** AircraftFixture */
         AircraftFixture: {
             /** Id */
@@ -837,6 +1474,32 @@ export interface components {
             tail_number: string;
             /** Label */
             label: string;
+        };
+        /** AircraftListItem */
+        AircraftListItem: {
+            /** Id */
+            id: string;
+            /** Base */
+            base: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "healthy" | "watch" | "degraded" | "critical" | "failed" | "under_maintenance";
+            /** Availability State */
+            availability_state: string;
+            /** Health Index */
+            health_index: number;
+            /** Driver */
+            driver: string | null;
+            /** Open Advisories */
+            open_advisories: number;
+            /** Top Priority */
+            top_priority: string | null;
+            /** Total Flight Hours */
+            total_flight_hours: number;
+            /** Utilisation Flights Per Day */
+            utilisation_flights_per_day: number;
         };
         /** AlertAcknowledgementResponse */
         AlertAcknowledgementResponse: {
@@ -993,6 +1656,235 @@ export interface components {
             /** Quality Findings */
             quality_findings: components["schemas"]["QualityFindingResponse"][];
         };
+        /** Attribution */
+        Attribution: {
+            /** Factor */
+            factor: string;
+            /** Label */
+            label: string;
+            /** Contribution */
+            contribution: number;
+        };
+        /** AvailabilityImpact */
+        AvailabilityImpact: {
+            /** Act Now Aircraft Days */
+            act_now_aircraft_days: number;
+            /** Run To Failure Expected Aircraft Days */
+            run_to_failure_expected_aircraft_days: number;
+        };
+        /** AvailabilityPoint */
+        AvailabilityPoint: {
+            /** Date */
+            date: string;
+            /** Availability */
+            availability: number;
+            /** Scheduled Maintenance */
+            scheduled_maintenance: number;
+            /** Unscheduled Repair */
+            unscheduled_repair: number;
+            /** Awaiting Spares */
+            awaiting_spares: number;
+            /** Awaiting Agency */
+            awaiting_agency: number;
+        };
+        /** AvailabilityTrendResponse */
+        AvailabilityTrendResponse: {
+            /** History */
+            history: components["schemas"]["AvailabilityPoint"][];
+            /** Forecast */
+            forecast: components["schemas"]["ForecastBand"][];
+            /** Downtime By Month */
+            downtime_by_month: {
+                [key: string]: unknown;
+            }[];
+            /** Definition */
+            definition: string;
+        };
+        /** Backlog */
+        Backlog: {
+            /** Open Work Orders */
+            open_work_orders: number;
+            /** Recorded Open */
+            recorded_open: number;
+            /** Planned From Advisories */
+            planned_from_advisories: number;
+            /** Man Hours */
+            man_hours: number;
+            /** Man Hours Assumption */
+            man_hours_assumption: string;
+        };
+        /** CannibalizeForge */
+        CannibalizeForge: {
+            /** Aircraft */
+            aircraft: string;
+            /** Part Number */
+            part_number: string;
+            /** Component Name */
+            component_name: string;
+            /** Work Order */
+            work_order: string;
+            /** Print Days */
+            print_days: number;
+        };
+        /** CannibalizeGrounded */
+        CannibalizeGrounded: {
+            /** Aircraft */
+            aircraft: string;
+            /** State */
+            state: string;
+            /** Base */
+            base: string;
+            /** Waiting For */
+            waiting_for: string[];
+            /**
+             * Role
+             * @enum {string}
+             */
+            role: "recipient" | "donor" | "blocked" | "other";
+        };
+        /** CannibalizeHangarQueen */
+        CannibalizeHangarQueen: {
+            /** Aircraft */
+            aircraft: string;
+            /** Components Removed */
+            components_removed: string[];
+        };
+        /** CannibalizeStep */
+        CannibalizeStep: {
+            /** Step */
+            step: number;
+            /**
+             * Action
+             * @enum {string}
+             */
+            action: "remove" | "transfer" | "install";
+            /** Aircraft */
+            aircraft: string;
+            /** Component Id */
+            component_id: string | null;
+            /** Part Number */
+            part_number: string;
+            /** Component Name */
+            component_name: string;
+            /** Labor Hours */
+            labor_hours: number;
+            /** Swap */
+            swap: number;
+        };
+        /** CannibalizeStrategyResponse */
+        CannibalizeStrategyResponse: {
+            /** As Of */
+            as_of: string;
+            /** Replay */
+            replay: boolean;
+            /** Fleet Size */
+            fleet_size: number;
+            /** Available Now */
+            available_now: number;
+            /** Grounded */
+            grounded: components["schemas"]["CannibalizeGrounded"][];
+            /** Aircraft Unblocked */
+            aircraft_unblocked: string[];
+            /** Available After Repairs */
+            available_after_repairs: number;
+            /** Total Labor Hours */
+            total_labor_hours: number;
+            /** Swaps */
+            swaps: components["schemas"]["CannibalizeSwap"][];
+            /** Sequence */
+            sequence: components["schemas"]["CannibalizeStep"][];
+            /** Hangar Queens */
+            hangar_queens: components["schemas"]["CannibalizeHangarQueen"][];
+            /** Forge */
+            forge: components["schemas"]["CannibalizeForge"][];
+            /** Unmet */
+            unmet: components["schemas"]["CannibalizeUnmet"][];
+            verification: components["schemas"]["CannibalizeVerification"];
+            /** Days With Blocked Aircraft */
+            days_with_blocked_aircraft: string[];
+            /** Method */
+            method: string;
+            /** Assumptions */
+            assumptions: string[];
+        };
+        /** CannibalizeSwap */
+        CannibalizeSwap: {
+            /** Swap */
+            swap: number;
+            /** Part Number */
+            part_number: string;
+            /** Component Type */
+            component_type: string;
+            /** Component Name */
+            component_name: string;
+            /** Donor */
+            donor: string;
+            /** Donor Component */
+            donor_component: string;
+            /** Donor Health Index */
+            donor_health_index: number;
+            /** Recipient */
+            recipient: string;
+            /** Recipient Component */
+            recipient_component: string | null;
+            /** Work Order */
+            work_order: string;
+            /** Labor Hours */
+            labor_hours: number;
+            /** Cross Base */
+            cross_base: boolean;
+            /** Supply Wait Avoided Days */
+            supply_wait_avoided_days: number;
+            /** Donor New Wait Days */
+            donor_new_wait_days: number;
+            /** Text */
+            text: string;
+        };
+        /** CannibalizeUnmet */
+        CannibalizeUnmet: {
+            /** Aircraft */
+            aircraft: string;
+            /** Part Number */
+            part_number: string;
+            /** Component Name */
+            component_name: string;
+            /** Work Order */
+            work_order: string;
+            /** Supply Wait Days */
+            supply_wait_days: number;
+            /** Reason */
+            reason: string;
+        };
+        /** CannibalizeVerification */
+        CannibalizeVerification: {
+            /** No Unit Used Twice */
+            no_unit_used_twice: boolean;
+            /** Types Match */
+            types_match: boolean;
+            /** Donors Grounded */
+            donors_grounded: boolean;
+            /** Donors Not Unblocked */
+            donors_not_unblocked: boolean;
+            /** Recipients Fully Covered */
+            recipients_fully_covered: boolean;
+            /** Greedy Unblocked */
+            greedy_unblocked: number;
+            /** Greedy Labor Hours */
+            greedy_labor_hours: number;
+            /** Optimal Unblocked */
+            optimal_unblocked: number | null;
+            /** Optimal Labor Hours */
+            optimal_labor_hours: number | null;
+            /** Greedy Is Optimal */
+            greedy_is_optimal: boolean | null;
+            /**
+             * Plan Source
+             * @enum {string}
+             */
+            plan_source: "greedy" | "exact";
+            /** Exact Method */
+            exact_method: string;
+        };
         /** ComponentDetailResponse */
         ComponentDetailResponse: {
             /** Id */
@@ -1026,6 +1918,57 @@ export interface components {
              */
             kind: "engine";
         };
+        /** ComponentHealthResponse */
+        ComponentHealthResponse: {
+            /** Component */
+            component: {
+                [key: string]: unknown;
+            };
+            /** As Of */
+            as_of: string;
+            /** Replay */
+            replay: boolean;
+            /** Dates */
+            dates: string[];
+            /** Sensors */
+            sensors: components["schemas"]["SensorSeries"][];
+            /** Ambient */
+            ambient: (number | null)[];
+            /** Health Index */
+            health_index: number[];
+            /** Replay Dates */
+            replay_dates: string[];
+            /** Risk14 */
+            risk14: number[];
+            /** Risk30 */
+            risk30: number[];
+            /** Rul */
+            rul: components["schemas"]["Quantiles"][];
+            /** Anomaly */
+            anomaly: number[];
+            /** Anomaly Alert */
+            anomaly_alert: boolean[];
+            /** Anomaly Threshold */
+            anomaly_threshold: number;
+            advisory: components["schemas"]["AdvisoryResponse"] | null;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "healthy" | "watch" | "degraded" | "critical" | "failed" | "under_maintenance";
+            /** History */
+            history: {
+                [key: string]: unknown;
+            }[];
+            /** Projection */
+            projection: {
+                [key: string]: unknown;
+            };
+            /** Simulation Truth */
+            simulation_truth: {
+                [key: string]: unknown;
+            } | null;
+        };
         /** ComponentMaintenanceResponse */
         ComponentMaintenanceResponse: {
             /** Component Id */
@@ -1034,6 +1977,25 @@ export interface components {
             slot_duration_hours: number;
             /** Tasks */
             tasks: components["schemas"]["InspectionTaskResponse"][];
+        };
+        /** Confidence */
+        Confidence: {
+            /**
+             * Level
+             * @enum {string}
+             */
+            level: "low" | "moderate" | "high";
+            /** Notes */
+            notes: string[];
+        };
+        /** ContributingParameter */
+        ContributingParameter: {
+            /** Name */
+            name: string;
+            /** Unit */
+            unit: string;
+            /** Deviation Sigma */
+            deviation_sigma: number;
         };
         /** Credentials */
         Credentials: {
@@ -1053,12 +2015,144 @@ export interface components {
             /** Previous Id */
             previous_id?: string | null;
         };
+        /** DataSourcesResponse */
+        DataSourcesResponse: {
+            /** Integration */
+            integration: {
+                [key: string]: unknown;
+            };
+            /** Batches */
+            batches: components["schemas"]["IngestBatchResponse"][];
+            /** Ingested Readings */
+            ingested_readings: number;
+        };
+        /** DemandForecastResponse */
+        DemandForecastResponse: {
+            /** Part Number */
+            part_number: string;
+            /** Horizon Days */
+            horizon_days: number;
+            /** Expected */
+            expected: number;
+            /** P10 */
+            p10: number;
+            /** P90 */
+            p90: number;
+            /** Predicted Failure Demand */
+            predicted_failure_demand: number;
+            /** Scheduled Demand */
+            scheduled_demand: number;
+            /** Baseline Moving Average */
+            baseline_moving_average: number;
+            /** Supply Within Horizon */
+            supply_within_horizon: number;
+            /** Shortfall Probability */
+            shortfall_probability: number;
+            /** Contributors */
+            contributors: {
+                [key: string]: unknown;
+            }[];
+            /** Method */
+            method: string;
+        };
+        /** Downtime */
+        Downtime: {
+            /** Act Now Days */
+            act_now_days: number;
+            /** Run To Failure Days */
+            run_to_failure_days: number;
+            /** Queue Days */
+            queue_days: number;
+            /** Spare Wait Days */
+            spare_wait_days: number;
+        };
+        /** EngineRunRequest */
+        EngineRunRequest: {
+            /**
+             * Seed
+             * @default 42
+             */
+            seed: number;
+        };
+        /** EngineRunResponse */
+        EngineRunResponse: {
+            /** Id */
+            id: string;
+            /** State */
+            state: string;
+            /** Seed */
+            seed: number;
+            /** As Of */
+            as_of: string | null;
+            /** Job Id */
+            job_id: string | null;
+            /** Summary */
+            summary: {
+                [key: string]: unknown;
+            };
+            /** Requested By */
+            requested_by: string;
+            /** Created At */
+            created_at: string;
+            /** Completed At */
+            completed_at: string | null;
+        };
+        /** EngineStatusResponse */
+        EngineStatusResponse: {
+            /** Ready */
+            ready: boolean;
+            active_run: components["schemas"]["EngineRunResponse"] | null;
+            pending_run: components["schemas"]["EngineRunResponse"] | null;
+            /** Runs */
+            runs: components["schemas"]["EngineRunResponse"][];
+            /** Data */
+            data: string;
+            /** Replay From */
+            replay_from?: string | null;
+            /** Replay To */
+            replay_to?: string | null;
+            /**
+             * Scripted
+             * @default []
+             */
+            scripted: {
+                [key: string]: unknown;
+            }[];
+        };
         /** ExplanationStateResponse */
         ExplanationStateResponse: {
             /** State */
             state: string;
             /** Reason */
             reason: string;
+        };
+        /** FleetAlertResponse */
+        FleetAlertResponse: {
+            /** Key */
+            key: string;
+            /** Type */
+            type: string;
+            /**
+             * Severity
+             * @enum {string}
+             */
+            severity: "critical" | "warning" | "info";
+            /** Title */
+            title: string;
+            /** Message */
+            message: string;
+            /** Aircraft */
+            aircraft: string | null;
+            /** Component Id */
+            component_id: string | null;
+            /** Advisory Id */
+            advisory_id: string | null;
+            /** Created On */
+            created_on: string;
+            /** Acknowledged By */
+            acknowledged_by: string | null;
+            /** Acknowledged At */
+            acknowledged_at: string | null;
         };
         /** FleetItemResponse */
         FleetItemResponse: {
@@ -1077,6 +2171,118 @@ export interface components {
             /** Open Tasks */
             open_tasks: number;
         };
+        /** FleetScenarioRequest */
+        FleetScenarioRequest: {
+            /** Name */
+            name: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "schedule_maintenance" | "spare_unavailable" | "early_replacement" | "extra_capacity";
+            /**
+             * Params
+             * @default {}
+             */
+            params: {
+                [key: string]: unknown;
+            };
+            /**
+             * Horizon Days
+             * @default 30
+             */
+            horizon_days: number;
+            /**
+             * Runs
+             * @default 300
+             */
+            runs: number;
+            /**
+             * Seed
+             * @default 7
+             */
+            seed: number;
+        };
+        /** FleetScenarioResponse */
+        FleetScenarioResponse: {
+            /** Id */
+            id: string;
+            /** Engine Run Id */
+            engine_run_id: string;
+            /** Name */
+            name: string;
+            /** Kind */
+            kind: string;
+            /** Params */
+            params: {
+                [key: string]: unknown;
+            };
+            /** Horizon Days */
+            horizon_days: number;
+            /** Runs */
+            runs: number;
+            /** Seed */
+            seed: number;
+            /** Results */
+            results: {
+                [key: string]: unknown;
+            };
+            /** Created By */
+            created_by: string;
+            /** Created At */
+            created_at: string;
+        };
+        /** FleetSummaryResponse */
+        FleetSummaryResponse: {
+            /** As Of */
+            as_of: string;
+            /** Aircraft */
+            aircraft: number;
+            /** Availability Today */
+            availability_today: number;
+            /** Availability 7D */
+            availability_7d: number;
+            /** Availability 30D */
+            availability_30d: number;
+            /** By Availability State */
+            by_availability_state: {
+                [key: string]: number;
+            };
+            /** By Health State */
+            by_health_state: {
+                [key: string]: number;
+            };
+            /** Open Advisories */
+            open_advisories: {
+                [key: string]: number;
+            };
+            /** Readiness Proxy */
+            readiness_proxy: number;
+            /** Readiness Proxy Definition */
+            readiness_proxy_definition: string;
+            backlog: components["schemas"]["Backlog"];
+            /** Parts At Risk */
+            parts_at_risk: string[];
+            /** Forecast 30D */
+            forecast_30d: {
+                [key: string]: unknown;
+            };
+            /** Alerts Open */
+            alerts_open: number;
+        };
+        /** ForecastBand */
+        ForecastBand: {
+            /** Date */
+            date: string;
+            /** P10 */
+            p10: number;
+            /** P50 */
+            p50: number;
+            /** P90 */
+            p90: number;
+            /** Mean */
+            mean: number;
+        };
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
@@ -1088,6 +2294,45 @@ export interface components {
             status: string;
             /** Database */
             database?: string | null;
+        };
+        /** HeatCell */
+        HeatCell: {
+            /** System */
+            system: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "healthy" | "watch" | "degraded" | "critical" | "failed" | "under_maintenance";
+            /** Health Index */
+            health_index: number;
+            /** Driver */
+            driver: string | null;
+        };
+        /** HeatGridResponse */
+        HeatGridResponse: {
+            /** Systems */
+            systems: components["schemas"]["SystemRef"][];
+            /** Rows */
+            rows: components["schemas"]["HeatRow"][];
+        };
+        /** HeatRow */
+        HeatRow: {
+            /** Aircraft */
+            aircraft: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "healthy" | "watch" | "degraded" | "critical" | "failed" | "under_maintenance";
+            /** Availability State */
+            availability_state: string;
+            /** Health Index */
+            health_index: number;
+            /** Driver */
+            driver: string | null;
+            /** Cells */
+            cells: components["schemas"]["HeatCell"][];
         };
         /** HistoryImport */
         HistoryImport: {
@@ -1106,6 +2351,37 @@ export interface components {
             cycle: number;
             /** Values */
             values: (number | null)[];
+        };
+        /** IngestBatchResponse */
+        IngestBatchResponse: {
+            /** Id */
+            id: string;
+            /** Source */
+            source: string;
+            /** Accepted */
+            accepted: number;
+            /** Rejected */
+            rejected: number;
+            /** Errors */
+            errors: {
+                [key: string]: unknown;
+            }[];
+            /** Actor */
+            actor: string;
+            /** Created At */
+            created_at: string;
+        };
+        /** IngestRequest */
+        IngestRequest: {
+            /**
+             * Source
+             * @default health_monitoring
+             */
+            source: string;
+            /** Readings */
+            readings: {
+                [key: string]: unknown;
+            }[];
         };
         /** InspectionTaskResponse */
         InspectionTaskResponse: {
@@ -1131,6 +2407,55 @@ export interface components {
             part_available: number | null;
             /** Version */
             version: number;
+        };
+        /** InventoryItem */
+        InventoryItem: {
+            /** Part Number */
+            part_number: string;
+            /** Description */
+            description: string;
+            /** System */
+            system: string;
+            /** Criticality */
+            criticality: number;
+            /** Unit Cost */
+            unit_cost: number;
+            /** Repairable */
+            repairable: boolean;
+            /** On Hand */
+            on_hand: number;
+            /** Reserved */
+            reserved: number;
+            /** Available */
+            available: number;
+            /** On Order */
+            on_order: number;
+            /** Next Receipt */
+            next_receipt: string | null;
+            /** Next Receipt In Days */
+            next_receipt_in_days: number | null;
+            /** Lead Time Days */
+            lead_time_days: number;
+            /** Reorder Level */
+            reorder_level: number;
+            /** Demand */
+            demand: {
+                [key: string]: {
+                    [key: string]: number;
+                };
+            };
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "ok" | "at_risk" | "short" | "print";
+            /**
+             * Additive Printable
+             * @default false
+             */
+            additive_printable: boolean;
+            /** Competing Components */
+            competing_components: string[];
         };
         /** InventoryPartResponse */
         InventoryPartResponse: {
@@ -1190,6 +2515,72 @@ export interface components {
              * @default 0
              */
             lead_time_slots: number;
+        };
+        /** PartRequestResponse */
+        PartRequestResponse: {
+            /** Id */
+            id: string;
+            /** Work Order Id */
+            work_order_id: string;
+            /** Aircraft */
+            aircraft: string;
+            /** Component Id */
+            component_id: string | null;
+            /** Component Name */
+            component_name: string;
+            /** Part */
+            part: string;
+            /** Description */
+            description: string;
+            /** Quantity */
+            quantity: number;
+            /** Needed By */
+            needed_by: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "open" | "reserved" | "ordered" | "received" | "cancelled";
+            /** Eta */
+            eta: string | null;
+            /** Note */
+            note: string;
+            /** Available Now */
+            available_now: number;
+            /** Lead Time Days */
+            lead_time_days: number;
+            /** Earliest Order Arrival */
+            earliest_order_arrival: string;
+            /**
+             * Additive Printable
+             * @default false
+             */
+            additive_printable: boolean;
+            /** At Risk */
+            at_risk: boolean;
+            /** Updated By */
+            updated_by: string;
+            /** Updated At */
+            updated_at: string;
+            /** Version */
+            version: number;
+        };
+        /** PartRequestUpdateRequest */
+        PartRequestUpdateRequest: {
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "reserved" | "ordered" | "received" | "cancelled";
+            /** Eta */
+            eta?: string | null;
+            /**
+             * Note
+             * @default
+             */
+            note: string;
+            /** Expected Version */
+            expected_version: number;
         };
         /** PlanAssignmentResponse */
         PlanAssignmentResponse: {
@@ -1257,6 +2648,71 @@ export interface components {
             /** Approved By */
             approved_by: string | null;
         };
+        /** PlannedWorkOrderResponse */
+        PlannedWorkOrderResponse: {
+            /** Id */
+            id: string;
+            /** Advisory Id */
+            advisory_id: string | null;
+            /** Aircraft */
+            aircraft: string;
+            /** Component Id */
+            component_id: string | null;
+            /** Agency Id */
+            agency_id: string;
+            /** Part */
+            part: string | null;
+            /** Title */
+            title: string;
+            /** Planned Start */
+            planned_start: string;
+            /** Duration Days */
+            duration_days: number;
+            /** Status */
+            status: string;
+            /** Priority */
+            priority: string | null;
+            /** Impact */
+            impact: {
+                [key: string]: unknown;
+            };
+            /** Notes */
+            notes: string;
+            /** Created By */
+            created_by: string;
+            /** Created At */
+            created_at: string;
+            /** Version */
+            version: number;
+            /**
+             * Source
+             * @default planned
+             */
+            source: string;
+        };
+        /** Priority */
+        Priority: {
+            /**
+             * Level
+             * @enum {string}
+             */
+            level: "P1" | "P2" | "P3" | "P4";
+            /** Score */
+            score: number;
+            /** Factors */
+            factors: components["schemas"]["PriorityFactor"][];
+        };
+        /** PriorityFactor */
+        PriorityFactor: {
+            /** Name */
+            name: string;
+            /** Weight */
+            weight: number;
+            /** Value */
+            value: number;
+            /** Points */
+            points: number;
+        };
         /** QualityFindingResponse */
         QualityFindingResponse: {
             /** Code */
@@ -1265,6 +2721,15 @@ export interface components {
             severity: string;
             /** Message */
             message: string;
+        };
+        /** Quantiles */
+        Quantiles: {
+            /** P10 */
+            p10: number;
+            /** P50 */
+            p50: number;
+            /** P90 */
+            p90: number;
         };
         /** Registration */
         Registration: {
@@ -1340,6 +2805,14 @@ export interface components {
             /** Expected Version */
             expected_version?: number | null;
         };
+        /** ReturnToServiceRequest */
+        ReturnToServiceRequest: {
+            /**
+             * Note
+             * @default
+             */
+            note: string;
+        };
         /** ScenarioResponse */
         ScenarioResponse: {
             /** Id */
@@ -1378,6 +2851,42 @@ export interface components {
                 number
             ][];
         };
+        /** ScheduleResponse */
+        ScheduleResponse: {
+            /** From */
+            from: string;
+            /** To */
+            to: string;
+            /** Today */
+            today: string;
+            /** Agencies */
+            agencies: {
+                [key: string]: unknown;
+            }[];
+            /** Bars */
+            bars: {
+                [key: string]: unknown;
+            }[];
+            /** Tasks Due */
+            tasks_due: {
+                [key: string]: unknown;
+            }[];
+        };
+        /** SensorSeries */
+        SensorSeries: {
+            /** Name */
+            name: string;
+            /** Unit */
+            unit: string;
+            /** Direction */
+            direction: number;
+            /** Values */
+            values: (number | null)[];
+            /** Normalised */
+            normalised: (number | null)[];
+            /** Cleaned */
+            cleaned: number[];
+        };
         /** SessionInfo */
         SessionInfo: {
             /** Id */
@@ -1406,6 +2915,47 @@ export interface components {
                 [key: string]: unknown;
             };
         };
+        /** SpareCheck */
+        SpareCheck: {
+            /** Part Number */
+            part_number: string;
+            /** On Hand */
+            on_hand: number;
+            /** Reserved */
+            reserved: number;
+            /** Available */
+            available: number;
+            /** On Order */
+            on_order: number;
+            /** Next Receipt */
+            next_receipt: string | null;
+            /** Lead Time Days */
+            lead_time_days: number;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "available" | "contested" | "short" | "additive_print";
+            /** Supplier Lead Time Days */
+            supplier_lead_time_days?: number | null;
+            /**
+             * Additive Printable
+             * @default false
+             */
+            additive_printable: boolean;
+            /** Queue Position */
+            queue_position: number;
+            /** Fleet Demand 30D */
+            fleet_demand_30d: number;
+            /** Fleet Shortfall */
+            fleet_shortfall: boolean;
+            /** Lead Time Exceeds Rul */
+            lead_time_exceeds_rul: boolean;
+            /** Shortfall In Days */
+            shortfall_in_days?: number | null;
+            /** Note */
+            note: string | null;
+        };
         /** StockAdjustment */
         StockAdjustment: {
             /** Delta Free Stock */
@@ -1416,6 +2966,13 @@ export interface components {
             reason: string;
             /** Command Id */
             command_id: string;
+        };
+        /** SystemRef */
+        SystemRef: {
+            /** Code */
+            code: string;
+            /** Name */
+            name: string;
         };
         /** TaskFixture */
         TaskFixture: {
@@ -1458,6 +3015,13 @@ export interface components {
              * @default true
              */
             mandatory: boolean;
+        };
+        /** TasksResponse */
+        TasksResponse: {
+            /** Tasks */
+            tasks: {
+                [key: string]: unknown;
+            }[];
         };
         /** TrialCatalogResponse */
         TrialCatalogResponse: {
@@ -1530,6 +3094,59 @@ export interface components {
             /** History Origin */
             history_origin: string;
         };
+        /** TwinComponent */
+        TwinComponent: {
+            /** Slot */
+            slot: number;
+            /** Id */
+            id: string;
+            /** Aircraft */
+            aircraft: string;
+            /** Type */
+            type: string;
+            /** Name */
+            name: string;
+            /** Criticality */
+            criticality: number;
+            /** Serial */
+            serial: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "healthy" | "watch" | "degraded" | "critical" | "failed" | "under_maintenance";
+            /** Hi */
+            hi: number;
+            /** Risk14 */
+            risk14: number;
+            /** Risk30 */
+            risk30: number;
+            rul: components["schemas"]["Quantiles"];
+            /** Anomaly */
+            anomaly: number;
+            /** Anomaly Sustained */
+            anomaly_sustained: boolean;
+            /** Work Order */
+            work_order: string | null;
+        };
+        /** TwinSystem */
+        TwinSystem: {
+            /** Code */
+            code: string;
+            /** Name */
+            name: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "healthy" | "watch" | "degraded" | "critical" | "failed" | "under_maintenance";
+            /** Health Index */
+            health_index: number;
+            /** Driver */
+            driver: string | null;
+            /** Components */
+            components: components["schemas"]["TwinComponent"][];
+        };
         /** ValidationError */
         ValidationError: {
             /** Location */
@@ -1561,6 +3178,62 @@ export interface components {
             started_at: string | null;
             /** Completed At */
             completed_at: string | null;
+        };
+        /** WorkOrderCreateRequest */
+        WorkOrderCreateRequest: {
+            /** Component Id */
+            component_id: string;
+            /** Advisory Id */
+            advisory_id?: string | null;
+            /** Agency Id */
+            agency_id?: string | null;
+            /**
+             * Planned Start
+             * Format: date
+             */
+            planned_start: string;
+            /**
+             * Notes
+             * @default
+             */
+            notes: string;
+        };
+        /** WorkOrderRescheduleRequest */
+        WorkOrderRescheduleRequest: {
+            /**
+             * Planned Start
+             * Format: date
+             */
+            planned_start: string;
+            /** Agency Id */
+            agency_id: string;
+            /** Expected Version */
+            expected_version: number;
+        };
+        /** WorkOrderUpdateRequest */
+        WorkOrderUpdateRequest: {
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "in_progress" | "completed" | "cancelled";
+            /** Expected Version */
+            expected_version: number;
+        };
+        /** WorkOrdersResponse */
+        WorkOrdersResponse: {
+            /** As Of */
+            as_of: string;
+            /** Recorded */
+            recorded: {
+                [key: string]: unknown;
+            }[];
+            /** Planned */
+            planned: components["schemas"]["PlannedWorkOrderResponse"][];
+            /** Kpis */
+            kpis: {
+                [key: string]: unknown;
+            };
         };
         /** WorkOutcome */
         WorkOutcome: {
@@ -3389,6 +5062,1065 @@ export interface operations {
                     "application/json": {
                         [key: string]: unknown;
                     };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    engine_api_fleet_health_engine_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-demo-user"?: string;
+                "x-demo-role"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EngineStatusResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    request_run_api_fleet_health_engine_runs_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-demo-user"?: string;
+                "x-demo-role"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EngineRunRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EngineStatusResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    cannibalize_strategy_api_fleet_health_engine_cannibalize_strategy_get: {
+        parameters: {
+            query?: {
+                /** @description Replay date within the last 120 days */
+                as_of?: string | null;
+            };
+            header?: {
+                "x-demo-user"?: string;
+                "x-demo-role"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CannibalizeStrategyResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    summary_api_fleet_health_summary_get: {
+        parameters: {
+            query?: {
+                /** @description Replay date within the last 120 days */
+                as_of?: string | null;
+            };
+            header?: {
+                "x-demo-user"?: string;
+                "x-demo-role"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FleetSummaryResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    trend_api_fleet_health_availability_trend_get: {
+        parameters: {
+            query?: {
+                /** @description Replay date within the last 120 days */
+                as_of?: string | null;
+            };
+            header?: {
+                "x-demo-user"?: string;
+                "x-demo-role"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AvailabilityTrendResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    heatgrid_api_fleet_health_heatgrid_get: {
+        parameters: {
+            query?: {
+                /** @description Replay date within the last 120 days */
+                as_of?: string | null;
+            };
+            header?: {
+                "x-demo-user"?: string;
+                "x-demo-role"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HeatGridResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    aircraft_api_fleet_health_aircraft_get: {
+        parameters: {
+            query?: {
+                /** @description Replay date within the last 120 days */
+                as_of?: string | null;
+            };
+            header?: {
+                "x-demo-user"?: string;
+                "x-demo-role"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AircraftListItem"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    aircraft_detail_api_fleet_health_aircraft__aircraft_id__get: {
+        parameters: {
+            query?: {
+                /** @description Replay date within the last 120 days */
+                as_of?: string | null;
+            };
+            header?: {
+                "x-demo-user"?: string;
+                "x-demo-role"?: string;
+            };
+            path: {
+                aircraft_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AircraftDetailResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    component_api_fleet_health_components__component_id__get: {
+        parameters: {
+            query?: {
+                /** @description Replay date within the last 120 days */
+                as_of?: string | null;
+                days?: number;
+            };
+            header?: {
+                "x-demo-user"?: string;
+                "x-demo-role"?: string;
+            };
+            path: {
+                component_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ComponentHealthResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    advisories_api_fleet_health_advisories_get: {
+        parameters: {
+            query?: {
+                /** @description Replay date within the last 120 days */
+                as_of?: string | null;
+                priority?: string | null;
+                status?: string | null;
+                system?: string | null;
+                spare_status?: string | null;
+                aircraft?: string | null;
+            };
+            header?: {
+                "x-demo-user"?: string;
+                "x-demo-role"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdvisoryResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_advisory_api_fleet_health_advisories__advisory_id__patch: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-demo-user"?: string;
+                "x-demo-role"?: string;
+            };
+            path: {
+                advisory_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AdvisoryUpdateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdvisoryResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    work_orders_api_fleet_health_work_orders_get: {
+        parameters: {
+            query?: {
+                status?: string | null;
+                aircraft?: string | null;
+                agency?: string | null;
+            };
+            header?: {
+                "x-demo-user"?: string;
+                "x-demo-role"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WorkOrdersResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_work_order_api_fleet_health_work_orders_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-demo-user"?: string;
+                "x-demo-role"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WorkOrderCreateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlannedWorkOrderResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_work_order_api_fleet_health_work_orders__work_order_id__patch: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-demo-user"?: string;
+                "x-demo-role"?: string;
+            };
+            path: {
+                work_order_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WorkOrderUpdateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlannedWorkOrderResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    schedule_api_fleet_health_maintenance_schedule_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-demo-user"?: string;
+                "x-demo-role"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScheduleResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    tasks_api_fleet_health_maintenance_tasks_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-demo-user"?: string;
+                "x-demo-role"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TasksResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    inventory_api_fleet_health_inventory_get: {
+        parameters: {
+            query?: {
+                /** @description Replay date within the last 120 days */
+                as_of?: string | null;
+            };
+            header?: {
+                "x-demo-user"?: string;
+                "x-demo-role"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InventoryItem"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    demand_api_fleet_health_inventory__part_number__forecast_get: {
+        parameters: {
+            query?: {
+                horizon?: number;
+            };
+            header?: {
+                "x-demo-user"?: string;
+                "x-demo-role"?: string;
+            };
+            path: {
+                part_number: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DemandForecastResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    alerts_api_fleet_health_alerts_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-demo-user"?: string;
+                "x-demo-role"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FleetAlertResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    acknowledge_api_fleet_health_alerts__alert_key__acknowledge_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-demo-user"?: string;
+                "x-demo-role"?: string;
+            };
+            path: {
+                alert_key: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FleetAlertResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    kpis_api_fleet_health_kpis_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-demo-user"?: string;
+                "x-demo-role"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    models_api_fleet_health_models_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-demo-user"?: string;
+                "x-demo-role"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    scenarios_api_fleet_health_scenarios_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-demo-user"?: string;
+                "x-demo-role"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FleetScenarioResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    run_scenario_api_fleet_health_scenarios_run_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-demo-user"?: string;
+                "x-demo-role"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FleetScenarioRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FleetScenarioResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    data_sources_api_fleet_health_data_sources_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-demo-user"?: string;
+                "x-demo-role"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DataSourcesResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    ingest_api_fleet_health_ingest_sensor_readings_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-demo-user"?: string;
+                "x-demo-role"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["IngestRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IngestBatchResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    part_requests_api_fleet_health_part_requests_get: {
+        parameters: {
+            query?: {
+                include_closed?: boolean;
+            };
+            header?: {
+                "x-demo-user"?: string;
+                "x-demo-role"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PartRequestResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_part_request_api_fleet_health_part_requests__request_id__patch: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-demo-user"?: string;
+                "x-demo-role"?: string;
+            };
+            path: {
+                request_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PartRequestUpdateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PartRequestResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    return_to_service_api_fleet_health_work_orders_recorded__work_order_id__return_to_service_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-demo-user"?: string;
+                "x-demo-role"?: string;
+            };
+            path: {
+                work_order_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReturnToServiceRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WorkOrdersResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reschedule_work_order_api_fleet_health_work_orders__work_order_id__schedule_patch: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-demo-user"?: string;
+                "x-demo-role"?: string;
+            };
+            path: {
+                work_order_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WorkOrderRescheduleRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlannedWorkOrderResponse"];
                 };
             };
             /** @description Validation Error */

@@ -10,6 +10,7 @@ from fleet_maintenance.api.routes import (
     events,
     evidence,
     fleet,
+    fleet_health,
     healthcheck,
     inventory,
     jobs,
@@ -38,5 +39,6 @@ for route in (
     work.router,
     workspace.router,
     evidence.router,
+    fleet_health.router,
 ):
     router.include_router(route, dependencies=[Depends(current_actor)])

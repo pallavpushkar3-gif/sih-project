@@ -25,6 +25,7 @@ def current_actor(
         return Actor(user.id, user.role)
     if x_demo_role not in {
         "viewer",
+        "fleet_manager",
         "planner",
         "engineer",
         "logistics",

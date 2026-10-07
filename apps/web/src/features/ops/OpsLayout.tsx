@@ -1,0 +1,342 @@
+import * as Dialog from "@radix-ui/react-dialog";
+import { useQuery } from "@tanstack/react-query";
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { Link, NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { api, isHealth } from "../../shared/api/client";
+import { Icon, type IconName } from "../../shared/ui/Icon";
+import { useSession } from "../access/SessionGate";
+import { addDays, dayDiff, useAsOf } from "./AsOf";
+import { useAcknowledgeAlert, useAdvisories, useAircraftList, useAlerts, useEngine, useRequestEngineRun } from "./api";
+import { longDate } from "./format";
+import { roleById, roles, stageCounts, useRole, type RoleId } from "./roles";
+import { useToast } from "./ui";
+
+type NavItem = { to: string; label: string; short?: string; icon: IconName; owner?: RoleId; step?: number; badge?: "review" | "schedule" | "parts" | "alerts" | "urgent"; match?: string[] };
+/** The seven primary screens (UI spec §2), then the team workflow and supporting views. */
+const groups: { title: string; items: NavItem[]; lab?: boolean; flow?: boolean; secondary?: boolean }[] = [
+  { title: "Operations", items: [
+    { to: "/dashboard", label: "Fleet Dashboard", short: "Overview", icon: "grid" },
+    { to: "/aircraft-detail", label: "Aircraft Detail", short: "Aircraft", icon: "aircraft", match: ["/aircraft/"] },
+    { to: "/component-health", label: "Component Health", short: "Components", icon: "activity", match: ["/health/"] },
+    { to: "/advisories", label: "Predictive Maintenance", short: "Predictive", icon: "list", badge: "urgent" },
+    { to: "/maintenance", label: "Maintenance Planning", short: "Bays", icon: "calendar" },
+    { to: "/spares", label: "Spares Inventory", short: "Spares", icon: "box" },
+    { to: "/simulator", label: "Scenario Simulator", short: "Simulator", icon: "sliders" },
+  ] },
+  { title: "Workflow", flow: true, secondary: true, items: [
+    { to: "/review", label: "Review findings", icon: "activity", owner: "engineer", step: 1, badge: "review" },
+    { to: "/plan", label: "Plan maintenance", icon: "calendar", owner: "supervisor", step: 2, badge: "schedule" },
+    { to: "/parts", label: "Secure parts", icon: "box", owner: "logistics", step: 3, badge: "parts" },
+    { to: "/status", label: "Fleet status", icon: "aircraft", owner: "fleet_manager", step: 4 },
+  ] },
+  { title: "More", secondary: true, items: [
+    { to: "/aircraft", label: "All aircraft", icon: "layers" },
+    { to: "/notifications", label: "Alerts", icon: "bell", badge: "alerts" },
+    { to: "/analytics", label: "Reports & models", icon: "chart" },
+    { to: "/data", label: "Data sources", icon: "file" },
+    { to: "/fleet", label: "Research lab (C-MAPSS)", icon: "flask" },
+  ] },
+];
+const labTools: NavItem[] = [
+  { to: "/fleet", label: "Engine evidence", icon: "activity" },
+  { to: "/planning", label: "Constraint planner", icon: "wrench" },
+  { to: "/scenarios", label: "Engine what-ifs", icon: "trend" },
+  { to: "/inventory", label: "Parts & deliveries", icon: "layers" },
+  { to: "/alerts", label: "Engine alerts", icon: "shield" },
+  { to: "/ai", label: "AI & evidence", icon: "spark" },
+  { to: "/demo", label: "Guided trial", icon: "play" },
+];
+const labPaths = ["/fleet", "/planning", "/scenarios", "/inventory", "/alerts", "/ai", "/demo", "/overview", "/components/"];
+const titles: Record<string, string> = Object.fromEntries([...groups.flatMap(group => group.items), ...labTools].map(item => [item.to, item.label]));
+
+function readPreference(key: string) { try { return window.localStorage.getItem(key); } catch { return null; } }
+function writePreference(key: string, value: string) { try { window.localStorage.setItem(key, value); } catch { /* per-viewer convenience only */ } }
+
+function useTheme() {
+  const [theme, setTheme] = useState<"light" | "dark">(() => (readPreference("ops:theme") as "light" | "dark" | null)
+    ?? "light"); // light glass palette by default; dark remains available
+  useEffect(() => { document.documentElement.dataset.theme = theme; writePreference("ops:theme", theme); }, [theme]);
+  return [theme, () => setTheme(value => value === "dark" ? "light" : "dark")] as const;
+}
+
+export function OpsLayout() {
+  const location = useLocation();
+  const [theme, toggleTheme] = useTheme();
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [paletteOpen, setPaletteOpen] = useState(false);
+  const menuButton = useRef<HTMLButtonElement>(null);
+  const lab = labPaths.some(path => location.pathname === path || location.pathname.startsWith(path) && path.endsWith("/") || location.pathname.startsWith(`${path}/`));
+  const health = useQuery({ queryKey: ["api-health"], queryFn: () => api("/health/ready", undefined, isHealth), refetchInterval: 30_000, retry: false });
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") { event.preventDefault(); setPaletteOpen(open => !open); }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+  useEffect(() => { setMobileOpen(false); }, [location.pathname]);
+  const title = titles[location.pathname] ?? (location.pathname.startsWith("/aircraft/") ? "Aircraft Detail" : location.pathname.startsWith("/health/") ? "Component Health" : location.pathname === "/welcome" ? "Welcome" : "Workspace");
+
+  return <div className="o-shell">
+    <a className="skip-link" href="#main-content">Skip to content</a>
+    <header className="o-header">
+      <button type="button" ref={menuButton} className="o-round-btn o-mobile-only" aria-label="Open navigation" onClick={() => setMobileOpen(true)}><Icon name="menu" size={18}/></button>
+      <Link to="/dashboard" className="o-header-brand" aria-label="Integrated Fleet Availability Platform — home"><OfficialMarks/><span className="o-wordmark"><strong>FleetAvail</strong><small>DSSC · Integrated Fleet Availability</small></span></Link>
+      <TopNav live={!lab} lab={lab}/>
+      <div className="o-header-tools">
+        <button type="button" className="o-round-btn" onClick={() => setPaletteOpen(true)} aria-label="Search (⌘K)" title="Search  ⌘K"><Icon name="search" size={17}/></button>
+        <button type="button" className="o-round-btn" onClick={toggleTheme} aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}><Icon name={theme === "dark" ? "sun" : "moon"} size={17}/></button>
+        {!lab && <AlertsMenu/>}
+        <ProfileMenu/>
+      </div>
+    </header>
+    <div className="o-contextbar">
+      <span className="o-synthetic-strip" title="All fleet data in this environment is generated by a documented simulator">Synthetic data environment</span>
+      <span className={`o-conn ${health.isError ? "off" : ""}`} title={health.isError ? "API unavailable" : "API connected"}><i/>{health.isError ? "API offline" : "Live"}</span>
+      {!lab && <ReplaySlider/>}
+    </div>
+    <Dialog.Root open={mobileOpen} onOpenChange={setMobileOpen}><Dialog.Portal><Dialog.Overlay className="o-overlay"/><Dialog.Content className="o-mobile-nav" aria-describedby={undefined} onCloseAutoFocus={event => { event.preventDefault(); menuButton.current?.focus(); }}><Dialog.Title className="sr-only">Workspace navigation</Dialog.Title><div className="o-mobile-nav-head"><strong>FleetAvail</strong><Dialog.Close asChild><button type="button" className="o-round-btn" aria-label="Close navigation"><Icon name="close" size={16}/></button></Dialog.Close></div><Sidebar live={!lab} lab={lab}/></Dialog.Content></Dialog.Portal></Dialog.Root>
+    <div className="o-main">
+      {/* Keyed by theme as well: legacy charts and the 3D stage read colour tokens once when drawn. */}
+      <main id="main-content" tabIndex={-1} className={lab ? "o-content legacy-surface" : "o-content"} key={`${location.pathname}:${theme}`} aria-label={title}>
+        {lab ? <div className="page"><Outlet/></div> : ["/", "/welcome", "/home"].includes(location.pathname) ? <Outlet/> : <EngineGate><Outlet/></EngineGate>}
+      </main>
+      <footer className="o-footer"><span>PS 26249 · Integrated predictive maintenance & fleet availability demonstrator</span><span>Synthetic data · Decision support only · No airworthiness or dispatch authority</span></footer>
+    </div>
+    <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen}/>
+  </div>;
+}
+
+/** Badge counts shared by the top navigation and the mobile menu. */
+function useNavBadges(live: boolean) {
+  // Fleet-health badges are only fetched on fleet-health screens; lab pages stay self-contained.
+  const advisories = useAdvisories(live);
+  const alerts = useAlerts(live);
+  const counts = stageCounts(advisories.data);
+  const urgent = advisories.data?.filter(a => ["P1", "P2"].includes(a.priority.level) && !["completed", "dismissed"].includes(a.status)).length;
+  return (key?: NavItem["badge"]) => key === "alerts" ? alerts.data?.filter(a => !a.acknowledged_by).length : key === "urgent" ? urgent : key ? counts[key] : undefined;
+}
+function isActive(pathname: string, item: NavItem) {
+  return pathname === item.to || pathname.startsWith(`${item.to}/`) || Boolean(item.match?.some(prefix => pathname.startsWith(prefix)));
+}
+
+/** Glass pill navigation (replaces the sidebar): primary screens as pills, the team workflow and
+ *  supporting views in pill menus. */
+function TopNav({ live, lab }: { live: boolean; lab: boolean }) {
+  const badge = useNavBadges(live);
+  const { role } = useRole();
+  const location = useLocation();
+  const pill = (item: NavItem) => {
+    const count = badge(item.badge);
+    return <NavLink key={item.to} to={item.to} className={isActive(location.pathname, item) ? "active" : ""} title={item.label}>
+      {item.short ?? item.label}{count ? <span className="o-pill-count">{count}</span> : null}
+    </NavLink>;
+  };
+  if (lab) return <nav className="o-topnav" aria-label="Primary">
+    <NavLink to="/review" className="o-topnav-back"><Icon name="arrow" size={14} style={{ transform: "rotate(180deg)" }}/>Fleet workspace</NavLink>
+    {labTools.slice(0, 4).map(pill)}
+    <NavMenu title="Lab tools" items={labTools.slice(4)} badge={badge} role={role.id}/>
+  </nav>;
+  return <nav className="o-topnav" aria-label="Primary">
+    {groups[0].items.map(pill)}
+    {groups.slice(1).map(group => <NavMenu key={group.title} title={group.title} items={group.items} badge={badge} role={role.id}/>)}
+  </nav>;
+}
+
+function NavMenu({ title, items, badge, role }: { title: string; items: NavItem[]; badge: (key?: NavItem["badge"]) => number | undefined; role: RoleId }) {
+  const ref = useRef<HTMLDetailsElement>(null);
+  const location = useLocation();
+  useEffect(() => {
+    if (ref.current) ref.current.open = false;
+    const close = (event: MouseEvent) => { if (ref.current?.open && !ref.current.contains(event.target as Node)) ref.current.open = false; };
+    document.addEventListener("mousedown", close);
+    return () => document.removeEventListener("mousedown", close);
+  }, [location.pathname]);
+  const active = items.some(item => isActive(location.pathname, item));
+  const total = items.reduce((sum, item) => sum + (item.owner === role ? badge(item.badge) ?? 0 : 0), 0);
+  return <details className={`o-navmenu${active ? " active" : ""}`} ref={ref}>
+    <summary>{title}{total ? <span className="o-pill-count">{total}</span> : null}<Icon name="chevron" size={12}/></summary>
+    <div className="o-glass-pop">{items.map(item => {
+      const count = badge(item.badge);
+      const mine = item.owner === role;
+      return <NavLink key={item.to} to={item.to} className={`${isActive(location.pathname, item) ? "active" : ""}${mine ? " mine" : ""}`}>
+        {item.step ? <span className="o-nav-step">{item.step}</span> : <Icon name={item.icon} size={16}/>}
+        <span>{item.label}{item.owner && <small>{mine ? "Your step" : roleById[item.owner].short}</small>}</span>
+        {count ? <span className="o-pill-count">{count}</span> : null}
+      </NavLink>;
+    })}</div>
+  </details>;
+}
+
+/** Official marks slot. Renders authorised artwork placed in public/branding/ (see README there);
+ *  it never substitutes a drawn imitation. Missing files fall back to a neutral placeholder. */
+function OfficialMarks() {
+  const marks = [["mod-crest", "Ministry of Defence"], ["dssc-crest", "Defence Services Staff College"]] as const;
+  const [missing, setMissing] = useState<string[]>([]);
+  return <span className="o-marks">{marks.map(([file, name]) => missing.includes(file)
+    ? <span key={file} className="o-mark-placeholder" title={`${name} mark not installed — add public/branding/${file}.png`} aria-label={`${name} mark not installed`}><Icon name="shield" size={18}/></span>
+    : <img key={file} className="o-mark" src={`${import.meta.env.BASE_URL}branding/${file}.png`} alt={name} width={32} height={32} onError={() => setMissing(list => [...list, file])}/>)}</span>;
+}
+
+/** Vertical navigation shown in the mobile menu sheet. */
+function Sidebar({ live, lab }: { live: boolean; lab: boolean }) {
+  const badge = useNavBadges(live);
+  const { role } = useRole();
+  const location = useLocation();
+  const link = (item: NavItem) => {
+    const count = badge(item.badge);
+    const mine = item.owner === role.id;
+    return <NavLink key={item.to} to={item.to} className={`${isActive(location.pathname, item) ? "active" : ""}${mine ? " mine" : ""}`}>
+      {item.step ? <span className="o-nav-step">{item.step}</span> : <Icon name={item.icon} size={18}/>}
+      <span className="o-nav-label">{item.label}{item.owner && <small>{mine ? "Your step" : roleById[item.owner].short}</small>}</span>
+      {count ? <span className="o-nav-count">{count}</span> : null}
+    </NavLink>;
+  };
+  return <aside className="o-sidebar">
+    <nav aria-label="Primary">
+      {lab ? <div className="o-nav-group lab">
+        <NavLink to="/review" className="o-nav-back"><Icon name="arrow" size={16} style={{ transform: "rotate(180deg)" }}/><span className="o-nav-label">Back to fleet workspace</span></NavLink>
+        <span className="o-nav-title">Research lab · C-MAPSS engines</span>
+        {labTools.map(link)}
+      </div> : groups.map(group => <div className="o-nav-group" key={group.title}>
+        <span className="o-nav-title">{group.title}</span>
+        {group.items.map(link)}
+      </div>)}
+    </nav>
+  </aside>;
+}
+
+const roleTag: Record<RoleId, string> = { fleet_manager: "COMMANDER", engineer: "ENGINEER", supervisor: "SUPERVISOR", logistics: "LOGISTICS" };
+
+/** Avatar with the active role; also switches role (demo mode) and signs out (sessions). */
+function ProfileMenu() {
+  const { role, setRole, canSwitch } = useRole();
+  const session = useSession();
+  const navigate = useNavigate();
+  const ref = useRef<HTMLDetailsElement>(null);
+  const location = useLocation();
+  useEffect(() => {
+    if (ref.current) ref.current.open = false;
+    const close = (event: MouseEvent) => { if (ref.current?.open && !ref.current.contains(event.target as Node)) ref.current.open = false; };
+    document.addEventListener("mousedown", close);
+    return () => document.removeEventListener("mousedown", close);
+  }, [location.pathname]);
+  return <details className="o-profile" ref={ref}>
+    <summary aria-label={`Account: ${role.label}`}><span className="o-avatar"><Icon name={role.icon} size={16}/></span><span className="o-role-tag">{roleTag[role.id]}</span></summary>
+    <div className="o-glass-pop">
+      <div className="o-profile-who"><strong>{session?.id ?? "Workspace user"}</strong><small>{role.label} · {session?.authentication === "server session" ? "signed in" : "local demo"}</small></div>
+      <p className="o-muted o-small">{canSwitch ? "Switch role to see the workspace as each team does." : "Your account role is set by an administrator."}</p>
+      {roles.map(r => <button type="button" key={r.id} className={r.id === role.id ? "on" : ""} disabled={!canSwitch && r.id !== role.id} onClick={() => { setRole(r.id); navigate(r.home); }}>
+        <Icon name={r.icon} size={16}/><span><strong>{r.label}</strong><small>{r.homeLabel}</small></span>{r.id === role.id && <Icon name="check" size={14}/>}
+      </button>)}
+      <div className="o-profile-foot"><Link className="o-link" to="/welcome">How the flow works</Link>{session?.authentication === "server session" && <button type="button" className="o-btn sm ghost" onClick={() => void api("/access/session", { method: "DELETE" }).then(() => window.dispatchEvent(new Event("fleet:session-expired")))}>Sign out</button>}</div>
+    </div>
+  </details>;
+}
+
+/** Inline time-replay slider (UI spec §2): scrub the operational date across the replay window. */
+function ReplaySlider() {
+  const engine = useEngine();
+  const { asOf, setAsOf } = useAsOf();
+  const [playing, setPlaying] = useState(false);
+  const from = engine.data?.replay_from, to = engine.data?.replay_to;
+  const span = from && to ? dayDiff(from, to) : 0;
+  const current = asOf ?? to ?? null;
+  const offset = current && from ? dayDiff(from, current) : span;
+  const [draft, setDraft] = useState(offset);
+  useEffect(() => setDraft(offset), [offset]);
+  const commit = (value: number) => { if (!from || !to) return; const clamped = Math.max(0, Math.min(span, value)); setAsOf(clamped >= span ? null : addDays(from, clamped)); };
+  const commitRef = useRef(commit);
+  commitRef.current = commit;
+  useEffect(() => {
+    if (!playing) return;
+    const timer = window.setInterval(() => {
+      if (offset >= span) { setPlaying(false); return; }
+      commitRef.current(offset + 1);
+    }, 900);
+    return () => window.clearInterval(timer);
+  }, [playing, offset, span]);
+  if (!from || !to) return null;
+  const replaying = Boolean(asOf);
+  return <div className={`o-replay-inline${replaying ? " replaying" : ""}`} title={`Replay scored history ${longDate(from)} – ${longDate(to)}. Decisions are recorded only at the latest date.`}>
+    <button type="button" className="o-replay-play" aria-label={playing ? "Pause replay" : "Play replay"} onClick={() => { if (offset >= span) commit(Math.max(0, span - 30)); setPlaying(value => !value); }}><Icon name={playing ? "pause" : "play"} size={12}/></button>
+    <input type="range" min={0} max={span} value={draft} aria-label="Operational date" aria-valuetext={longDate(addDays(from, draft))}
+      onChange={event => setDraft(Number(event.target.value))} onPointerUp={() => commit(draft)} onKeyUp={() => commit(draft)}
+      style={{ "--fill": `${(draft / Math.max(span, 1)) * 100}%` } as CSSProperties}/>
+    <span className="o-replay-date">{replaying ? "REPLAY " : "T0 "}{longDate(addDays(from, draft)).toUpperCase()}</span>
+    {replaying && <button type="button" className="o-replay-live" onClick={() => { setPlaying(false); setAsOf(null); }}>LIVE</button>}
+  </div>;
+}
+
+function AlertsMenu() {
+  const alerts = useAlerts();
+  const acknowledge = useAcknowledgeAlert();
+  const navigate = useNavigate();
+  const toast = useToast();
+  const [open, setOpen] = useState(false);
+  const pending = alerts.data?.filter(alert => !alert.acknowledged_by) ?? [];
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!open) return;
+    const close = (event: MouseEvent) => { if (!ref.current?.contains(event.target as Node)) setOpen(false); };
+    document.addEventListener("mousedown", close);
+    return () => document.removeEventListener("mousedown", close);
+  }, [open]);
+  return <div className="o-alerts" ref={ref}>
+    <button type="button" className="o-round-btn" aria-label={`Alerts (${pending.length} unacknowledged)`} onClick={() => setOpen(value => !value)}><Icon name="bell" size={18}/>{pending.length > 0 && <span className="o-dot">{pending.length}</span>}</button>
+    {open && <div className="o-alerts-pop o-glass-pop">
+      <header><strong>Alerts</strong><button type="button" className="o-link" onClick={() => { setOpen(false); navigate("/notifications"); }}>View all</button></header>
+      {pending.length === 0 ? <p className="o-muted">All alerts acknowledged.</p> : pending.slice(0, 6).map(alert => <article key={alert.key} className={`o-alert-row ${alert.severity}`}>
+        <i/><div><strong>{alert.title}</strong><p>{alert.message}</p>
+          <div className="o-alert-actions">{alert.component_id && <button type="button" className="o-link" onClick={() => { setOpen(false); navigate(`/health/${alert.component_id}`); }}>Open component</button>}<button type="button" className="o-link" onClick={() => acknowledge.mutate(alert.key, { onSuccess: () => toast({ tone: "success", title: "Alert acknowledged" }), onError: error => toast({ tone: "error", title: "Could not acknowledge", body: error.message }) })}>Acknowledge</button></div>
+        </div>
+      </article>)}
+    </div>}
+  </div>;
+}
+
+function CommandPalette({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
+  const navigate = useNavigate();
+  const aircraft = useAircraftList(open);
+  const advisories = useAdvisories(open);
+  const [text, setText] = useState("");
+  const [cursor, setCursor] = useState(0);
+  const items = useMemo(() => {
+    const pages = [...groups.flatMap(group => group.items.map(item => ({ key: item.to, label: item.label, hint: item.owner ? `Step ${item.step} · ${roleById[item.owner].short}` : group.title, to: item.to, icon: item.icon }))), ...labTools.map(item => ({ key: `lab${item.to}`, label: item.label, hint: "Research lab", to: item.to, icon: item.icon }))];
+    const planes = (aircraft.data ?? []).map(row => ({ key: row.id, label: row.id, hint: `Aircraft · ${row.base} · HI ${row.health_index.toFixed(0)}`, to: `/aircraft/${row.id}`, icon: "aircraft" as IconName }));
+    const parts = (advisories.data ?? []).map(row => ({ key: row.id, label: `${row.aircraft} ${row.component_name}`, hint: `${row.priority.level} · ${row.action.label}`, to: `/health/${row.component_id}`, icon: "gauge" as IconName }));
+    const query = text.trim().toLowerCase();
+    return [...pages, ...planes, ...parts].filter(item => !query || `${item.label} ${item.hint}`.toLowerCase().includes(query)).slice(0, 12);
+  }, [aircraft.data, advisories.data, text]);
+  useEffect(() => { setCursor(0); }, [text, open]);
+  const go = (to: string) => { onOpenChange(false); setText(""); navigate(to); };
+  return <Dialog.Root open={open} onOpenChange={onOpenChange}><Dialog.Portal><Dialog.Overlay className="o-overlay"/><Dialog.Content className="o-palette" aria-describedby={undefined}>
+    <Dialog.Title className="sr-only">Search</Dialog.Title>
+    <div className="o-palette-input"><Icon name="search" size={18}/><input autoFocus value={text} placeholder="Jump to an aircraft, component or page…" onChange={event => setText(event.target.value)} onKeyDown={event => {
+      if (event.key === "ArrowDown") { event.preventDefault(); setCursor(value => Math.min(items.length - 1, value + 1)); }
+      if (event.key === "ArrowUp") { event.preventDefault(); setCursor(value => Math.max(0, value - 1)); }
+      if (event.key === "Enter" && items[cursor]) go(items[cursor].to);
+    }}/><kbd>esc</kbd></div>
+    <ul role="listbox" aria-label="Results">{items.map((item, index) => <li key={item.key} role="option" aria-selected={index === cursor}><button type="button" className={index === cursor ? "on" : ""} onMouseEnter={() => setCursor(index)} onClick={() => go(item.to)}><Icon name={item.icon} size={16}/><span>{item.label}</span><small>{item.hint}</small></button></li>)}{items.length === 0 && <li className="o-muted o-palette-empty">No matches</li>}</ul>
+  </Dialog.Content></Dialog.Portal></Dialog.Root>;
+}
+
+function EngineGate({ children }: { children: ReactNode }) {
+  const engine = useEngine();
+  const session = useSession();
+  const request = useRequestEngineRun();
+  const ready = engine.data?.ready;
+  const poll = useEngine(!ready);
+  if (engine.isLoading) return <div className="o-gate"><span className="o-spinner"/><strong>Connecting to the fleet engine…</strong></div>;
+  if (engine.error && !engine.data) return <div className="o-gate"><Icon name="warning" size={28}/><strong>Fleet engine unavailable</strong><p>{engine.error.message}</p><button type="button" className="o-btn" onClick={() => void engine.refetch()}>Retry</button></div>;
+  if (ready) return <>{children}</>;
+  const pending = poll.data?.pending_run ?? engine.data?.pending_run;
+  const failed = !pending && engine.data?.runs.some(run => run.state === "failed");
+  return <div className="o-gate">
+    <div className="o-gate-art"><Icon name="spark" size={30}/></div>
+    <strong>{pending ? "Building the synthetic fleet…" : failed ? "The last engine run failed" : "No engine run yet"}</strong>
+    <p>{pending ? "Simulating 40 aircraft over three years, training the anomaly, risk and remaining-life models, and scoring the replay window. This takes about half a minute." : "A supervisor can start an engine run to generate the synthetic fleet and train its models."}</p>
+    {pending && <div className="o-gate-steps">{["Simulate latent health", "Engineer past-only features", "Train & calibrate models", "Score, explain & forecast"].map((step, index) => <span key={step} style={{ animationDelay: `${index * 0.35}s` }}>{step}</span>)}</div>}
+    {!pending && session?.role === "supervisor" && <button type="button" className="o-btn" disabled={request.isPending} onClick={() => request.mutate(42)}><Icon name="play" size={15}/>Start engine run</button>}
+  </div>;
+}

@@ -5,6 +5,7 @@ Status: single-workspace server sessions and demo identity injection implemented
 | Role | Implemented mutations |
 |---|---|
 | viewer | None; read protected workspace records. |
+| fleet_manager | Run fleet-health what-if scenarios; acknowledge alerts. |
 | engineer | Import supported engine histories, request assessments, acknowledge alerts. |
 | planner | Submit planning/simulation jobs and create/revise proposals/scenarios. |
 | logistics | Version-checked, audited stock adjustments. |
@@ -45,3 +46,7 @@ Customer-trial `/demo` routes require local development/demo authentication or t
 ## Release scope — 2026-10-05
 
 Administrator additionally configures operational resources; planner/supervisor submits exact-plan comparisons. Authentication scopes one isolated agency installation: all authenticated accounts share its read workspace; job cancellation retains owner/supervisor authorization. `deployment_scope` rejects shared multi-agency mode. Selected ASVS 5.0.0 controls and remaining security-assessment limits are mapped in `docs/operations/security_review.md`.
+
+## Fleet-health workspace decisions
+
+The fleet-health screens follow one decision flow, and the API enforces each step: engineers confirm or dismiss findings; supervisors (and planners) schedule work orders; logistics reserves, orders or receives parts requests; fleet managers run scenarios. Supervisors may act at every step. In local demo mode the role chosen in the top bar is sent as `X-Demo-Role`; signed-in accounts keep their server role.

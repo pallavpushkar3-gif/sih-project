@@ -1,0 +1,23 @@
+# Transparent maintenance-priority rule (docs/plan.md section 4.D). Not a learned model.
+# score = sum(weight * factor), each factor scaled to 0..1. Edit and restart the API to tune.
+version: priority-v1
+weights:
+  failure_risk: 0.35        # max(14-day risk, 0.6 x 30-day risk)
+  criticality: 0.20         # component criticality / 5
+  remaining_life: 0.20      # min(1, 10 / RUL median days)
+  spare_shortfall: 0.15     # 1 = no spare and lead time exceeds RUL p10, 0.5 = no spare, 0 = ok
+  availability_impact: 0.10 # expected run-to-failure aircraft-days, scaled to 0..1 at 10 days
+bands:                       # minimum score for each priority level
+  P1: 0.72
+  P2: 0.52
+  P3: 0.32
+risk_bands:                  # 14-day probability bands for display
+  watch: 0.15
+  high: 0.35
+  critical: 0.70
+ground_now:                  # criticality >= 4 and (risk >= this or RUL p10 <= 1 day)
+  risk_14d: 0.85
+health_states:               # health-index thresholds (0..100)
+  healthy: 80
+  watch: 60
+  degraded: 40
