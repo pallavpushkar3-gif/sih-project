@@ -1,5 +1,19 @@
 # Asset register
 
+## Interactive blueprint and component structures — 2026-10-10
+
+The blueprint SVG paths in `AircraftBlueprint.tsx` are newly authored code-native drawings inspired by the supplied multi-view layout, not copied stock artwork. The blue drafting grid is CSS. `BlueprintStudio.tsx` derives disposable line geometry from the existing illustrative fighter GLB, preserving its asset provenance. `componentStructure.ts` authors conceptual section assemblies with installed Three.js primitives for twenty synthetic catalogue types (fifteen assembly families). No external CAD, texture or engineering model is downloaded. Locations in `componentArchitecture.ts`, dimensions and internal arrangements use arbitrary scene units and are not validated installation or physical-fault data. Unknown type codes have no fabricated structure. The red highlight represents recorded whole-component attention only.
+
+## Authored illustrative fighter — 2026-10-09
+
+After explicit user approval of a visual-only Tejas-inspired model, the fleet-health aircraft studio uses `apps/web/public/models/tejas-visual.glb`. Original geometry is authored in `apps/web/src/features/ops/fighterGeometry.ts` and reproducibly exported with Node 24 using `node apps/web/scripts/build-fighter-model.mjs` and the installed Three.js GLTFExporter. No third-party mesh, image, model weights or CAD was incorporated. The public [HAL Tejas brochure](https://hal-india.co.in/backend/wp-content/uploads/2022/12/LCA.pdf) informed the tailless compound-delta visual direction; it is not a dimension/configuration validation source, nor was its artwork copied. Decorative roundels imply no operational identity or government endorsement.
+
+Visual details: shaped fuselage/radome and pitot, compound-delta wings/elevons, swept single fin/rudder, cockpit canopy/frame/coaming/headrest, paired intake mouths/lips/splitters, separate exhaust collars/petals, tricycle gear/tyres/hubs/oleos/braces/bay doors, empty pylons/rails, antenna/nav lenses, seams and instanced fasteners. The texture-free GLB is **1,644,344 bytes**, SHA-256 `2b8708c96fd91e127b6050c999da490227b032f4e3146dce46ae0c86a369b7d6`; generator traversal counts 123 mesh objects and 61,196 base triangles (instanced fasteners repeat their base geometry). Root extras explicitly retain `engineeringValidated: false` and arbitrary scene units. The local `fighter-poster.svg` is an authored simplified silhouette for renderer/model failure, not a CAD drawing or capture of the detailed GLB.
+
+This model is a visual approximation with no verified dimensions, physical internals, configuration baseline, tolerances, aerodynamic accuracy or component installation mapping. Synthetic records remain independent of its one-engine visual shape. The original transport GLB/poster and licence are preserved for the untouched legacy inspection workflow; no source geometry or labels there are silently replaced.
+
+## Earlier registered assets
+
 Downloaded/registered 2026-10-04. Assets are served locally; normal runtime does not depend on a remote model or font CDN.
 
 | Asset | Source / author / license | Local use and modifications |
@@ -12,3 +26,7 @@ Downloaded/registered 2026-10-04. Assets are served locally; normal runtime does
 GLB SHA-256: `e72f627c5f0c9dc50726059703df55d74e634a32dbccb25b18f1783f913360b8`. Raw 586,652 bytes; reproducible gzip 515,163 bytes (mtime=0), below the proposed 10 MB compressed budget. Both embedded images are 1024×1024 (JPEG body artwork and PNG propeller), below 2K. Model meshes are `Cesium_Air` and shared `Prop`; no validated separable engine assembly/explode model is supplied. These measurements describe asset delivery, not physical fidelity.
 
 The earlier unused bitmap illustration remains in the repository but is no longer imported by the fleet register or inspection route. No reference screenshot, Bombardier identity, passenger count or cabin controls were copied into product data. Before substituting an asset, record exact source/license/author, acquisition date, modifications and measurements here.
+
+2026-10-09: The fleet-health `/aircraft/:aircraftId` studio also uses the registered Cesium Air binary. Runtime material clones use roughness 0.32 and metalness 0.18 for opaque surfaces; textures and source geometry remain unchanged. Reflections are generated locally using the installed Three.js RoomEnvironment (Three.js MIT license), with no downloaded HDR or new raster asset. All generic synthetic aircraft share this illustrative model; their per-record identity, base, usage and condition come from the API rather than its artwork. The car references guide presentation and transition poses only.
+
+Candidate inspection, not shipped: [Tandem Seat Jet Trainer by 3D Assets](https://3dassets.dev/assets/aircraft-fleet-and-airfield-jet-trainer-e5ce1a6e), [exact CDN file](https://cdn.3dassets.dev/assets/32594/v1/model.glb), publisher-declared CC0 1.0 Universal and AI-assisted generic design. Downloaded 2026-10-09; unchanged 906,608-byte binary, SHA-256 `b9508a1e52747ba76eb9dbf6831aa08502a7aac712b6595f46562635fe4fa787`, inspected 27 meshes / 39 nodes / 10 materials / 9 clips. After the user required engineering accuracy rather than illustrative geometry, the candidate was removed from the public model directory and retained in `artifacts/model-candidates-2026-10-09/jet-trainer.glb`; no runtime route imports it. Neither that model nor the existing transport provides approved fighter geometry or validated installation/physical data.

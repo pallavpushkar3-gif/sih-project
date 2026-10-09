@@ -8,6 +8,8 @@ async function fixture(page:Page){
   if(path==='/api/health/ready')return route.fulfill({json:{status:'ready',database:'ok'}});
   if(path==='/api/fleet')return route.fulfill({json:fleet});
   if(path==='/api/alerts')return route.fulfill({json:[]});
+  // Labelled fixture for the shared workspace navbar, also present on research routes.
+  if(path==='/api/fleet-health/alerts'||path==='/api/fleet-health/advisories')return route.fulfill({json:[]});
   const id=path.split('/')[3];
   if(path.endsWith('/maintenance'))return route.fulfill({json:{component_id:id,slot_duration_hours:8,tasks:[]}});
   if(path.startsWith('/api/components/'))return route.fulfill({json:{id,aircraft_id:id==='other'?'b':'a',kind:'engine',serial_number:`ENGINE-${id}`,status:'monitoring',current_cycle:31,observations:[],assessment:{id:`asm-${id}`,state:'unavailable',estimate_cycles:null,lower_cycles:null,upper_cycles:null,model_version:null,input_version:'labelled-test-fixture',quality_findings:[{code:'model_unavailable',severity:'warning',message:'Fixture: no evaluated model installed.'}]}}});
@@ -54,7 +56,7 @@ test('delayed previous component response cannot replace aircraft selection',asy
 });
 test('lost WebGL context disables camera controls and preserves component buttons',async({page})=>{
  await page.goto('/fleet');await expect(page.getByRole('button',{name:'Overview',exact:true})).toBeEnabled({timeout:20000});
- await page.locator('canvas').evaluate(canvas=>canvas.dispatchEvent(new Event('webglcontextlost',{cancelable:true})));
+ await page.locator('.inspection-model canvas').evaluate(canvas=>canvas.dispatchEvent(new Event('webglcontextlost',{cancelable:true})));
  await expect(page.getByText('3D view unavailable',{exact:true})).toBeVisible();
  await expect(page.getByRole('button',{name:'Overview',exact:true})).toBeDisabled();
  await expect(page.locator('.engine-hotspot')).toHaveCount(0);

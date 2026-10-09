@@ -68,7 +68,12 @@ const isTrend = validator<AvailabilityTrend>(shape({
 const isHeatGrid = validator<HeatGrid>(shape({ systems: list(shape({ code: str, name: str })), rows: list(shape({ aircraft: str, state: healthState, cells: list(shape({ system: str, state: healthState, health_index: num })) })) }));
 const isAircraftList = validator<AircraftItem[]>(list(shape({ id: str, state: healthState, health_index: num, open_advisories: num })));
 const twinComponent = shape({ id: str, name: str, state: healthState, hi: num, risk14: fraction, rul: quantiles });
-const isAircraftDetail = validator<AircraftDetail>(shape({ as_of: str, state: healthState, health_index: num, systems: list(shape({ code: str, state: healthState, components: list(twinComponent) })), advisories: list(advisoryCheck) }));
+const isAircraftDetail = validator<AircraftDetail>(shape({ aircraft: shape({ id: str }), as_of: str, replay: bool, availability_state: str, state: healthState, health_index: num, systems: list(shape({ code: str, name: str, health_index: num, state: healthState, components: list(twinComponent) })), advisories: list(advisoryCheck) }));
+export async function fetchAircraftDetail(id: string, asOf: string | null) {
+  const detail = await api(withAsOf(`${base}/aircraft/${encodeURIComponent(id)}`, asOf), undefined, isAircraftDetail);
+  if (detail.aircraft.id !== id) throw new Error("The aircraft response does not match your selection.");
+  return detail;
+}
 const isComponentHealth = validator<ComponentHealth>(shape({
   as_of: str, dates: list(str), sensors: list(shape({ name: str, unit: str, values: list(optional(num)) })), health_index: list(num),
   replay_dates: list(str), risk14: list(fraction), rul: list(quantiles), anomaly: list(fraction), anomaly_alert: list(bool), state: healthState,
@@ -108,7 +113,10 @@ export const useSummary = () => useReplayQuery("summary", "/summary", isSummary)
 export const useTrend = () => useReplayQuery("trend", "/availability/trend", isTrend);
 export const useHeatGrid = () => useReplayQuery("heatgrid", "/heatgrid", isHeatGrid);
 export const useAircraftList = (enabled = true) => useReplayQuery("aircraft", "/aircraft", isAircraftList, enabled);
-export const useAircraftDetail = (id: string) => useReplayQuery("aircraft-detail", `/aircraft/${encodeURIComponent(id)}`, isAircraftDetail, Boolean(id));
+export function useAircraftDetail(id: string) {
+  const { asOf } = useAsOf();
+  return useQuery({ queryKey: ["ops", "aircraft-detail", `/aircraft/${encodeURIComponent(id)}`, asOf], queryFn: () => fetchAircraftDetail(id, asOf), placeholderData: keepPreviousData, enabled: Boolean(id) });
+}
 export const useComponentHealth = (id: string, days = 180) => useReplayQuery("component", `/components/${encodeURIComponent(id)}?days=${days}`, isComponentHealth, Boolean(id));
 export const useAdvisories = (enabled = true) => useReplayQuery("advisories", "/advisories", isAdvisories, enabled);
 export const useInventory = () => useReplayQuery("inventory", "/inventory", isInventory);

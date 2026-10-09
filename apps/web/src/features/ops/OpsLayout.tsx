@@ -10,6 +10,7 @@ import { useAcknowledgeAlert, useAdvisories, useAircraftList, useAlerts, useEngi
 import { longDate } from "./format";
 import { roleById, roles, stageCounts, useRole, type RoleId } from "./roles";
 import { useToast } from "./ui";
+import { WorkspaceGrid } from "./WorkspaceGrid";
 
 type NavItem = { to: string; label: string; short?: string; icon: IconName; owner?: RoleId; step?: number; badge?: "review" | "schedule" | "parts" | "alerts" | "urgent"; match?: string[] };
 /** The seven primary screens (UI spec §2), then the team workflow and supporting views. */
@@ -46,6 +47,9 @@ const labTools: NavItem[] = [
   { to: "/ai", label: "AI & evidence", icon: "spark" },
   { to: "/demo", label: "Guided trial", icon: "play" },
 ];
+const navigationGroups = groups.map(group => group.title === "More"
+  ? { ...group, items: [...group.items, ...labTools.filter(item => item.to !== "/fleet")] }
+  : group);
 const labPaths = ["/fleet", "/planning", "/scenarios", "/inventory", "/alerts", "/ai", "/demo", "/overview", "/components/"];
 const titles: Record<string, string> = Object.fromEntries([...groups.flatMap(group => group.items), ...labTools].map(item => [item.to, item.label]));
 
@@ -65,6 +69,7 @@ export function OpsLayout() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(false);
   const menuButton = useRef<HTMLButtonElement>(null);
+  const shell = useRef<HTMLDivElement>(null);
   const lab = labPaths.some(path => location.pathname === path || location.pathname.startsWith(path) && path.endsWith("/") || location.pathname.startsWith(`${path}/`));
   const health = useQuery({ queryKey: ["api-health"], queryFn: () => api("/health/ready", undefined, isHealth), refetchInterval: 30_000, retry: false });
   useEffect(() => {
@@ -77,16 +82,17 @@ export function OpsLayout() {
   useEffect(() => { setMobileOpen(false); }, [location.pathname]);
   const title = titles[location.pathname] ?? (location.pathname.startsWith("/aircraft/") ? "Aircraft Detail" : location.pathname.startsWith("/health/") ? "Component Health" : location.pathname === "/welcome" ? "Welcome" : "Workspace");
 
-  return <div className="o-shell">
+  return <div ref={shell} className={`o-shell${location.pathname.startsWith("/aircraft/") ? " o-twin-atmosphere" : ""}`}>
+    {!location.pathname.startsWith("/aircraft/") && <WorkspaceGrid host={shell} paused={mobileOpen || paletteOpen}/>}
     <a className="skip-link" href="#main-content">Skip to content</a>
     <header className="o-header">
       <button type="button" ref={menuButton} className="o-round-btn o-mobile-only" aria-label="Open navigation" onClick={() => setMobileOpen(true)}><Icon name="menu" size={18}/></button>
       <Link to="/dashboard" className="o-header-brand" aria-label="Integrated Fleet Availability Platform — home"><OfficialMarks/><span className="o-wordmark"><strong>FleetAvail</strong><small>DSSC · Integrated Fleet Availability</small></span></Link>
-      <TopNav live={!lab} lab={lab}/>
+      <TopNav/>
       <div className="o-header-tools">
         <button type="button" className="o-round-btn" onClick={() => setPaletteOpen(true)} aria-label="Search (⌘K)" title="Search  ⌘K"><Icon name="search" size={17}/></button>
         <button type="button" className="o-round-btn" onClick={toggleTheme} aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}><Icon name={theme === "dark" ? "sun" : "moon"} size={17}/></button>
-        {!lab && <AlertsMenu/>}
+        <AlertsMenu/>
         <ProfileMenu/>
       </div>
     </header>
@@ -95,10 +101,10 @@ export function OpsLayout() {
       <span className={`o-conn ${health.isError ? "off" : ""}`} title={health.isError ? "API unavailable" : "API connected"}><i/>{health.isError ? "API offline" : "Live"}</span>
       {!lab && <ReplaySlider/>}
     </div>
-    <Dialog.Root open={mobileOpen} onOpenChange={setMobileOpen}><Dialog.Portal><Dialog.Overlay className="o-overlay"/><Dialog.Content className="o-mobile-nav" aria-describedby={undefined} onCloseAutoFocus={event => { event.preventDefault(); menuButton.current?.focus(); }}><Dialog.Title className="sr-only">Workspace navigation</Dialog.Title><div className="o-mobile-nav-head"><strong>FleetAvail</strong><Dialog.Close asChild><button type="button" className="o-round-btn" aria-label="Close navigation"><Icon name="close" size={16}/></button></Dialog.Close></div><Sidebar live={!lab} lab={lab}/></Dialog.Content></Dialog.Portal></Dialog.Root>
+    <Dialog.Root open={mobileOpen} onOpenChange={setMobileOpen}><Dialog.Portal><Dialog.Overlay className="o-overlay"/><Dialog.Content className="o-mobile-nav" aria-describedby={undefined} onCloseAutoFocus={event => { event.preventDefault(); menuButton.current?.focus(); }}><Dialog.Title className="sr-only">Workspace navigation</Dialog.Title><div className="o-mobile-nav-head"><strong>FleetAvail</strong><Dialog.Close asChild><button type="button" className="o-round-btn" aria-label="Close navigation"><Icon name="close" size={16}/></button></Dialog.Close></div><Sidebar/></Dialog.Content></Dialog.Portal></Dialog.Root>
     <div className="o-main">
       {/* Keyed by theme as well: legacy charts and the 3D stage read colour tokens once when drawn. */}
-      <main id="main-content" tabIndex={-1} className={lab ? "o-content legacy-surface" : "o-content"} key={`${location.pathname}:${theme}`} aria-label={title}>
+      <main id="main-content" tabIndex={-1} className={lab ? "o-content legacy-surface" : "o-content"} key={`${location.pathname.startsWith("/aircraft/") ? "/aircraft/twin" : location.pathname}:${theme}`} aria-label={title}>
         {lab ? <div className="page"><Outlet/></div> : ["/", "/welcome", "/home"].includes(location.pathname) ? <Outlet/> : <EngineGate><Outlet/></EngineGate>}
       </main>
       <footer className="o-footer"><span>PS 26249 · Integrated predictive maintenance & fleet availability demonstrator</span><span>Synthetic data · Decision support only · No airworthiness or dispatch authority</span></footer>
@@ -109,7 +115,7 @@ export function OpsLayout() {
 
 /** Badge counts shared by the top navigation and the mobile menu. */
 function useNavBadges(live: boolean) {
-  // Fleet-health badges are only fetched on fleet-health screens; lab pages stay self-contained.
+  // Shared navigation badges retain the same meaning on operations and research screens.
   const advisories = useAdvisories(live);
   const alerts = useAlerts(live);
   const counts = stageCounts(advisories.data);
@@ -122,8 +128,8 @@ function isActive(pathname: string, item: NavItem) {
 
 /** Glass pill navigation (replaces the sidebar): primary screens as pills, the team workflow and
  *  supporting views in pill menus. */
-function TopNav({ live, lab }: { live: boolean; lab: boolean }) {
-  const badge = useNavBadges(live);
+function TopNav() {
+  const badge = useNavBadges(true);
   const { role } = useRole();
   const location = useLocation();
   const pill = (item: NavItem) => {
@@ -132,14 +138,9 @@ function TopNav({ live, lab }: { live: boolean; lab: boolean }) {
       {item.short ?? item.label}{count ? <span className="o-pill-count">{count}</span> : null}
     </NavLink>;
   };
-  if (lab) return <nav className="o-topnav" aria-label="Primary">
-    <NavLink to="/review" className="o-topnav-back"><Icon name="arrow" size={14} style={{ transform: "rotate(180deg)" }}/>Fleet workspace</NavLink>
-    {labTools.slice(0, 4).map(pill)}
-    <NavMenu title="Lab tools" items={labTools.slice(4)} badge={badge} role={role.id}/>
-  </nav>;
   return <nav className="o-topnav" aria-label="Primary">
-    {groups[0].items.map(pill)}
-    {groups.slice(1).map(group => <NavMenu key={group.title} title={group.title} items={group.items} badge={badge} role={role.id}/>)}
+    {navigationGroups[0].items.map(pill)}
+    {navigationGroups.slice(1).map(group => <NavMenu key={group.title} title={group.title} items={group.items} badge={badge} role={role.id}/>)}
   </nav>;
 }
 
@@ -179,8 +180,8 @@ function OfficialMarks() {
 }
 
 /** Vertical navigation shown in the mobile menu sheet. */
-function Sidebar({ live, lab }: { live: boolean; lab: boolean }) {
-  const badge = useNavBadges(live);
+function Sidebar() {
+  const badge = useNavBadges(true);
   const { role } = useRole();
   const location = useLocation();
   const link = (item: NavItem) => {
@@ -194,11 +195,7 @@ function Sidebar({ live, lab }: { live: boolean; lab: boolean }) {
   };
   return <aside className="o-sidebar">
     <nav aria-label="Primary">
-      {lab ? <div className="o-nav-group lab">
-        <NavLink to="/review" className="o-nav-back"><Icon name="arrow" size={16} style={{ transform: "rotate(180deg)" }}/><span className="o-nav-label">Back to fleet workspace</span></NavLink>
-        <span className="o-nav-title">Research lab · C-MAPSS engines</span>
-        {labTools.map(link)}
-      </div> : groups.map(group => <div className="o-nav-group" key={group.title}>
+      {navigationGroups.map(group => <div className="o-nav-group" key={group.title}>
         <span className="o-nav-title">{group.title}</span>
         {group.items.map(link)}
       </div>)}

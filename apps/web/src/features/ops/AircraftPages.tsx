@@ -2,6 +2,9 @@ import { useMemo, useState } from "react";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { Icon } from "../../shared/ui/Icon";
 import { AircraftSchematic } from "./AircraftSchematic";
+import { TwinShowcase } from "./TwinShowcase";
+import { AircraftBlueprint } from "./AircraftBlueprint";
+import { useAsOf } from "./AsOf";
 import { useAircraftDetail, useAircraftList, type AircraftDetail } from "./api";
 import { availabilityLabel, num, pct, rulText, shortDate, stateLabel, stateRank } from "./format";
 import { AdvisoryCompact } from "./AdvisoryViews";
@@ -43,15 +46,18 @@ export function AircraftListPage() {
 
 export function AircraftDetailPage() {
   const { aircraftId = "" } = useParams();
+  const { asOf } = useAsOf();
   const detail = useAircraftDetail(aircraftId);
   useRememberFocus("aircraft", aircraftId);
   const [params, setParams] = useSearchParams();
   const tab = (params.get("tab") ?? "twin") as "twin" | "components" | "history" | "advisories";
   const open = (data: AircraftDetail) => data.advisories.filter(a => !["completed", "dismissed"].includes(a.status));
   return <Query query={detail} rows={10}>{data => <div className="o-screen">
-    <div className="o-status-strip">
+    {detail.isPlaceholderData && <p role="status">Loading {aircraftId}… Previous aircraft records remain visible until its response arrives.</p>}
+    {detail.isError && <p role="alert">Could not update this aircraft. <button type="button" onClick={() => void detail.refetch()}>Retry</button></p>}
+    {tab !== "twin" && tab !== "components" && <div className="o-status-strip">
       <Link to="/aircraft" className="o-strip-back" aria-label="All aircraft"><Icon name="arrow" size={13} style={{ transform: "rotate(180deg)" }}/></Link>
-      <strong>{aircraftId}</strong><i>|</i>
+      <strong>{String(data.aircraft.id)}</strong><i>|</i>
       <span>STATUS: <b className={`o-tone-${data.state === "healthy" ? "healthy" : ["watch", "degraded"].includes(data.state) ? "watch" : "critical"}`}>{stateLabel[data.state].toUpperCase()}</b></span><i>|</i>
       <span>AVAILABILITY: <b>{availabilityLabel[data.availability_state].toUpperCase()}</b></span><i>|</i>
       <span>FLIGHT HOURS: <b>{num(Number(data.aircraft.total_flight_hours))}</b></span><i>|</i>
@@ -60,7 +66,9 @@ export function AircraftDetailPage() {
       <span>SINCE INSPECTION: <b className={Number(data.aircraft.inspection_hours_since) > 450 ? "o-tone-critical" : ""}>{num(Number(data.aircraft.inspection_hours_since))} FH</b></span>
       {data.replay && <span className="o-tone-watch">REPLAY {shortDate(data.as_of).toUpperCase()}</span>}
       <span className="o-strip-actions"><Link className="o-btn sm ghost" to={`/simulator?kind=schedule_maintenance&component=${data.driver ?? ""}`}><Icon name="sliders" size={13}/>What-if</Link></span>
-    </div>
+    </div>}
+    {(tab === "twin" || tab === "components") && <TwinShowcase data={data}/>}
+    {(tab === "twin" || tab === "components") && <AircraftBlueprint key={`${aircraftId}-${asOf}-${String(data.aircraft.id)}-${data.as_of}`} data={data}/>}
     <Tabs value={tab === "components" ? "twin" : tab} onChange={value => setParams(previous => { const next = new URLSearchParams(previous); next.set("tab", value); return next; }, { replace: true })}
       tabs={[["twin", "Digital twin", "aircraft"], ["history", "History", "history"], ["advisories", `Advisories (${data.advisories.length})`, "list"]] as const}/>
     {(tab === "twin" || tab === "components") && <TwinTab data={data}/>}
@@ -78,12 +86,12 @@ function TwinTab({ data }: { data: AircraftDetail }) {
   const select = (code: string) => { choose(code); setExpanded(list => list.includes(code) ? list : [...list, code]); };
   const toggle = (code: string) => { choose(code); setExpanded(list => list.includes(code) ? list.filter(c => c !== code) : [...list, code]); };
   const advisories = new Map(data.advisories.map(a => [a.component_id, a]));
-  return <div className="o-grid-12">
-    <Card className="span-5" title="Digital twin" subtitle="Wireframe with one node per system. Amber and red nodes pulse; click one to open it in the tree.">
+  return <><div id="twin-system-details" className="o-grid twin-system-layout">
+    <Card title="System map" subtitle="Select a system to inspect its components.">
       <AircraftSchematic systems={data.systems} selected={selectedCode} onSelect={select} tail={data.aircraft.id as string}/>
       <div className="o-legend"><span><i className="m-healthy"/>Healthy (HI ≥ 80)</span><span><i className="m-degraded"/>Watch / degraded (HI 40–80)</span><span><i className="m-critical"/>Critical / failed</span><span><i className="m-under_maintenance"/>In maintenance</span></div>
     </Card>
-    <Card className="span-7" title="System › component tree" subtitle="Criticality-weighted system health. Expand a system for each component's HI, risk and remaining life.">
+    <Card title="System › component tree" subtitle="Criticality-weighted system health. Expand a system for each component's HI, risk and remaining life.">
       <div className="o-table-wrap"><table className="o-table o-tree">
         <thead><tr><th>System / component</th><th className="num">HI</th><th>State</th><th className="num">Risk 14d</th><th className="num">RUL</th><th>Advisory</th><th/></tr></thead>
         <tbody>{ordered.flatMap(system => {
@@ -109,7 +117,7 @@ function TwinTab({ data }: { data: AircraftDetail }) {
         })}</tbody>
       </table></div>
     </Card>
-  </div>;
+  </div></>;
 }
 
 function HistoryTab({ data }: { data: AircraftDetail }) {

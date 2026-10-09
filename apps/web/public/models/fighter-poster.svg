@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="640" viewBox="0 0 1000 640" role="img" aria-labelledby="title desc">
+  <title id="title">Illustrative delta-wing fighter fallback</title>
+  <desc id="desc">Simplified top-view fighter silhouette, not engineering CAD. The interactive view contains the detailed model.</desc>
+  <defs><linearGradient id="skin" x1="0" x2="1"><stop stop-color="#687b8d"/><stop offset=".5" stop-color="#bac6d1"/><stop offset="1" stop-color="#687b8d"/></linearGradient></defs>
+  <ellipse cx="500" cy="465" rx="290" ry="40" fill="#ced6dd" opacity=".4"/>
+  <path d="M478 235 223 484 233 501 479 514 521 514 767 501 777 484 522 235Z" fill="url(#skin)" stroke="#637485" stroke-width="3"/>
+  <path d="M500 81Q469 154 465 254L461 427 478 547 522 547 539 427 535 254Q531 154 500 81Z" fill="url(#skin)" stroke="#637485" stroke-width="3"/>
+  <path d="M500 81Q481 127 474 173L526 173Q519 127 500 81Z" fill="#526171"/>
+  <ellipse cx="500" cy="234" rx="21" ry="56" fill="#28455e" stroke="#657789" stroke-width="4"/>
+  <path d="M488 397 496 487 496 547 504 547 504 487 512 397Z" fill="#657789"/>
+  <path d="m250 480 203-34m94 0 203 34M480 323l-84 117m124-117 84 117" fill="none" stroke="#536678" stroke-width="3"/>
+  <path d="M481 548h38" stroke="#333c47" stroke-width="15"/>
+  <path d="M500 53v31" stroke="#7e8994" stroke-width="3"/>
+  <text x="500" y="605" text-anchor="middle" font-family="sans-serif" font-size="18" fill="#61707b">Illustrative fighter silhouette · 3D renderer unavailable</text>
+</svg>

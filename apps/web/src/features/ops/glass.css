@@ -68,7 +68,7 @@ html:has(.o-shell), body:has(.o-shell) {
 .o-navmenu > summary::-webkit-details-marker { display: none; }
 .o-navmenu > summary svg { transform: rotate(90deg); transition: transform .15s; opacity: .6; }
 .o-navmenu[open] > summary svg { transform: rotate(-90deg); }
-.o-navmenu > .o-glass-pop { position: absolute; top: calc(100% + 10px); left: 50%; transform: translateX(-50%); z-index: 50; width: 270px; padding: 8px; display: grid; gap: 2px; animation: o-fade .15s ease; }
+.o-navmenu > .o-glass-pop { position: absolute; top: calc(100% + 10px); left: 50%; transform: translateX(-50%); z-index: 50; width: 270px; max-height: calc(100svh - 130px); overflow-y: auto; padding: 8px; display: grid; gap: 2px; animation: o-fade .15s ease; }
 .o-navmenu .o-glass-pop a { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 12px; color: var(--o-text); font-size: 13px; }
 .o-navmenu .o-glass-pop a:hover { background: color-mix(in srgb, var(--o-surface) 70%, transparent); }
 .o-navmenu .o-glass-pop a.active { background: var(--o-accent-soft); color: var(--o-accent-ink); }
@@ -105,9 +105,18 @@ html:has(.o-shell), body:has(.o-shell) {
 .o-replay-inline.replaying .o-replay-date { color: color-mix(in srgb, var(--o-watch) 70%, var(--o-text)); }
 
 /* Content --------------------------------------------------------------------------------- */
-.o-content { max-width: 1680px; margin: 0 auto; padding: 18px 24px 32px; }
+.o-content { max-width: 1680px; margin: 0 auto; padding: 24px 24px 32px; }
+/* Route fragments and explicit screen wrappers share one vertical rhythm.
+   Do not turn legacy research layouts or card interiors into page stacks. */
+.o-content:not(.legacy-surface) { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+.o-content:not(.legacy-surface) > *, .o-screen > * { min-width: 0; flex-shrink: 0; }
+.o-content:not(.legacy-surface) > :is(.o-card, .o-grid, .o-page-head, .o-screen-head),
+.o-screen > :is(.o-card, .o-grid, .o-grid-12, .o-page-head, .o-screen-head) { margin-top: 0; margin-bottom: 0; }
 .o-footer { max-width: 1680px; margin: 0 auto; padding: 8px 24px 18px; border-top: 0; color: var(--o-text-3); }
-.o-screen { gap: 16px; }
+.o-screen { gap: 20px; min-width: 0; }
+.o-screen-head { column-gap: 16px; row-gap: 8px; }
+.o-screen-head h1 { line-height: 1.2; }
+.o-screen-head > span { line-height: 1.5; }
 .o-screen-head h1, .o-page-head h1, .o-role-head h1 { font-size: 30px; font-weight: 600; letter-spacing: -.8px; }
 .o-screen-head > span { font: 400 13px Inter, system-ui, sans-serif; letter-spacing: 0; text-transform: none; color: var(--o-text-3); }
 .o-eyebrow { color: var(--o-accent-ink); }
@@ -122,6 +131,19 @@ button.o-kpi-block:hover { border-color: var(--o-border-strong); background: var
 .o-kpi-block strong { font: 500 28px/1.1 var(--o-mono); letter-spacing: -.5px; }
 .o-kpi-block strong.big { font-size: 34px; }
 .o-kpi-block small { font: 400 12.5px Inter, sans-serif; color: var(--o-text-2); }
+.o-kpi-block small { white-space: normal; overflow: visible; text-overflow: clip; line-height: 1.5; }
+.o-kpis { gap: 16px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); }
+.o-kpi { padding: 18px 20px; gap: 10px; }
+.o-kpi-top { min-height: 32px; align-items: center; }
+.o-kpi-icon { flex-shrink: 0; }
+.o-kpi-label, .o-kpi-detail { line-height: 1.5; overflow-wrap: anywhere; }
+.o-kpi-detail { color: var(--o-text-2); }
+.o-card-head > div { min-width: 0; }
+.o-card-head p { line-height: 1.55; }
+/* ECharts resizes on the next observer callback. Contain its old drawing
+   surface during viewport changes without clipping the separate tooltip. */
+.o-chart { min-width: 0; width: 100%; }
+.o-chart > div:first-child { max-width: 100%; overflow: hidden; }
 .o-chip-delta { display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border-radius: 7px; font: 600 11px var(--o-mono); }
 .o-chip-delta.up { background: var(--o-healthy-soft); color: var(--o-accent-ink); }
 .o-chip-delta.down { background: var(--o-critical-soft); color: var(--o-critical); }
@@ -162,7 +184,9 @@ button.o-kpi-block:hover { border-color: var(--o-border-strong); background: var
 .o-g-due, .o-g-ghost { border-radius: 8px; }
 .o-g-track { background: repeating-linear-gradient(90deg, transparent 0 calc(100% / 15 - 1px), color-mix(in srgb, var(--o-border) 70%, transparent) calc(100% / 15 - 1px) calc(100% / 15)); }
 .o-g-row { border-top: 1px dashed var(--o-border); }
-.o-cannibal-btn { border-radius: var(--o-radius); }
+.o-cannibal-btn { border-radius: var(--o-radius); height: auto; min-width: 0; white-space: normal; text-align: left; margin-bottom: 0; }
+.o-cannibal-btn > span { min-width: 0; flex: 1; }
+.o-cannibal-btn strong, .o-cannibal-btn small { overflow-wrap: anywhere; line-height: 1.5; }
 .o-finding, .o-aircraft-card, .o-component-tile, .o-adv-card, .o-flow-step, .o-status-big, .o-role-card, .o-kind, .o-run, .o-delta, .o-alert-card, .o-unified > div { border-radius: 16px; }
 
 /* Frosted glass for every small popup ------------------------------------------------------ */
@@ -210,8 +234,22 @@ button.o-kpi-block:hover { border-color: var(--o-border-strong); background: var
   .o-screen-head h1, .o-page-head h1, .o-role-head h1 { font-size: 24px; }
   .o-table-wrap { margin: 0 -16px; }
   .o-card { padding: 16px; }
+  .o-content:not(.legacy-surface), .o-screen { gap: 16px; }
+  .o-page-head, .o-card-head { flex-wrap: wrap; row-gap: 12px; }
+  .o-card-actions { max-width: 100%; justify-content: flex-start; }
 }
+@media (max-width: 480px) { .o-kpis { grid-template-columns: minmax(0, 1fr); }.o-kpi { min-height: 0; }.o-screen-head > span { flex-basis: 100%; }.o-screen-head > .o-btn { margin-left: 0 !important; } }
 @media (max-width: 420px) { .o-replay-inline input[type="range"] { display: none; } .o-header-brand .o-marks { display: none; } }
+
+/* Shared frosted header. Keep blur on the pseudo-layer so nested menus retain
+   their own backdrop sampling; content surfaces and backgrounds are unchanged. */
+/* Aircraft pages share the dashboard's green/blue ambient canvas above. */
+.o-shell .o-header { top: 16px; margin: 16px 24px 0; border: 1px solid #ffffff80; border-radius: 18px; box-shadow: 0 12px 35px #213d5d12, inset 0 1px 0 #ffffff80; }
+.o-shell .o-header::before { background: #edf3f8a8; -webkit-backdrop-filter: blur(26px) saturate(1.15); backdrop-filter: blur(26px) saturate(1.15); }
+.o-shell .o-topnav { border-color: transparent; box-shadow: none; }
+.o-shell .o-topnav::before { background: transparent; backdrop-filter: none; }
+[data-theme="dark"] .o-shell .o-header::before { background: #152336bd; }
+@media (max-width: 760px) { .o-shell .o-header { top: 10px; margin: 10px 16px 0; padding: 0 10px; border-radius: 16px; } }
 
 /* Bay flow (bays wired to aircraft) -------------------------------------------------------- */
 .o-kpi-block strong.o-tone-healthy { color: var(--o-text); }

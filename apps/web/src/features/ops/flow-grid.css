@@ -1,0 +1,4 @@
+.twin-flow-grid { position: absolute; z-index: 0; left: 0; top: 0; width: 100%; height: calc(100% - 112px); pointer-events: none; mask-image: linear-gradient(transparent 18%, #000 48%, #000 85%, transparent); }
+.o-shell { isolation: isolate; }
+.workspace-flow-grid { position: fixed; z-index: -1; inset: 0; width: 100%; height: 100svh; pointer-events: none; opacity: .55; mask-image: linear-gradient(transparent, #000 35%, #000 85%, transparent); }
+@media (max-width: 760px) { .twin-flow-grid { height: calc(100% - 154px); }.workspace-flow-grid { opacity: .4; } }

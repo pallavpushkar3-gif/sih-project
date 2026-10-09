@@ -53,7 +53,7 @@ export function SparesPage() {
       <Query query={inventory} rows={8}>{() => <div className="o-table-wrap"><table className="o-table">
         <thead><tr><th>Part</th><th>Status</th><th className="num">On hand</th><th className="num">Reserved</th><th className="num">On order</th><th>Next receipt</th><th className="num">Lead time</th><th>Demand 30 d (P10–P90)</th><th>Shortfall risk</th><th>Waiting components</th></tr></thead>
         <tbody>{rows.map((item: InventoryItem) => <tr key={item.part_number} className={`clickable${item.status !== "ok" ? ` o-row-flag ${item.status}` : ""}`} onClick={() => setPart(item.part_number)}>
-          <td><span className="o-strong o-mono">{item.part_number}</span><small>{item.description} · crit {item.criticality}{item.repairable ? " · repairable" : ""}</small></td>
+          <td><button type="button" className="o-link o-mono" aria-label={`Inspect part ${item.part_number}`} onClick={event => { event.stopPropagation(); setPart(item.part_number); }}>{item.part_number}</button><small>{item.description} · crit {item.criticality}{item.repairable ? " · repairable" : ""}</small></td>
           <td><Pill tone={item.status === "print" ? "accent" : item.status}>{statusLabel[item.status]}</Pill>{item.status === "print" && <span className="o-forge-note"><Icon name="printer" size={13}/>Supply bypassed: additive print route (1 day)</span>}</td>
           <td className="num o-strong">{item.on_hand}</td><td className="num">{item.reserved}</td><td className="num">{item.on_order}</td>
           <td>{item.next_receipt ? <>{longDate(item.next_receipt)}<small>in {item.next_receipt_in_days} d</small></> : <span className="o-muted">—</span>}</td>
@@ -79,7 +79,7 @@ function LeadTimeScatter({ items }: { items: Advisory[] }) {
       type: "scatter", data: items.map(item => [item.rul_days.p10, item.spare.lead_time_days, item.risk_14d]),
       symbolSize: (value: number[]) => 8 + value[2] * 22,
       itemStyle: { color: (params: { dataIndex: number }) => { const item = items[params.dataIndex]; return item && item.spare.lead_time_days > item.rul_days.p10 ? p.critical : p.accent; }, opacity: 0.85, borderColor: p.surface, borderWidth: 1.5 },
-      markLine: { symbol: "none", silent: true, lineStyle: { color: p.muted, type: "dashed" }, label: { formatter: "lead time = RUL", color: p.muted, fontSize: 10 }, data: [[{ coord: [0, 0] }, { coord: [60, 60] }]] },
+      markLine: { symbol: "none", silent: true, lineStyle: { color: p.muted, type: "dashed" }, label: { formatter: "lead time = RUL", position: "insideEnd", color: p.muted, fontSize: 10 }, data: [[{ coord: [0, 0] }, { coord: [60, 60] }]] },
       markArea: { silent: true, itemStyle: { color: `${p.critical}0d` }, data: [[{ coord: [0, 0] }, { coord: [60, 100] }]] },
     }],
   })}/>;
