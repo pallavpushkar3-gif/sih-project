@@ -5,6 +5,7 @@ import { useAsOf } from "./AsOf";
 import { useAdvisories, useAlerts, useHeatGrid, useSummary, useTrend, type Advisory, type HeatGrid } from "./api";
 import { availabilityLabel, longDate, num, pct, rulText, shortDate, stateLabel } from "./format";
 import { MONO, OpsChart, areaFill, baseAxes, tooltip, withAlpha } from "./OpsChart";
+import { HeadingReplay } from "./ReplaySlider";
 import { Card, PriorityBadge, Query, Segmented, StateBadge } from "./ui";
 
 /** Screen 1 · Fleet Dashboard (UI spec §3): every value is computed by the engine and simulator. */
@@ -22,10 +23,13 @@ export function FleetDashboard() {
   const critical = alerts.data?.filter(alert => alert.severity === "critical" && !alert.acknowledged_by) ?? [];
   const tone = (value: number) => value >= 0.8 ? "healthy" : value >= 0.7 ? "watch" : "critical";
   return <div className="o-screen">
-    <div className="o-screen-head">
-      <h1>Fleet Dashboard</h1>
-      <span>{s ? `${s.aircraft} aircraft · as of ${longDate(s.as_of)}` : ""}{asOf ? " · REPLAY (read only)" : ""}</span>
-      {critical.length > 0 && !asOf && <Link className="o-head-alert" to="/notifications"><Icon name="warning" size={14}/>{critical.length} critical alert{critical.length === 1 ? "" : "s"}</Link>}
+    <div className="o-screen-head o-dashboard-heading">
+      <div className="o-dashboard-heading-copy">
+        <h1>Fleet Dashboard</h1>
+        <span>{s ? `${s.aircraft} aircraft · as of ${longDate(s.as_of)}` : ""}{asOf ? " · REPLAY (read only)" : ""}</span>
+        {critical.length > 0 && !asOf && <Link className="o-head-alert" to="/notifications"><Icon name="warning" size={14}/>{critical.length} critical alert{critical.length === 1 ? "" : "s"}</Link>}
+      </div>
+      <HeadingReplay/>
     </div>
     <div className="o-kpi-row">
       <KpiBlock label="Fleet availability" value={s ? pct(s.availability_today, 0) : "—"} tone={s ? tone(s.availability_today) : undefined} big

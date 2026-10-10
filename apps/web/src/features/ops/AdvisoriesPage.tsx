@@ -1,3 +1,4 @@
+import { HeadingReplay } from "./ReplaySlider";
 import { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Icon } from "../../shared/ui/Icon";
@@ -48,7 +49,7 @@ export function AdvisoriesPage() {
     : a.spare.status === "additive_print" ? <span className="o-spare-print" title="Project Forge: printed in 1 day"><Icon name="printer" size={13}/></span>
     : a.spare.status === "contested" ? <span className="o-spare-warn" title="Spare contested by other aircraft">!</span> : <span className="o-spare-bad" title="No spare in stock">✖</span>;
   return <div className="o-screen">
-    <div className="o-screen-head"><h1>Predictive Maintenance</h1><span>Risk queue · {rows.length} of {items.length} advisories{asOf ? " · REPLAY (read only)" : ""}</span></div>
+    <div className="o-screen-head"><h1>Predictive Maintenance</h1><span>Risk queue · {rows.length} of {items.length} advisories{asOf ? " · REPLAY (read only)" : ""}</span><HeadingReplay/></div>
     <Card>
       <div className="o-control-bar">
         <label>Priority<select className="o-input" value={priority[0] ?? ""} onChange={event => single(priority, setPriority)(event.target.value)}><option value="">All</option>{filters.priority.map(level => <option key={level} value={level}>{level} ({counts("priority", level)})</option>)}</select></label>

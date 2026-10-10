@@ -1,3 +1,4 @@
+import { HeadingReplay } from "./ReplaySlider";
 import { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Icon } from "../../shared/ui/Icon";
@@ -17,7 +18,7 @@ export function SparesPage() {
   const rows = filter === "all" ? items : items.filter(item => item.status !== "ok");
   const flagged = (advisories.data ?? []).filter(a => !["completed", "dismissed"].includes(a.status));
   return <>
-    <div className="o-screen-head"><h1>Spares Inventory</h1><span>Stock · orders · ML-driven 30-day demand · lead time vs RUL</span></div>
+    <div className="o-screen-head"><h1>Spares Inventory</h1><span>Stock · orders · ML-driven 30-day demand · lead time vs RUL</span><HeadingReplay/></div>
     <div className="o-kpis">
       <Kpi label="Parts short" icon="warning" tone="critical" value={items.length ? items.filter(i => i.status === "short").length : null} format={v => v.toFixed(0)} detail="No usable stock for expected demand"/>
       <Kpi label="Covered by print" icon="printer" tone="accent" value={items.length ? items.filter(i => i.status === "print").length : null} format={v => v.toFixed(0)} detail="Project Forge: printable parts reach the bay in 1 day"/>

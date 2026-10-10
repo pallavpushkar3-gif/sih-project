@@ -1,3 +1,4 @@
+import { HeadingReplay } from "./ReplaySlider";
 import { useMemo, useState } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { Icon } from "../../shared/ui/Icon";
@@ -31,6 +32,7 @@ function RoleHead({ title, question, actions }: { title: string; question: strin
       <p>{question}</p>
     </div>
     <div className="o-page-actions">{asOf && <Pill tone="degraded" icon="history">Replaying {shortDate(asOf)} — read only</Pill>}{actions}</div>
+    <HeadingReplay/>
   </header>;
 }
 

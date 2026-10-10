@@ -1,3 +1,4 @@
+import { HeadingReplay } from "./ReplaySlider";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { Icon, type IconName } from "../../shared/ui/Icon";
@@ -24,7 +25,7 @@ export function SimulatorPage() {
   useEffect(() => { if (scenarios.data && compare.length === 0 && scenarios.data.length) setCompare([scenarios.data[0].id]); }, [scenarios.data, compare.length]);
   const chosen = (scenarios.data ?? []).filter(run => compare.includes(run.id));
   return <div className="o-screen">
-    <div className="o-screen-head"><h1>Scenario Simulator</h1><span>Monte Carlo discrete-event simulation · shared random numbers · synthetic data</span></div>
+    <div className="o-screen-head"><h1>Scenario Simulator</h1><span>Monte Carlo discrete-event simulation · shared random numbers · synthetic data</span><HeadingReplay/></div>
     <div className="o-grid-12 o-sim-grid">
       <div className="span-3"><Builder onRan={run => setCompare(list => [run.id, ...list.filter(id => id !== run.id)].slice(0, 3))}/></div>
       <div className="span-9 o-stack">

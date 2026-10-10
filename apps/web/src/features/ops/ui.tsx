@@ -1,3 +1,4 @@
+import { HeadingReplay } from "./ReplaySlider";
 import * as Dialog from "@radix-ui/react-dialog";
 import { createContext, useCallback, useContext, useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { Icon, type IconName } from "../../shared/ui/Icon";
@@ -148,5 +149,5 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 export function useToast() { return useContext(ToastContext); }
 
 export function PageHead({ eyebrow, title, description, actions, children }: { eyebrow: string; title: ReactNode; description?: ReactNode; actions?: ReactNode; children?: ReactNode }) {
-  return <header className="o-page-head"><div><span className="o-eyebrow">{eyebrow}</span><h1>{title}</h1>{description && <p>{description}</p>}{children}</div>{actions && <div className="o-page-actions">{actions}</div>}</header>;
+  return <header className="o-page-head"><div><span className="o-eyebrow">{eyebrow}</span><h1>{title}</h1>{description && <p>{description}</p>}{children}</div>{actions && <div className="o-page-actions">{actions}</div>}<HeadingReplay/></header>;
 }

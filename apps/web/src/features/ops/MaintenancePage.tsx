@@ -1,3 +1,4 @@
+import { HeadingReplay } from "./ReplaySlider";
 import { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Icon } from "../../shared/ui/Icon";
@@ -18,7 +19,7 @@ export function MaintenancePage() {
   const schedule = useSchedule();
   const k = orders.data?.kpis as { backlog: { open_work_orders: number; man_hours: number; planned_from_advisories: number }; mean_turnaround_days: number; on_time_rate: number; closed_last_120_days: number } | undefined;
   return <>
-    <div className="o-screen-head"><h1>Maintenance Planning</h1><span>Bays · work orders · agency turnaround</span><Link className="o-btn sm" style={{ marginLeft: "auto" }} to="/advisories"><Icon name="plus" size={14}/>Plan from the risk queue</Link></div>
+    <div className="o-screen-head"><h1>Maintenance Planning</h1><span>Bays · work orders · agency turnaround</span><Link className="o-btn sm" style={{ marginLeft: "auto" }} to="/advisories"><Icon name="plus" size={14}/>Plan from the risk queue</Link><HeadingReplay/></div>
     <div className="o-kpis">
       <Kpi label="Open backlog" icon="wrench" tone="degraded" value={k?.backlog.open_work_orders ?? null} format={v => v.toFixed(0)} detail={k ? `≈ ${num(k.backlog.man_hours)} man-hours outstanding` : undefined}/>
       <Kpi label="Planned from advisories" icon="calendar" tone="maint" value={k?.backlog.planned_from_advisories ?? null} format={v => v.toFixed(0)} detail="Predictive work orders"/>

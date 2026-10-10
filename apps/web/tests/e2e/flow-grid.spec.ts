@@ -15,11 +15,11 @@ test("flexible light grid follows pointer and camera without intercepting contro
   const grid = stage.locator(".twin-flow-grid");
   await expect(grid).toHaveAttribute("aria-hidden", "true");
   await expect(grid).toHaveCSS("pointer-events", "none");
-  await expect(stage).toHaveCSS("background-color", "rgb(255, 255, 255)");
+  await expect(stage).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
   const aircraftBackground = await page.locator("body").evaluate(element => getComputedStyle(element).backgroundImage);
   expect(aircraftBackground).toContain("radial-gradient");
-  expect(aircraftBackground).toContain("rgba(52, 179, 106, 0.16)");
-  expect(await stage.locator(".twin-floor").evaluate(element => getComputedStyle(element).backgroundImage)).toContain("rgba(52, 179, 106,");
+  expect(aircraftBackground).toContain("rgba(105, 155, 69, 0.78)");
+  expect(await stage.locator(".twin-floor").evaluate(element => getComputedStyle(element).backgroundImage)).toContain("linear-gradient");
   await expect(stage.locator(".twin-scene canvas")).toHaveCSS("filter", "none");
   const signature = () => grid.evaluate(element => (element as HTMLCanvasElement).toDataURL());
   await page.waitForTimeout(1100);
@@ -55,7 +55,7 @@ test("flexible light grid follows pointer and camera without intercepting contro
   await stage.screenshot({ path: info.outputPath("flexible-grid-mobile.png") });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await page.goto("/dashboard");
-  expect(await page.locator("body").evaluate(element => getComputedStyle(element).backgroundImage)).toBe(aircraftBackground);
+  await expect(page.locator("body")).toHaveCSS("background-image", aircraftBackground);
   expect(errors).toEqual([]);
 });
 

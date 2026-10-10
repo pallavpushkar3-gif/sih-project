@@ -2,9 +2,13 @@
 
 ## Interactive architecture blueprint
 
-`AircraftBlueprint` follows the main aircraft showroom. Its original SVG multi-view drawing and numbered register map API catalogue type codes via `componentArchitecture.ts` to explicit conceptual locations. The rotatable architecture view lazily loads `BlueprintStudio`, creates disposable edge geometry from the existing visual GLB and uses the same component IDs for clickable markers. No engineering placement data is inferred. Unknown type codes remain in the register with unavailable structure/placement.
+`AircraftBlueprint` follows the main aircraft showroom. Its authored SVG top/front/side cutaway drawing and numbered register map API catalogue type codes via `componentArchitecture.ts` to explicit conceptual locations. The rotatable architecture view lazily loads `BlueprintStudio`, creates a translucent airframe from cloned visual GLB geometry and draws selectable solid component assemblies with the same component IDs. Top-down, front, side and three-quarter camera presets and wireframe expose cockpit, structure and internal assemblies. The entire affected assembly is red; locator spheres and circular annotation markers are removed. No engineering placement data is inferred. Unknown type codes remain in the register with unavailable structure/placement.
 
 `componentStructure.ts` authors schematic section assemblies in arbitrary units for known catalogue types. The modal's assembled/exploded/wireframe views change geometry presentation only; red identifies whole-component recorded attention, not an internal physical defect. Health/life/risk/advisory content comes from the selected response. The blueprint is keyed by aircraft/cutoff to clear stale inspection; modal focus restoration, scroll and renderer fallbacks retain evidence navigation. Canvas demand rendering and private geometry/material disposal avoid continuous animations and mutation of shared GLB resources. SVG drawing remains usable without WebGL. This is an illustrative presentation extension, not a physical twin or diagnosis subsystem.
+
+## Integrated showroom — 2026-10-11
+
+Aircraft detail shares the workspace olive/lime canvas beneath the floating navbar. Its former rounded enclosing card and separate replay row are removed. Historical snapshot context remains in the record/blueprint labels; replay controls on other operational pages are unchanged. Explore blueprint scrolls to the inspection sheet. The redundant System map is removed, with system/component evidence retained in a collapsed Component records section. Fonts, navigation destinations and returned assessments remain unchanged. The following dated treatments document earlier iterations and are superseded where they conflict with this section.
 
 ## Decorative flexible surface — 2026-10-10
 

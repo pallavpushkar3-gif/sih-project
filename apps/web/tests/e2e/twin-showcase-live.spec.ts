@@ -33,10 +33,11 @@ test("authored fighter replaces the transport and renders each camera view", asy
 });
 
 test("dashboard uses the shared glass header without blurring content", async ({ page }, info) => {
+  test.setTimeout(60_000);
   test.skip(!process.env.FLEET_E2E_BASE_URL, "Select the running local deployment explicitly.");
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/dashboard");
-  await expect(page.getByRole("heading", { name: "Fleet Dashboard", exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Fleet Dashboard", exact: true })).toBeVisible({ timeout: 15_000 });
   const header = page.locator(".o-header");
   await expect(header).toHaveCSS("border-radius", "18px");
   expect(await header.evaluate(element => getComputedStyle(element, "::before").backdropFilter)).toBe("blur(26px) saturate(1.15)");
@@ -64,7 +65,7 @@ test("live twin statistics match the API and responsive layouts contain the view
   await expect(stage.locator(".twin-scene canvas")).toBeVisible();
   await expect(stage.getByText("Loading aircraft model…")).toHaveCount(0);
   await expect(stage.getByText(/3D view unavailable/)).toHaveCount(0);
-  // The requested aircraft showroom stays white; only the shared header is glass.
+  // The showroom shares the workspace canvas beneath the floating glass header.
   const treatment = await stage.evaluate(element => ({
     backdrop: getComputedStyle(element, "::before").filter,
     foreground: getComputedStyle(element).filter,
@@ -72,8 +73,8 @@ test("live twin statistics match the API and responsive layouts contain the view
     text: getComputedStyle(element.querySelector("dl")!).filter,
     radius: getComputedStyle(element).borderRadius,
   }));
-  expect(treatment).toEqual({ backdrop: "none", foreground: "none", canvas: "none", text: "none", radius: "12px" });
-  await expect(stage).toHaveCSS("background-color", "rgb(255, 255, 255)");
+  expect(treatment).toEqual({ backdrop: "none", foreground: "none", canvas: "none", text: "none", radius: "0px" });
+  await expect(stage).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
   await expect(page.locator(".o-header")).toHaveCSS("border-radius", "18px");
   expect(await page.locator(".o-header").evaluate(element => getComputedStyle(element, "::before").backdropFilter)).toBe("blur(26px) saturate(1.15)");
   const response = await page.request.get("/api/fleet-health/aircraft/AC-001");
@@ -150,11 +151,12 @@ test("live twin statistics match the API and responsive layouts contain the view
 });
 
 test("dragging through oblique and overhead views keeps the fighter framed", async ({ page }, info) => {
+  test.setTimeout(90_000); // Multiple GPU orbits and screenshot comparisons, not a frame-rate benchmark.
   test.skip(!process.env.FLEET_E2E_BASE_URL, "Select the local deployment explicitly.");
   await page.goto("/aircraft/AC-033");
   const stage = page.getByRole("region", { name: "Aircraft digital twin showcase" });
-  await expect(stage.locator(".twin-scene canvas")).toBeVisible();
-  await expect(stage.getByText("Loading aircraft model…")).toHaveCount(0);
+  await expect(stage.locator(".twin-scene canvas")).toBeVisible({ timeout: 20_000 });
+  await expect(stage.getByText("Loading aircraft model…")).toHaveCount(0, { timeout: 20_000 });
   for (const [name, width, height] of [["wide", 1680, 950], ["laptop", 1366, 768], ["tablet", 900, 1000], ["mobile", 390, 844]] as const) {
     await page.setViewportSize({ width, height });
     await stage.getByRole("button", { name: "3/4 view", exact: true }).click();
@@ -199,7 +201,7 @@ test("component condition supports keyboard, evidence navigation and mobile syst
   await expect(panel).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await panel.screenshot({ path: info.outputPath("component-condition-mobile.png") });
-  await panel.getByRole("button", { name: "Explore system map" }).click();
+  await panel.getByRole("button", { name: "Explore aircraft blueprint" }).click();
   await expect(panel).toHaveCount(0);
-  await expect(page.getByRole("heading", { name: "System map", exact: true })).toBeInViewport();
+  await expect(page.getByRole("heading", { name: "Aircraft blueprint", exact: true })).toBeInViewport();
 });

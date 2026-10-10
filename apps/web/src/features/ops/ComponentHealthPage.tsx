@@ -1,3 +1,4 @@
+import { HeadingReplay } from "./ReplaySlider";
 import { useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Icon } from "../../shared/ui/Icon";
@@ -36,7 +37,7 @@ function ComponentHealthView({ data, days, setDays }: { data: ComponentHealth; d
   const truth = data.simulation_truth as { scripted_failure_date: string; label: string } | null;
   const tone = hi >= 80 ? "healthy" : hi >= 40 ? "watch" : "critical";
   return <div className="o-screen">
-    <div className="o-screen-head"><h1>Component Health</h1><span>{String(c.aircraft)} · {String(c.name)} · {String(c.system_name)}</span></div>
+    <div className="o-screen-head"><h1>Component Health</h1><span>{String(c.aircraft)} · {String(c.name)} · {String(c.system_name)}</span><HeadingReplay/></div>
     <div className="o-status-strip">
       <Link to={`/aircraft/${c.aircraft}`} className="o-strip-back" aria-label={`${c.aircraft} digital twin`}><Icon name="arrow" size={13} style={{ transform: "rotate(180deg)" }}/></Link>
       <strong>{String(c.aircraft)} › {String(c.name)}</strong><i>|</i>

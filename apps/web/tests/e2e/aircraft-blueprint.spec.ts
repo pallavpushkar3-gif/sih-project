@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 
-test("live blueprint matches selected component records and opens 3D structures from drawing and spatial markers", async ({ page, request }, info) => {
+test("live blueprint matches selected component records and opens 3D structures from drawn assemblies and the register", async ({ page, request }, info) => {
   test.skip(!process.env.FLEET_E2E_BASE_URL, "Read-only live deployment selected explicitly.");
   const errors: string[] = []; page.on("pageerror", error => errors.push(error.message));
   await page.setViewportSize({ width: 1440, height: 900 });
@@ -16,7 +16,7 @@ test("live blueprint matches selected component records and opens 3D structures 
   for (const item of items) {
     const finding = ["watch", "degraded", "critical", "failed"].includes(item.state) || (item.state !== "under_maintenance" && data.advisories.some((a: { component_id: string; status: string }) => a.component_id === item.id && !["completed", "dismissed"].includes(a.status)));
     await expect(bp.locator(`.bp-register-item[data-component-id="${item.id}"]`)).toHaveAttribute("data-attention", String(finding));
-    await expect(bp.locator(`.bp-hotspot[data-component-id="${item.id}"]`)).toHaveAttribute("data-attention", String(finding));
+    await expect(bp.locator(`.bp-assembly[data-component-id="${item.id}"]`)).toHaveAttribute("data-attention", String(finding));
   }
   await bp.scrollIntoViewIfNeeded(); await bp.screenshot({ path: info.outputPath("blueprint-desktop.png") });
   await bp.getByRole("button", { name: "Inspect Turbine: Failed", exact: true }).press("Enter");
@@ -37,11 +37,13 @@ test("live blueprint matches selected component records and opens 3D structures 
   await bp.getByRole("button", { name: "Findings only" }).click();
   await expect(bp.locator('.bp-register-item[data-attention="false"]')).toHaveCount(0);
   await bp.getByRole("button", { name: "3D architecture" }).click(); await expect(bp.locator("canvas")).toBeVisible();
-  const marker = bp.locator(".bp-spatial-scene").getByRole("button", { name: "Inspect Turbine: Failed", exact: true });
-  await expect(marker).toBeVisible(); await page.waitForTimeout(400); await bp.screenshot({ path: info.outputPath("blueprint-spatial.png") });
-  await expect(marker).toHaveText("2");
-  const markerBox = await marker.boundingBox(); expect(markerBox!.width).toBeCloseTo(markerBox!.height, 0);
-  await marker.click(); await expect(dialog).toBeVisible();
+  await expect(bp.locator(".bp-spatial-target")).toHaveCount(0);
+  for (const name of ["Top-down", "Side view", "Front view", "3/4 view"]) {
+    await bp.getByRole("button", { name, exact: true }).click();
+    await expect(bp.getByRole("button", { name, exact: true })).toHaveAttribute("aria-pressed", "true");
+  }
+  await page.waitForTimeout(400); await bp.screenshot({ path: info.outputPath("blueprint-spatial.png") });
+  await bp.locator('.bp-register-item[data-component-id="AC-033-ENG-TRB"]').click(); await expect(dialog).toBeVisible();
   await dialog.getByRole("link", { name: "Open condition evidence" }).click(); await expect(page).toHaveURL(/\/health\/AC-033-ENG-TRB/);
   expect(errors).toEqual([]);
 });
@@ -71,7 +73,8 @@ async function fixtures(page: Page) {
 test("mobile blueprint supports unknown types, maintenance separation, keyboard selection and aircraft reconciliation", async ({ page }, info) => {
   await fixtures(page); await page.emulateMedia({ reducedMotion: "reduce" }); await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/aircraft/AC-001"); const bp = page.getByRole("region", { name: "Aircraft component blueprint" });
-  await expect(bp.locator(".bp-register-item")).toHaveCount(3); await expect(bp.locator(".bp-hotspot")).toHaveCount(2);
+  await expect(bp.locator(".bp-register-item")).toHaveCount(3); await expect(bp.locator(".bp-assembly")).toHaveCount(2);
+  expect(await bp.evaluate(element => element.scrollWidth <= element.clientWidth + 1)).toBe(true);
   await expect(bp.locator('.bp-register-item[data-component-id="AC-001-M"]')).toHaveAttribute("data-attention", "false");
   const unmapped = bp.getByRole("button", { name: /Unmapped component/ }); await unmapped.press("Enter");
   const unknownDialog = page.getByRole("dialog", { name: "Unmapped component", exact: true });
@@ -109,6 +112,6 @@ test("empty records stay unavailable rather than becoming a healthy blueprint", 
   await page.route("**/api/fleet-health/aircraft/AC-001", route => route.fulfill({ json: { ...detail("AC-001"), systems: [] } }));
   await page.goto("/aircraft/AC-001"); const bp = page.getByRole("region", { name: "Aircraft component blueprint" });
   await expect(bp.getByText("Component records unavailable", { exact: true })).toBeVisible();
-  await expect(bp.locator(".bp-register-item,.bp-hotspot")).toHaveCount(0);
+  await expect(bp.locator(".bp-register-item,.bp-assembly")).toHaveCount(0);
   await expect(bp.getByText("No condition findings", { exact: true })).toHaveCount(0);
 });

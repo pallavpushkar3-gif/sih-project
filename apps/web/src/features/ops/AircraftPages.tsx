@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { Icon } from "../../shared/ui/Icon";
-import { AircraftSchematic } from "./AircraftSchematic";
 import { TwinShowcase } from "./TwinShowcase";
 import { AircraftBlueprint } from "./AircraftBlueprint";
 import { useAsOf } from "./AsOf";
@@ -83,15 +82,10 @@ function TwinTab({ data }: { data: AircraftDetail }) {
   const selectedCode = params.get("system") ?? ordered[0]?.code ?? null;
   const [expanded, setExpanded] = useState<string[]>(() => selectedCode ? [selectedCode] : []);
   const choose = (code: string) => setParams(previous => { const next = new URLSearchParams(previous); next.set("system", code); return next; }, { replace: true });
-  const select = (code: string) => { choose(code); setExpanded(list => list.includes(code) ? list : [...list, code]); };
   const toggle = (code: string) => { choose(code); setExpanded(list => list.includes(code) ? list.filter(c => c !== code) : [...list, code]); };
   const advisories = new Map(data.advisories.map(a => [a.component_id, a]));
-  return <><div id="twin-system-details" className="o-grid twin-system-layout">
-    <Card title="System map" subtitle="Select a system to inspect its components.">
-      <AircraftSchematic systems={data.systems} selected={selectedCode} onSelect={select} tail={data.aircraft.id as string}/>
-      <div className="o-legend"><span><i className="m-healthy"/>Healthy (HI ≥ 80)</span><span><i className="m-degraded"/>Watch / degraded (HI 40–80)</span><span><i className="m-critical"/>Critical / failed</span><span><i className="m-under_maintenance"/>In maintenance</span></div>
-    </Card>
-    <Card title="System › component tree" subtitle="Criticality-weighted system health. Expand a system for each component's HI, risk and remaining life.">
+  return <details id="twin-system-details" className="bp-records"><summary>Component records <span>Health, remaining life and evidence by system</span></summary>
+    <Card title="System and component records" subtitle="Criticality-weighted system health. Expand a system for each component's HI, risk and remaining life.">
       <div className="o-table-wrap"><table className="o-table o-tree">
         <thead><tr><th>System / component</th><th className="num">HI</th><th>State</th><th className="num">Risk 14d</th><th className="num">RUL</th><th>Advisory</th><th/></tr></thead>
         <tbody>{ordered.flatMap(system => {
@@ -117,7 +111,7 @@ function TwinTab({ data }: { data: AircraftDetail }) {
         })}</tbody>
       </table></div>
     </Card>
-  </div></>;
+  </details>;
 }
 
 function HistoryTab({ data }: { data: AircraftDetail }) {
