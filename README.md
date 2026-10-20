@@ -1,117 +1,256 @@
-# AeroCare — Aircraft maintenance & fleet availability
+# AeroCare — SIH26249 Aircraft Predictive Maintenance & Fleet Availability
 
-**[Open the product](https://pallavpushkar3-gif.github.io/sih-project/)** · [Startup and deployment guide](docs/operations/pages_and_tunnel.md).
+**Connect aircraft health evidence to maintenance decisions, spare parts and fleet availability.**
 
-The React product is published through GitHub Pages. Its synthetic demo API runs in an isolated local Docker stack through an HTTPS tunnel. Pages checks backend readiness and opens the complete app on the tunnel origin to avoid third-party cookie restrictions. If the host or tunnel stops, Pages shows **Demo backend offline**.
+[![Web checks](https://github.com/pallavpushkar3-gif/sih-project/actions/workflows/web-checks.yml/badge.svg?branch=main)](https://github.com/pallavpushkar3-gif/sih-project/actions/workflows/web-checks.yml)
+[![Backend checks](https://github.com/pallavpushkar3-gif/sih-project/actions/workflows/backend-checks.yml/badge.svg?branch=main)](https://github.com/pallavpushkar3-gif/sih-project/actions/workflows/backend-checks.yml)
+[![Problem statement SIH26249](https://img.shields.io/badge/Smart_India_Hackathon-SIH26249-21634c)](docs/product/problem_statement.md)
 
-PS 26249 is a local decision-workspace demonstrator connecting labelled component records, maintenance constraints, inventory reservations and scenario-specific availability simulation. It is not an airworthiness, dispatch or operational-readiness system.
+**[Live application](https://sih-34-56-39-7.sslip.io/)** · **[Video demonstration](https://www.youtube.com/watch?v=HlYxblGJHEs)** · **[Evaluation evidence](docs/research/release_evaluation.md)** · **[Local setup](docs/operations/local_setup.md)**
 
-## Fleet-health workspace (docs/plan.md)
+Maintained by **[Pushkar Pallav](https://github.com/pallavpushkar3-gif)** and the project contributors.
 
-The default entry is the **fleet dashboard** (`/dashboard`) for the labelled synthetic 40-aircraft fleet. The connected operations flow is **Aircraft → Findings & evidence → Maintenance → Spares & supply → recorded work → Overview**. Maintenance combines its work board, bays/timeline and work register; supply combines inventory forecasts and actual parts requests. Aircraft/component context follows the handoff links, with aggregate views explicitly identified.
+AeroCare is a working prototype for **Smart India Hackathon SIH26249 / PS26249 — Air Power: Predictive Maintenance & Fleet Availability**. It brings aircraft records, findings, maintenance cases, spares and decision history into one workspace. A separate engine-research workflow estimates remaining useful life, checks resource-constrained schedules and compares simulated outcomes.
 
-The separate **Research** menu opens engine evidence, the constraint planner, retained inventory/approvals, what-if comparisons and guided trials. Those records use their own dataset and cutoffs; fleet replay does not control them. The optional workflow guide is `/welcome`; it is not a mandatory entry screen. Design and limitations: [user flow](docs/product/user_flow.md), [site audit](docs/design/site_flow_audit.md), [ADR 0006](docs/decisions/0006-fleet-health-workspace.md).
+The demonstration uses **synthetic fleet and logistics records** and **public simulated engine data**. Benchmark results apply to their stated datasets. AeroCare supports engineering judgement and human approval; it does not provide airworthiness or dispatch clearance.
 
-On first start the worker builds and verifies the fleet-health bundle. Missing records and unavailable model evidence remain explicit states.
+## Explore the product
 
-## Current implemented boundary
+![AeroCare workspace selection: maintenance engineer, supervisor, logistics and fleet manager](docs/design/screenshots/readme-workspaces.png)
 
-The interface connects recorded evidence, review, planning, supply and work history. It retains the engine research and customer-trial tools because their planner, exact approvals and saved simulations have distinct responsibilities. See [current project status and remaining work](docs/team/project_status.md); the original release remains incomplete.
+1. Open **[AeroCare](https://sih-34-56-39-7.sslip.io/)** and select a workspace.
+2. Choose **Maintenance engineer**, **Maintenance supervisor**, **Logistics team** or **Fleet manager**.
+3. Select **Sign in** or **Create account**. The chosen workspace stays with the account flow.
+4. Open the relevant findings, maintenance, supply or fleet dashboard.
 
-The repository currently provides:
+The public installation is a **shared synthetic demonstration**: its explicit demo policy supports signup and login across the four workspaces, including accounts created before the workspace-login correction. Use demonstration information only. Normal production configuration keeps self-registration read-only and requires assigned staff access. [Access policy →](docs/engineering/permissions.md)
 
-- a React/TypeScript/Vite interface for fleet, component evidence, alerts, planning, inventory and simulation scenarios;
-- a FastAPI/SQLAlchemy API with an Alembic schema and labelled synthetic demo records;
-- PostgreSQL-backed proposal approval with current-input checks, row locking, reservations and audit records;
-- an OR-Tools CP-SAT planner with independent checks for windows, capacity, fixed work, precedence and aggregate stock;
-- deterministic SimPy reference scenarios with explicit aircraft-time availability, queue wait and horizon handling;
-- Celery/RabbitMQ durable job execution with PostgreSQL outbox dispatch, attempt claiming, cancellation and stale-result rejection; and
-- unit, verification, API and browser workflow checks.
+![AeroCare fleet dashboard showing synthetic aircraft availability and maintenance priorities](docs/design/screenshots/readme-dashboard.png)
 
-The NASA C-MAPSS FD001 baseline now serves immutable, cutoff-bound histories through durable assessment jobs, with hash-verified model/transform/calibration artifacts and noncausal feature sensitivities. The user-approved frozen demonstrator prediction and interval gates passed on the official 100-engine final test: capped MAE 8.722 cycles, RMSE 11.710 cycles, coverage 98%, mean interval width 58.231 cycles. These are this implementation's results, not reproductions of published model scores or operational safety evidence.
+*Current product screens, captured from the deployed synthetic demonstration. The interactive aircraft view is illustrative; it is not a validated physical digital twin.*
 
-Opaque cookie sessions, CSRF/origin checks, account provisioning, atomic labelled fixture imports, stock corrections, immutable revisions, work completion/cancellation, bounded lost-worker recovery and durable per-attempt history are implemented. Validation-only explanation diagnostics and a bounded concurrent HTTP workload benchmark are available. See [production readiness](docs/operations/production_readiness.md) for verified evidence, operator setup and remaining acceptance gaps. The full original release is not yet accepted: independent alert validation, explanation stability, broader robustness and workload performance evidence remain incomplete.
+## Why AeroCare
 
-## Prerequisites
+Identifying a possible component failure does not, by itself, make maintenance executable. A team also needs supporting evidence, an available spare, qualified people, workshop capacity and an accountable decision.
 
-- Docker with Compose
-- Node.js 24 and Corepack/pnpm 12
+AeroCare connects those responsibilities so users can follow **what needs attention, why it matters, what blocks the work and what happened after completion**. Its contribution is the traceable workflow from evidence to action.
 
-The backend image uses Python 3.13, matching `backend/pyproject.toml`. A host Python installation is not required.
+| Workspace | Main responsibility | What users can inspect or do |
+|---|---|---|
+| Maintenance engineer | Review the evidence | Inspect component history, sensor trends and findings; confirm or dismiss concerns with a reason |
+| Maintenance supervisor | Coordinate maintenance | Review cases, organise work and follow approval and completion records |
+| Logistics team | Secure the required parts | Inspect inventory, shortages, parts requests, expected arrivals and receipts |
+| Fleet manager | Understand fleet availability | Review aircraft states, maintenance priorities and labelled what-if projections |
 
-## Setup and run
+## Connected maintenance workflow
 
-```sh
+The fleet workspace connects aircraft, component evidence, findings, cases, work and supply. Existing record context follows the handoff between teams.
+
+```mermaid
+flowchart TD
+    Entry[Open AeroCare] --> Role[Choose workspace]
+    Role --> Auth[Sign in or create account]
+    Auth --> Fleet[Explore fleet and aircraft records]
+    Fleet --> Evidence[Inspect component evidence and findings]
+    Evidence --> Review{Engineer review}
+    Review -->|Needs action| Case[Maintenance case and proposed work]
+    Review -->|Dismiss with reason| History[Decision and work history]
+    Case --> Work[Supervisor coordinates maintenance]
+    Supply[Logistics checks stock and deliveries] --> Work
+    Work --> Human[Human decision and authorised action]
+    Human --> Complete[Record work progress and completion]
+    Complete --> History
+    History --> Fleet
+```
+
+## Two connected areas, distinct evidence
+
+| Area | Data and calculations | Boundary |
+|---|---|---|
+| **Fleet operations** | Synthetic aircraft/component histories, condition findings, maintenance cases, parts requests and fleet-availability projections | Demonstrates the team workflow; its fleet models and projections are not operational aircraft validation |
+| **Engine research and guided trials** | NASA C-MAPSS histories, cutoff-bound remaining-life estimates, calibrated intervals, CP-SAT proposals and saved-plan simulation | Research records have their own datasets, units and cutoffs; the FD001 benchmark belongs to this engine-life workflow |
+
+The research planner and fleet maintenance board have different responsibilities. Do not interpret every fleet-board action as a CP-SAT solve, or FD001 prediction scores as validation of the entire fleet demonstration.
+
+### Engine evidence → checked plan → reviewed work
+
+```mermaid
+flowchart TD
+    Data[Supported engine history and selected cutoff] --> Quality{Quality and support checks}
+    Quality -->|Insufficient or unsupported| Withhold[Withhold estimate and explain why]
+    Quality -->|Eligible history| RUL[Engine remaining-life estimate and interval]
+    RUL --> Review[Human reviews evidence and task requirements]
+    Review --> Solver[CP-SAT scheduling proposal]
+    Inputs[Parts, deliveries, qualified crews, bays and deadlines] --> Solver
+    Solver --> Check{Independent constraint checks}
+    Check -->|No usable schedule| Explain[Show solver status and known bottlenecks]
+    Check -->|Usable schedule| Plan[Save versioned plan and input snapshot]
+    Plan --> Approval[Human review and approval request]
+    Plan -. Optional comparison .-> Replay[SimPy replay of saved plan and baseline]
+    Replay -. Projected outcomes .-> Approval
+    Approval --> Fresh{Recheck current inputs and availability}
+    Fresh -->|Changed or conflicting| Replan[Review inputs and request a fresh proposal]
+    Replan --> Review
+    Fresh -->|Valid and authorised| Commit[Commit reservations, bookings and audit]
+    Commit --> Work[Record started and completed work]
+```
+
+Prediction intervals communicate evaluated uncertainty; they are not individual engine failure probabilities. The planner preserves hard constraints and distinguishes feasible, optimal, infeasible and unknown solver outcomes. Scenario results never silently change a live plan.
+
+## Main capabilities
+
+- **Fleet and component inspection:** searchable records, linked findings, sensor history, replay context and illustrative aircraft exploration.
+- **Remaining useful life and uncertainty:** supported engine estimates with dataset, cutoff, transformation, model and calibration provenance.
+- **Evidence and data-quality controls:** explicit missing, stale, unsupported and withheld states; model-input sensitivities are not mechanical diagnoses.
+- **Maintenance cases and work records:** review, responsibility, linked evidence, supply dependencies and completion history.
+- **Research scheduling:** OR-Tools CP-SAT with independent checks for task windows, qualifications, resource capacity, commitments, parts and deadlines.
+- **Inventory and approval:** current-input checks, transactional stock/resource reservations and auditable decisions.
+- **What-if analysis:** synthetic fleet forecasts and separate saved-plan scenario comparisons with visible assumptions and units.
+- **Durable calculations:** Celery/RabbitMQ jobs with outbox dispatch, attempt tracking, retries, cancellation and stale-result handling.
+- **Qwen copilot:** conversational access to permitted records and services, with source links and answer checks.
+
+### Qwen copilot
+
+Qwen runs through **Ollama** on the configured server. Common record and guidance questions use application services directly; open-ended explanations use model inference and allowlisted service tools. Model-generated figures are not the source of authoritative predictions or schedules. Maintenance decisions and approvals remain explicit human actions.
+
+The deployed model is `qwen3:4b-instruct`; local Compose defaults to `qwen3:8b` unless overridden. Model availability and CPU inference latency depend on the host and configuration. No hosted-provider account is required for the local-only Ollama configuration. See [copilot operation and timing diagnostics](docs/operations/ai_copilot.md).
+
+## Architecture
+
+```mermaid
+flowchart TD
+    Browser[React and TypeScript browser] --> Proxy[NGINX and HTTPS]
+    Proxy --> API[FastAPI routes and application services]
+    API <--> DB[(PostgreSQL: records, sessions, jobs and outbox)]
+    DB --> Dispatcher[Outbox dispatcher]
+    Dispatcher --> Broker[RabbitMQ]
+    Broker --> Workers[Celery workers]
+    Workers -->|Calculate| Science[Shared Python prediction, scheduling and simulation modules]
+    Science -->|Typed results| Workers
+    Workers -->|Persist results| Artifacts[(Versioned models and result artifacts)]
+    Workers --> DB
+    API -->|Read manifests and results| Artifacts
+    API --> Copilot[Copilot and permitted service tools]
+    Copilot <--> Ollama[Ollama and locally hosted Qwen]
+    Copilot --> Services[Existing application services]
+    Services --> DB
+```
+
+Browser code lives in `apps/web/`. The API and workers import the shared installable Python package in `backend/src/fleet_maintenance/`. Scientific modules calculate results; application services and persistence own record changes, transactions and approval.
+
+| Layer | Technology |
+|---|---|
+| Interface | React, TypeScript, Vite, TanStack Query, ECharts |
+| Aircraft presentation | Three.js, React Three Fiber and Drei |
+| API and persistence | FastAPI, Pydantic, SQLAlchemy, Alembic, PostgreSQL |
+| Background work | Celery, RabbitMQ, PostgreSQL outbox |
+| Predictive research | scikit-learn, gradient boosting, calibrated prediction intervals |
+| Research planning and replay | OR-Tools CP-SAT, SimPy |
+| Conversational assistant | Qwen through Ollama |
+| Current public hosting | Google Compute Engine, Docker Compose, NGINX, HTTPS |
+
+## Evaluated engine-life benchmark
+
+The retained **NASA C-MAPSS FD001** evaluation uses simulated turbofan degradation histories. The selected gradient-boosting engine-life model is evaluated at **100 official truncated test-engine endpoints**, with its primary RUL target capped at **125 operating cycles**.
+
+| Metric | Retained result |
+|---|---|
+| Mean absolute error | **8.722 cycles** |
+| Root mean squared error | **11.710 cycles** |
+| Observed coverage of nominal 90% intervals | **98 of 100 engines** |
+| Mean prediction-interval width | **58.231 cycles** |
+
+These are historical, inspected benchmark results for this engine-life model. They are not whole-aircraft accuracy, evidence of measured downtime savings or an independent operational trial. Interval coverage must be read with its width and evaluation assumptions. Future tuning cannot reuse inspected test outcomes as untouched validation.
+
+Read the [scientific evaluation](docs/research/release_evaluation.md), [dataset protocol](docs/research/dataset_protocol.md), [retained reproduction record](docs/research/reproduction_log.md) and [additional C-MAPSS subset research](docs/research/multidataset-demo-protocol.md). Additional subset results belong to their own protocols and do not extend the selected FD001 model's qualification automatically.
+
+## Run locally
+
+### Requirements
+
+- Docker with Docker Compose
+- Node.js 24 and Corepack/pnpm 12.8.1
+- `make` for the documented convenience targets
+
+The backend Docker image uses Python 3.13; a host Python installation is not needed for the container workflow.
+
+```bash
+git clone https://github.com/pallavpushkar3-gif/sih-project.git
+cd sih-project
 make setup
 make dev
 ```
 
-Open <http://localhost:8080>, choose a workspace, and sign in with an account assigned to that role. The Compose stack migrates PostgreSQL and seeds the labelled demo records on first API startup. RabbitMQ management is exposed at <http://localhost:15672> for local inspection only.
+Open **http://localhost:8080**. Compose starts the API, web proxy, PostgreSQL, RabbitMQ, worker and outbox dispatcher, and applies the implemented development migrations/seed. Local server-session authentication requires provisioned credentials; the public demonstration's signup policy is not the default local policy.
 
-Environment defaults are in `.env.example`. Local Compose now requires server-session credentials. Account setup is documented in `docs/operations/local_setup.md`; existing accounts are preserved.
+To provision a local supervisor account, run this from another terminal after the services are ready. The script prompts for the password; it does not accept or print it as a command argument.
 
-## Verified checks
-
-```sh
-make web-check
-make backend-check
-make backend-integration
-make e2e
-make science-check
-make sequence-check
+```bash
+docker compose run --rm --no-deps \
+  -v "$PWD:/workspace" -w /workspace \
+  -e PYTHONPATH=/workspace/backend/src api \
+  python scripts/provision_user.py local-supervisor \
+  --display-name "Local Supervisor" --role supervisor
 ```
 
-`make web-check` runs ESLint, TypeScript, the production build and Vitest. `make backend-check` builds the Python 3.13 test image, then runs Ruff, mypy, and the unit/verification suites. `make backend-integration` runs the integration tests against PostgreSQL, including the concurrent stock-reservation race. `make e2e` starts PostgreSQL, RabbitMQ, the API, outbox dispatcher and worker before running Playwright in Chrome.
+Provisioning an existing ID resets its credentials and active sessions. Use a new local ID unless a reset is intended. [Full setup and troubleshooting →](docs/operations/local_setup.md)
 
-PostgreSQL-specific reservation races and broker/process fault injection require the integration environment described in `docs/operations/local_setup.md`; SQLite results must not be used as evidence for those criteria.
+### Data, model artifacts and Ollama
 
-After acquiring and preparing FD001 as documented in `docs/operations/local_setup.md`, `make science-train`, `make sequence-train`, `make science-calibrate`, and `make science-robustness` reproduce the validation-only model, calibration, and robustness comparisons. Those training/calibration commands do not inspect official test labels. `make science-evaluate` evaluates the frozen model and targets; the official test has now been inspected, so it cannot be reused as unseen evidence for subsequent tuning.
+The Git clone does not include bulk NASA data, trained weights or generated fleet/model bundles. The worker prepares the synthetic fleet bundle; numerical engine-research results require the documented dataset acquisition, fitted/calibrated artifacts and model registration. See [research installation](docs/product/customer_trial.md) and [dataset sources and hashes](data/sources.yaml).
 
-`make planner-benchmark` compares CP-SAT with the transparent earliest-deadline baseline on the configured deterministic reference instances and writes an ignored result manifest.
-`make simulation-reference` runs the matched, explicitly synthetic capacity scenarios and retains per-run metrics without fabricating variability for the single deterministic replication.
-`make alert-evaluation` compares the configured hysteresis policy with a no-hysteresis threshold baseline on fixed synthetic validation histories. Its synthetic report verifies comparison wiring; it does not meet the independent alert acceptance requirement.
+Ollama and its selected model must be installed/configured separately for model-generated explanations. Record-based workflows and guidance do not require an LLM response. Configuration examples are in [.env.example](.env.example) and the [copilot guide](docs/operations/ai_copilot.md).
 
-## Data and claims
+## Verification and reproducibility
 
-- Fleet, tasks, stock, durations, capacities and scenario assumptions are synthetic demonstration inputs.
-- Scenario outputs are simulated projections, not observed fleet improvements.
-- Sensor names retain generic C-MAPSS-style identifiers unless a source provides a validated physical mapping.
-- Bulk data, learned weights and generated result artifacts are intentionally excluded from Git and require manifests/hashes.
+| Implemented command | Purpose |
+|---|---|
+| `make web-check` | Frontend lint, TypeScript, production build and unit tests |
+| `make backend-check` | Ruff, mypy and backend unit/verification tests |
+| `make backend-integration` | API/persistence integration checks with an isolated integration database |
+| `make e2e` | Playwright browser workflows; match the test authentication mode and artifact requirements |
+| `make science-check` | Scientific dependency image and scientific tests |
+| `make planner-benchmark` | Scheduling comparison against the documented baseline |
+| `make simulation-reference` | Matched synthetic reference scenarios |
 
-See `intent.md`, `scope.md`, `rule.md`, and `docs/product/acceptance_criteria.md` for the governing product and evidence boundaries.
+These are implemented entry points, not a statement that every environment or optional model test passes automatically. The [Makefile](Makefile), [local setup](docs/operations/local_setup.md) and [CI workflows](.github/workflows) define their dependencies. Header-demo browser tests need an explicitly isolated demo stack; credential-entry fixtures exercise server-session UI. Scientific/live-model tests require their retained inputs and services.
 
+Recent signup/login verification covered **303 backend unit/verification tests**, **24 focused signup/security API tests** and **23 account/entry browser tests**, plus lint, types and production build. A subsequent real-browser check on the public deployment created a demo account and verified login and the correct home for all four workspaces. These are scoped engineering checks, not operational acceptance. Historical results and failures remain in the [project ledger](docs/team/project_status.md).
 
-`make explanation-evaluation` runs the validation-only sensitivity diagnostics. `make workload-diagnostic` uses the prepared host .venv313 environment against the local demo stack and creates labelled test job/result records; it is a measured diagnostic, not a production performance gate.
+Training, calibration and official-test evaluation have separate commands and provenance. Follow the [research protocols](docs/research) before reproducing or extending an experiment; do not tune on the inspected official test set.
 
-Deployment preparation for the agreed single Ubuntu EC2 VM is documented in [EC2 deployment preparation](docs/operations/ec2_deployment.md). It uses `compose.ec2.yaml` and mandatory `DEPLOYMENT_DOMAIN`; the public demonstration now uses the separately documented [Pages/tunnel deployment](docs/operations/pages_and_tunnel.md); EC2 remains optional preparation. The [FD001 holdout audit](docs/research/fd001_alert_holdout_audit.md) records why complete-trajectory held-out alert evaluation remains blocked.
+## Deployment and current limits
 
-## Aircraft inspection redesign
+The current public application runs on the `aerocare-server` **Google Compute Engine** VM with Docker Compose, NGINX and HTTPS. Existing overlay filenames retain their earlier `aws-demo`/`ec2` names; the active host is Google Cloud. The earlier GitHub Pages/tunnel setup remains documented as a historical/alternative setup, not the primary product link.
 
-Fleet now opens a large illustrative aircraft inspection workspace with API-verified engine selection, actual assessment/quality/task context and a direct path to evidence and planning. The searchable register remains at `/fleet/register`. React Three Fiber/Drei load the licensed local Cesium GLB; Inter and both license notices are bundled locally. The aircraft shape/anchors are illustrative, public C-MAPSS histories simulated and logistics synthetic. No validated physical digital twin or aircraft clearance is claimed.
+- [Google Cloud deployment runbook](docs/operations/gce_deployment.md)
+- [Deployment validation and recovery record](docs/operations/gce_validation.md)
+- [Backup and restore](docs/operations/backup_and_restore.md)
+- [Access and demo-account policy](docs/engineering/permissions.md)
+- [Remaining release and operational acceptance](docs/team/release_acceptance.md)
 
-![Actual local aircraft inspection workspace](docs/design/screenshots/inspection-desktop.png)
+Public-demo records are shared. Production configuration enforces a separate access policy. Independent security, accessibility/user acceptance, representative workload/data validation and operational qualification remain separate gates. Model availability does not establish answer accuracy or low latency.
 
-Actual saved-screen captures: [engine evidence](docs/design/screenshots/engine-evidence.png), [planning and commitment history](docs/design/screenshots/planning-history.png), [scenario comparison](docs/design/screenshots/scenario-comparison.png), [mobile inspection](docs/design/screenshots/inspection-mobile.png), [3D fallback](docs/design/screenshots/inspection-fallback.png). These use public simulated FD001 records and synthetic logistics.
+## Project map
 
-Scenario revisions now support an explicit common synthetic part-ready hour and calculate separate part/bay waits. Compare retained baseline/alternative outcomes under matching demand, fleet count and horizon. Exact-plan approval remains transactional and requires an eligible solver result and supervisor permission.
+```text
+apps/web/                         React product and browser checks
+backend/src/fleet_maintenance/    Shared Python API, services, science and workers
+backend/migrations/               Reviewed Alembic migrations
+backend/tests/                    Unit, scientific, verification and integration checks
+configs/                         Versioned model, policy and experiment settings
+data/sources.yaml                Dataset acquisition provenance and hashes
+docs/product/                    Features, journeys and acceptance contracts
+docs/research/                   Dataset protocols and retained evaluations
+docs/operations/                 Setup, deployment and recovery
+infra/proxy/                     NGINX proxy and TLS templates
+scripts/                         Setup, research and operator entry points
+```
 
-Use the existing `make dev` workflow (see local setup). The actual redesign screenshots and device/check evidence are indexed in [UI verification](docs/design/ui_verification.md); captures are in `artifacts/ui-redesign/`. To regenerate them against the locally running app, run `node scripts/capture_aircraft_ui.mjs`. See the [asset register](docs/design/asset_register.md), [viewer contract](docs/design/3d_viewer.md), [scoped design evidence](docs/research/ui_design_evidence.md) and [ADR 0004](docs/decisions/0004-aircraft-inspection-ui.md). Model attribution: Copyright 2011–2026 CesiumJS Contributors, Apache 2.0; Inter: Copyright 2016 The Inter Project Authors, SIL OFL 1.1.
+## Roadmap and contribution
 
-Historical aircraft-redesign verification (before release-v2): its built-preview browser suite passed all 22 tests; frontend typecheck/lint/build and six unit tests passed. The completed backend verification now includes 81 passing tests with PostgreSQL and Torch, Ruff and mypy across 121 files. This does not close the blocked external validation/deployment criteria or the pending UI device/user-study acceptance. Deployment preparation and deployment acceptance remain separate.
+The proposed next step is a controlled pilot with one aircraft type and one maintenance base, using authorised data and an agreed baseline for alert quality, maintenance delays, parts waiting time and fleet availability. This is a proposal, not a completed operational deployment.
 
-### Interactive customer trial
+For implementation changes, read [CONTRIBUTING.md](CONTRIBUTING.md), [intent](intent.md), [scope](scope.md), [architecture](design.md) and the canonical [engineering rules](rule.md). Preserve provenance, hard constraints and explicit human decisions. Aircraft visuals and fonts retain their source attribution in the [asset register](docs/design/asset_register.md); their licences do not imply a blanket licence for this repository.
 
-Open **http://localhost:8080/demo** after local startup. **Try demo** connects an entered aircraft name, sensor-history cutoff, usage, work duration, deadline and parts supply to real model jobs, scheduling, matched simulation, approval and recorded work. The original aircraft viewer remains at **Aircraft** (`/fleet`). A fitted/calibrated model and sample must be installed for numerical output; [customer trial setup and walkthrough](docs/product/customer_trial.md) documents the verified installer and scientific boundaries. Trials retain separate synthetic resources and results; they do not change ordinary fleet planning scope.
-
-## Release-v2 local workflow and evidence
-
-Open **http://localhost:8080/demo** after `docker compose up -d --build`. Enter a case, calculate AI evidence, calculate the schedule, **Compare this saved plan**, record receipt/replan where needed, then approve/start/complete work. Original aircraft exploration remains available; initial case entry defers its 3D code until requested. Models use public simulated FD001 data and synthetic logistics.
-
-[Current implementation/verification ledger](docs/team/release_acceptance.md), [scientific evaluation](docs/research/release_evaluation.md), [backup/restore](docs/operations/backup_and_restore.md), and [intended-user study](docs/design/user_study_protocol.md) describe the current boundary. Legacy active work without crew/bay booking requires explicit reconciliation or completion/cancellation before ordinary fleet replanning; preserve its history. Dedicated new customer trials remain usable. The original release and operational customer acceptance remain incomplete.
-
-## Google Cloud deployment
-
-For the existing `aerocare-server` Ubuntu 24.04 / e2-standard-2 VM, follow the
-[GCE deployment runbook](docs/operations/gce_deployment.md). The
-[validation record](docs/operations/gce_validation.md) distinguishes the locally verified
-release candidate from remaining VM deployment, AI availability and external acceptance gates.
+**Project:** AeroCare · **Problem:** SIH26249 / PS26249 · **Maintainer:** [Pushkar Pallav](https://github.com/pallavpushkar3-gif) · **Repository:** [pallavpushkar3-gif/sih-project](https://github.com/pallavpushkar3-gif/sih-project)

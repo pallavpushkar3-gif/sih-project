@@ -1,0 +1,26 @@
+{
+  "description": "AeroCare — SIH26249 / PS26249 aircraft predictive maintenance and fleet availability. Engine RUL with uncertainty, maintenance planning, spares, simulation and a Qwen copilot. Maintained by Pushkar Pallav.",
+  "homepage": "https://sih-34-56-39-7.sslip.io/",
+  "topics": [
+    "sih26249",
+    "ps26249",
+    "smart-india-hackathon",
+    "sih-2026",
+    "aircraft-maintenance",
+    "predictive-maintenance",
+    "fleet-availability",
+    "fleet-management",
+    "remaining-useful-life",
+    "nasa-cmapss",
+    "condition-monitoring",
+    "maintenance-planning",
+    "operations-research",
+    "ortools",
+    "fastapi",
+    "react",
+    "typescript",
+    "ollama",
+    "qwen",
+    "sih"
+  ]
+}

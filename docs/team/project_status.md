@@ -800,3 +800,23 @@ process passed 325 checks but failed two log-capture assertions after app loggin
 the canonical separate-process unit run passed all 303. API and web both require replacement
 for this update; no database migration or account recreation is needed. Direct VM access remains
 unavailable, so the owner must apply the pushed update through the existing VM terminal.
+
+## Product README and repository discovery — 21 October 2026
+
+Replaced the old Pages/tunnel and dashboard-first README with the deployed Google Cloud
+product, workspace-first signup/login, team responsibilities, current capabilities, architecture,
+local setup and clearly separated synthetic-fleet versus engine-research evidence. Captured
+new workspace-entry and authenticated fleet-dashboard screenshots from the public demo using
+synthetic test credentials, then signed out. The public demo already runs `e0747bd`; its signup
+and all four workspace logins also have retained real-browser verification.
+
+Three Mermaid diagrams were parsed and rendered with Mermaid 11; GitHub's Markdown API
+rendered the README with all three diagram fences and five tables. Local links/images, metadata
+JSON, topic syntax/count and whitespace checks passed. Documentation changes require no app
+redeployment; application suites were not rerun for this documentation update.
+
+Updated the GitHub About description and homepage and verified all 20 relevant repository
+topics through the authenticated API. The reviewed values are in
+`.github/repository-metadata.json`; that file is a record, not automatic GitHub configuration.
+The README identifies Pushkar Pallav as maintainer. No search rank, award, unique superiority
+or operational qualification claim is made.

@@ -27,3 +27,8 @@ Run relevant automated checks and substantive acceptance cases. Review material 
 ## Documentation
 
 Update intended behaviour and actual implementation status separately. Significant choices receive a decision record; routine implementation details stay with code/specification. Do not copy the same rule across several files.
+
+The intended GitHub About description, homepage and topics are recorded in
+`.github/repository-metadata.json`. Apply changes through the repository's GitHub
+settings or API as well; GitHub does not automatically sync this file. Use relevant
+topics and evidence-backed descriptions without ranking or award claims.
