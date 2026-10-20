@@ -8,7 +8,7 @@
 
 **[Live application](https://sih-34-56-39-7.sslip.io/)** · **[Video demonstration](https://www.youtube.com/watch?v=HlYxblGJHEs)** · **[Capability and verification index](docs/product/capability_evidence.md)** · **[Evaluation evidence](docs/research/release_evaluation.md)** · **[Local setup](docs/operations/local_setup.md)**
 
-Maintained by **[Pushkar Pallav](https://github.com/pallavpushkar3-gif)** and the project contributors.
+Maintained by **Team Null Paradox**.
 
 AeroCare is a working prototype for **Smart India Hackathon SIH26249 / PS26249 — Air Power: Predictive Maintenance & Fleet Availability**. It brings aircraft records, findings, maintenance cases, spares and decision history into one workspace. A separate engine-research workflow estimates remaining useful life, checks resource-constrained schedules and compares simulated outcomes.
 
@@ -335,4 +335,4 @@ The proposed next step is a controlled pilot with one aircraft type and one main
 
 For implementation changes, read [CONTRIBUTING.md](CONTRIBUTING.md), [intent](intent.md), [scope](scope.md), [architecture](design.md) and the canonical [engineering rules](rule.md). Preserve provenance, hard constraints and explicit human decisions. Aircraft visuals and fonts retain their source attribution in the [asset register](docs/design/asset_register.md); their licences do not imply a blanket licence for this repository.
 
-**Project:** AeroCare · **Problem:** SIH26249 / PS26249 · **Maintainer:** [Pushkar Pallav](https://github.com/pallavpushkar3-gif) · **Repository:** [pallavpushkar3-gif/sih-project](https://github.com/pallavpushkar3-gif/sih-project)
+**Project:** AeroCare · **Problem:** SIH26249 / PS26249 · **Team:** Team Null Paradox · **Repository:** [pallavpushkar3-gif/sih-project](https://github.com/pallavpushkar3-gif/sih-project)
