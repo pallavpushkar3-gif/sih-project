@@ -8,7 +8,7 @@
 
 **[Live application](https://sih-34-56-39-7.sslip.io/)** · **[Video demonstration](https://www.youtube.com/watch?v=HlYxblGJHEs)** · **[Capability and verification index](docs/product/capability_evidence.md)** · **[Evaluation evidence](docs/research/release_evaluation.md)** · **[Local setup](docs/operations/local_setup.md)**
 
-Maintained by **Team Null Paradox**.
+Maintained by **[Team Null Paradox](docs/team/team_null_paradox.md)**.
 
 AeroCare is a working prototype for **Smart India Hackathon SIH26249 / PS26249 — Air Power: Predictive Maintenance & Fleet Availability**. It brings aircraft records, findings, maintenance cases, spares and decision history into one workspace. A separate engine-research workflow estimates remaining useful life, checks resource-constrained schedules and compares simulated outcomes.
 
@@ -28,6 +28,15 @@ The public installation is a **shared synthetic demonstration**: its explicit de
 ![AeroCare fleet dashboard showing synthetic aircraft availability and maintenance priorities](docs/design/screenshots/readme-dashboard.png)
 
 *Current product screens, captured from the deployed synthetic demonstration. The interactive aircraft view is illustrative; it is not a validated physical digital twin.*
+
+## Dashboard gallery and walkthrough
+
+Explore the [screen gallery](docs/design/product_gallery.md), including mobile and dark-mode
+captures, [annotated maintenance walkthrough](docs/design/maintenance_walkthrough.md), and
+[Ask AI recording](docs/design/recordings/ask-ai-record-answers.webm).
+The [dated verification summary](docs/team/demo_verification_2026-10-21.md) identifies local versus
+historical captures, direct record answers versus generative inference, and remaining proof gaps.
+These presentation assets are not a new public-deployment acceptance claim.
 
 ## Why AeroCare
 
