@@ -1,7 +1,34 @@
-# Account flow repair — 20 October 2026
+# Account flow — current journey and historical repair
 
-Status: implemented and verified locally; not deployed to the public VM. Check
-Git history for the published source revision before updating the server.
+## Current journey — 21 October 2026
+
+The account-first repair below is historical and was superseded by `bb53735` (workspace-first
+entry) and `e0747bd` (public-demo signup/workspace compatibility). The README and
+[permissions contract](../engineering/permissions.md) describe the current policy.
+
+1. Open the root entry and select maintenance engineer, maintenance supervisor, logistics or
+   fleet manager before sign-in/signup. The selection is retained through account creation,
+   login and refresh of the credential form. The root entry can be revisited even with a session.
+2. Create a demo account or sign in with an existing account. Account creation does not itself
+   create an authenticated session. Workspace access is decided by the server, not a client role.
+3. The explicitly enabled shared synthetic-demo policy permits workspace-capable demo signup
+   and selected-workspace sessions for existing self-registered accounts. Normal production
+   registration stays read-only; staff access needs assignment and the demo policy is prohibited.
+4. Successful login opens that workspace's home. Explicit workspace switching confirms the
+   change, signs out with CSRF handling and returns to workspace-specific credentials. Session
+   expiry, wrong credentials, denied roles and unavailable registration remain explicit states.
+
+[Project status](../team/project_status.md) records 23 entry/account browser checks, 24 focused
+signup/security API checks and the public four-workspace signup/login verification. These are
+historical results, not continuous verification. A documented shared credential was rejected
+during a later 21 October preview attempt; current access needs a fresh authorized check rather
+than assuming old demo credentials remain valid. No account reset was performed in that check.
+
+## Historical account-first repair — 20 October 2026
+
+Status at the time of this repair: implemented and verified locally, not then deployed to the
+public VM. The following sections retain that earlier journey and verification history; they
+are not the current entry specification or a statement of today's deployment status.
 
 ## User journey
 

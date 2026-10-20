@@ -6,7 +6,7 @@
 [![Backend checks](https://github.com/pallavpushkar3-gif/sih-project/actions/workflows/backend-checks.yml/badge.svg?branch=main)](https://github.com/pallavpushkar3-gif/sih-project/actions/workflows/backend-checks.yml)
 [![Problem statement SIH26249](https://img.shields.io/badge/Smart_India_Hackathon-SIH26249-21634c)](docs/product/problem_statement.md)
 
-**[Live application](https://sih-34-56-39-7.sslip.io/)** · **[Video demonstration](https://www.youtube.com/watch?v=HlYxblGJHEs)** · **[Evaluation evidence](docs/research/release_evaluation.md)** · **[Local setup](docs/operations/local_setup.md)**
+**[Live application](https://sih-34-56-39-7.sslip.io/)** · **[Video demonstration](https://www.youtube.com/watch?v=HlYxblGJHEs)** · **[Capability and verification index](docs/product/capability_evidence.md)** · **[Evaluation evidence](docs/research/release_evaluation.md)** · **[Local setup](docs/operations/local_setup.md)**
 
 Maintained by **[Pushkar Pallav](https://github.com/pallavpushkar3-gif)** and the project contributors.
 
@@ -99,7 +99,7 @@ Prediction intervals communicate evaluated uncertainty; they are not individual 
 
 ## Main capabilities
 
-- **Fleet and component inspection:** searchable records, linked findings, sensor history, replay context and illustrative aircraft exploration.
+- **Fleet and component inspection:** searchable records, linked findings, sensor history, replay context and five illustrative aircraft families, with blueprint/2D and unavailable-WebGL fallbacks.
 - **Remaining useful life and uncertainty:** supported engine estimates with dataset, cutoff, transformation, model and calibration provenance.
 - **Evidence and data-quality controls:** explicit missing, stale, unsupported and withheld states; model-input sensitivities are not mechanical diagnoses.
 - **Maintenance cases and work records:** review, responsibility, linked evidence, supply dependencies and completion history.
@@ -109,11 +109,49 @@ Prediction intervals communicate evaluated uncertainty; they are not individual 
 - **Durable calculations:** Celery/RabbitMQ jobs with outbox dispatch, attempt tracking, retries, cancellation and stale-result handling.
 - **Qwen copilot:** conversational access to permitted records and services, with source links and answer checks.
 
+### Implemented workflows worth trying
+
+| Workflow | What is implemented | Where to inspect it |
+|---|---|---|
+| **Add your aircraft and records** | Register an aircraft and installed components; preview and import usage, technical history and mandatory requirements. Unassessed aircraft remain separate from the scored demo fleet. | Aircraft → Add aircraft; [onboarding contract](docs/engineering/aircraft_registration.md) |
+| **Follow a case from input to completed work** | Enter supported engine history and logistics assumptions, calculate evidence and a schedule, compare the saved plan, record a receipt/replan, approve, complete and verify the demo inspection. | Guided trial at `/demo`; [trial walkthrough](docs/product/customer_trial.md) |
+| **Replay telemetry through the actual pipeline** | Transport archived FD001 cycles over authenticated HTTP; validate order, duplicates and freshness; create immutable assessment snapshots and follow their mapped visual evidence. | Data & integrations → live replay; [telemetry contract and verification](docs/engineering/live_telemetry_demo.md) |
+| **Inspect research beyond FD001** | Separate FD002–FD004 evaluations with declared splits, withheld short histories, calibration and reproduced artifact hashes. These do not expand the selected FD001 serving model's qualification. | Research benchmarks; [multi-subset protocol and results](docs/research/multidataset-demo-protocol.md) |
+| **Inspect recovery and concurrency evidence** | Tests cover competing reservations, stale approvals, duplicate jobs, interruption recovery and replay. Deployment rehearsals include coordinated backup and isolated restore. | [Acceptance ledger](docs/team/release_acceptance.md), [product audit](docs/team/product_audit_two_pass_2026-10-20.md) and [deployment verification](docs/operations/gce_validation.md) |
+
+These are implemented paths with scoped verification records, not a claim that each is installed,
+qualified or freshly retested on every deployment. Research and telemetry require their documented
+data/model artifacts; the telemetry producer replays simulated data rather than a real aircraft feed.
+The [capability and verification index](docs/product/capability_evidence.md) links implementation,
+test sources and remaining limits.
+
 ### Qwen copilot
 
 Qwen runs through **Ollama** on the configured server. Common record and guidance questions use application services directly; open-ended explanations use model inference and allowlisted service tools. Model-generated figures are not the source of authoritative predictions or schedules. Maintenance decisions and approvals remain explicit human actions.
 
 The deployed model is `qwen3:4b-instruct`; local Compose defaults to `qwen3:8b` unless overridden. Model availability and CPU inference latency depend on the host and configuration. No hosted-provider account is required for the local-only Ollama configuration. See [copilot operation and timing diagnostics](docs/operations/ai_copilot.md).
+
+Ask AI is an in-page conversation with page/record context, source links and service-backed evidence
+cards. Its 12 allowlisted tools cover product help, registered aircraft, priority findings, fleet
+state, forecasts, aircraft/component evidence, sensor history, maintenance records, spares, plan
+comparisons and role-permitted what-if scenarios. A saved scenario does not approve work or change
+the active maintenance plan.
+
+Try **“How many aircraft are in the fleet?”**, then open an aircraft or finding and ask
+**“What maintenance is open for this aircraft?”** or **“Explain this finding with evidence.”**
+Answers should appear in chat; source links are optional navigation. Availability depends on the
+selected records, installed data and permissions. Streaming drafts are provisional: the final checked
+answer replaces them. Cancellation, retry and truncated-stream handling have explicit
+[browser tests](apps/web/tests/e2e/assistant-stream.spec.ts); role/context and citation/number
+checks have [backend tests](backend/tests/unit/test_assistant.py).
+Those checks reduce specific failure modes; they are not proof of general answer accuracy.
+
+The [retained local product audit](docs/team/product_audit_two_pass_2026-10-20.md) checked actual
+record answers against the authoritative API across four roles and observed a completed, cited
+answer in the signed-in UI. Its generative model service was unavailable during that audit; later
+bounded real-Qwen checks are recorded separately in the copilot guide. Neither establishes current
+public cold/warm latency. We do not claim the fastest assistant or universal superiority over other
+projects; the release priority is repeatable correctness and measured response time on the deployed host.
 
 ## Architecture
 
@@ -217,6 +255,12 @@ These are implemented entry points, not a statement that every environment or op
 
 Recent signup/login verification covered **303 backend unit/verification tests**, **24 focused signup/security API tests** and **23 account/entry browser tests**, plus lint, types and production build. A subsequent real-browser check on the public deployment created a demo account and verified login and the correct home for all four workspaces. These are scoped engineering checks, not operational acceptance. Historical results and failures remain in the [project ledger](docs/team/project_status.md).
 
+Earlier retained verification also includes a **155-case compiled browser run with zero skips or
+retries**, an isolated PostgreSQL concurrency suite and a coordinated backup/restore rehearsal.
+These belong to their recorded revisions and environments, not a fresh combined run of the current
+release. See the [evidence index](docs/product/capability_evidence.md) for scope, source tests and
+the distinction between browser fixtures, actual local services and public deployment checks.
+
 Training, calibration and official-test evaluation have separate commands and provenance. Follow the [research protocols](docs/research) before reproducing or extending an experiment; do not tune on the inspected official test set.
 
 ## Deployment and current limits
@@ -248,6 +292,12 @@ scripts/                         Setup, research and operator entry points
 ```
 
 ## Roadmap and contribution
+
+The immediate priority is **verified reliability and public proof before feature expansion**:
+fresh public workspace-entry checks, a traceable maintenance journey, measured cold/warm copilot
+correctness and latency, and reproducible recovery/evaluation evidence. The
+[current release plan](docs/plan.md#current-release-direction--21-october-2026) defines the gates;
+proposed latency budgets are targets, not claimed results.
 
 The proposed next step is a controlled pilot with one aircraft type and one maintenance base, using authorised data and an agreed baseline for alert quality, maintenance delays, parts waiting time and fleet availability. This is a proposal, not a completed operational deployment.
 

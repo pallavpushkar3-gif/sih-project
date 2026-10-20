@@ -820,3 +820,37 @@ topics through the authenticated API. The reviewed values are in
 `.github/repository-metadata.json`; that file is a record, not automatic GitHub configuration.
 The README identifies Pushkar Pallav as maintainer. No search rank, award, unique superiority
 or operational qualification claim is made.
+
+## Release-plan alignment — 21 October 2026
+
+Updated [the plan](../plan.md) to treat the existing public Google Cloud HTTPS demonstration
+as the primary presentation target and local Docker as development/recovery support. The
+assistant is recorded as implemented rather than future stretch scope. Release priorities
+are public entry/access, a traceable maintenance journey, measured copilot correctness and
+latency, durable recovery and reproducible scientific evidence. Proposed latency budgets
+are explicitly unverified targets. This is documentation alignment only: no application
+change, deployment, new live verification or research result is claimed.
+
+## Capability visibility and publication audit — 21 October 2026
+
+Fetched `origin` and confirmed source baseline `1908a94` was identical to `origin/main`;
+no unpushed application commits or untracked application source were found. Existing work
+was under-explained rather than absent from GitHub. Expanded the README and plan to surface
+aircraft onboarding, authenticated simulated telemetry, the guided case-to-completion trial,
+separate reproduced FD002–FD004 research, 12 copilot tools and scoped concurrency/recovery
+evidence. Added the [capability and verification index](../product/capability_evidence.md)
+with implementation/test links, revision/environment limits and reproduction references.
+Marked the old account-first runbook historical and documented the current workspace-first
+demo policy without claiming normal production grants self-selected staff access.
+
+Trusted-HTTPS read-only checks at 2026-10-20 21:20 UTC returned 200 for root, liveness,
+readiness and registration options; readiness reported ready/database ok and signup enabled.
+No new authenticated journey, deployed revision, model latency or continuous uptime was
+verified. The earlier contrast-preview attempt rejected the documented shared demo credentials;
+the index records that bounded observation rather than treating earlier public role checks as
+current proof. No credentials were reset and no public account was created in this audit.
+
+Only reviewed documentation is intended for publication. Ignored raw artifacts/browser state,
+the isolated contrast preview and competitor checkouts remain excluded. Local document links
+and diff whitespace were checked; application/scientific suites were not rerun for these
+documentation-only changes. No application deployment is required or claimed.

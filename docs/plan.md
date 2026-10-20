@@ -1,6 +1,8 @@
 # PS 26249: Predictive Maintenance & Fleet Availability
 
-This plan goes from understanding to solution, then data, ML, architecture and implementation. It is written so you can hand sections to Antigravity phase by phase.
+This document retains the original problem analysis and implementation proposals. The current
+release direction below records today's priorities and points to implemented contracts and evidence;
+the original phase prompts are historical planning material, not instructions to rebuild the product.
 
 **Labels used throughout**
 - **[PS]**: stated in the problem statement
@@ -8,6 +10,81 @@ This plan goes from understanding to solution, then data, ML, architecture and i
 - **[REAL DATA]**: would need real operational data to settle
 
 Section 19 is the consolidated plan. It points back to the detailed sections instead of repeating them.
+
+## Current release direction — 21 October 2026
+
+**Priority: verified reliability and public proof, not additional features.** AeroCare already
+has a public synthetic demonstration at [the live application](https://sih-34-56-39-7.sslip.io/).
+The primary demonstration target is that Google Cloud deployment, using Docker, NGINX and
+HTTPS. Local Docker remains the development, regression and recovery rehearsal environment;
+it is not a substitute for checking the actual public installation.
+
+This is a working release plan, not a completion certificate. Earlier sections retain the
+original design and phase proposals; their sample commands, paths, JWT/role assumptions and
+technology choices are not authoritative descriptions of the current application. Use
+[system design](../design.md), [access permissions](engineering/permissions.md),
+[local setup](operations/local_setup.md) and the [GCE runbook](operations/gce_deployment.md)
+for implemented architecture and commands. The [acceptance ledger](team/release_acceptance.md),
+[project status](team/project_status.md) and [deployment validation](operations/gce_validation.md)
+distinguish executed checks, their revision/environment and unresolved gates.
+
+### Existing implementation to present, not rebuild
+
+The [capability and verification index](product/capability_evidence.md) maps current source,
+test cases and retained results. The implemented scope already includes aircraft/component
+onboarding with source-record previews, immutable imports, mandatory requirements and unknown
+health; authenticated archived telemetry replay with snapshot-bound assessment; a genuine
+supported-input-to-completed-work trial; and separate reproduced FD002–FD004 research evaluations.
+The private copilot has 12 allowlisted tools, page/date context, direct-service record paths,
+checked final answers, evidence cards and explicit stream failure/cancellation handling.
+Transactional reservations, stale-approval rejection, durable jobs and recovery rehearsals have
+their own scoped evidence. These capabilities must be discoverable in the README and walkthrough;
+they are not reasons to add another feature or claim all live routes are freshly verified.
+
+Historical public checks do not establish current shared-account credentials. Before presenting,
+verify the intended signup/sign-in journey on the real origin. A passing readiness endpoint only
+establishes its documented readiness checks, not model responsiveness or role-workflow acceptance.
+
+### Release gates before feature expansion
+
+The following are required verification work, **not newly passed checks**. Fix defects in
+existing journeys first. Defer new models, integrations, infrastructure and dashboard pages
+unless measured evidence shows they are necessary to pass a gate.
+
+| Gate | What must be demonstrated | Evidence to retain |
+|---|---|---|
+| Public entry and access | Fresh browser → workspace selection → signup/sign-in → correct workspace; sign-out, reload, expired/denied sessions and desktop/mobile handling. Test the public synthetic-demo policy separately from normal assigned production permissions. | Deployed revision, UTC time, browser/viewport, redacted result and failure records. A public HTTP 200 alone does not pass this gate. |
+| Connected maintenance journey | Evidence → case → feasible work/plan → human approval → parts/resources → completion → decision history, with current-state checks and no manual database repair. Identify where the fleet demonstration and separate research planner/simulator connect or remain separate. | Reproducible synthetic inputs, exact clicks, expected record transitions, plan/input identities and redacted audit references. |
+| Ask AI correctness and responsiveness | Fixed questions covering direct records, selected context, follow-ups, missing/denied evidence, citations and unsupported claims; verify the final answer is visible. Exercise cold/warm model runs, concurrent requests, cancellation and model outage without weakening permission or grounding checks. | Hardware, model/provider/configuration, revision, query set, repetitions/failures, time to first useful output and final validated answer. Separate direct-service paths from inference; a thinking indicator or unvalidated draft is not a completed answer. |
+| Durable workflow recovery | Duplicate/stale approvals, competition for the last spare or resource, worker interruption, job retry/cancellation and SSE reconnection preserve authoritative records. Rehearse backup/restore and rollback in isolation; do not run destructive checks against shared public data. | Named scenarios, input and image/schema/artifact identities, observed outcomes and recovery times. Local recovery evidence remains local until an equivalent controlled VM rehearsal is recorded. |
+| Reproducible scientific proof | Link predictions to dataset/split/cutoff/transform/model versions; reproduce declared baselines, planning constraint checks and matched simulation comparisons. Preserve historical test inspection, interval width/coverage and failed gates. | Research protocol, configuration, artifact hashes, reproduction instructions and limitations. Synthetic logistics and simulated availability are not operational improvements. |
+
+For Ask AI, proposed initial experience targets are direct record answers within 3 seconds
+and model-backed final answers within 15 seconds for at least 95% of a declared query set,
+with first useful model output within 5 seconds. These are **proposed acceptance targets**,
+not measured performance or commitments already met. Report cold and warm distributions
+separately; do not hide timeouts, rejected/incorrect answers or cold-start costs. Freeze the
+workload, sample size and host configuration before the acceptance run. If the host cannot
+meet the targets, retain that failed result and evaluate a bounded model/configuration or
+compute change with the same correctness checks.
+
+### Public proof package
+
+Maintain one dated, revision-linked entry point in the README linking to the live application,
+a short walkthrough recording, current screenshots, CI results, the acceptance ledger and
+research/reproduction documents. Provide a compact verification summary with **verified,
+partial, failed, pending or externally blocked** status, the environment, procedure and
+limitations. Include cold/warm copilot measurements and a scripted maintenance journey rather
+than feature-count claims or subjective competitor rankings.
+
+Publish only reviewed, redacted summaries and small relevant evidence. Keep credentials,
+session cookies, private records, bulk data, weights and generated numerical artifacts out
+of Git; provide provenance and retrieval/reproduction instructions for external artifacts.
+A recorded walkthrough is a presentation fallback, not proof of current live availability.
+A code change requires live verification after deployment; a documentation change does not
+establish a new deployment or new passing tests. Current health and deployed revision must
+be checked again before presenting the public link.
+
 
 ---
 
@@ -155,7 +232,7 @@ Working name: **"Integrated Predictive Maintenance & Fleet Availability Platform
 | 9 | Alerts | **Essential, minimal version** |
 | 10 | Reports and Analytics | Optional (a lightweight analytics page) |
 | 11 | Maintenance Agency Tracking | Folded into module 7 (agency field plus turnaround stats) |
-| 12 | AI Maintenance Assistant (LLM) | **Future scope / stretch.** MVP uses template-based explanations |
+| 12 | AI Maintenance Assistant (LLM) | **Implemented in the current demonstrator.** Prioritize correctness, permissions and deployed latency verification; see current release direction above |
 
 ### Module details
 
@@ -198,7 +275,7 @@ Working name: **"Integrated Predictive Maintenance & Fleet Availability Platform
 - Rule-based: risk above threshold, spare shortfall against RUL, overdue inspection, backlog above limit. Shown in-app only for the MVP; email and SMS are future scope.
 
 ### MVP definition
-The MVP is modules 1–9 with **one fleet, 7 systems, about 20 component types, and 3 predictive models** (anomaly detection, failure risk, RUL), plus the rule-based priority and the simulation. The delay model, spare demand forecast and LLM assistant are stretch goals.
+The MVP is modules 1–9 with **one fleet, 7 systems, about 20 component types, and 3 predictive models** (anomaly detection, failure risk, RUL), plus the rule-based priority and the simulation. The delay model and spare demand forecast remain original stretch proposals. The LLM assistant is now implemented; reliability verification takes precedence over expanding its features.
 
 ---
 
@@ -520,20 +597,20 @@ Each run returns a **side-by-side comparison** (baseline vs. scenario) with the 
 
 | Layer | Choice | Why |
 |---|---|---|
-| Frontend | **React + Vite + TypeScript + Tailwind**; charts with **ECharts** (rich time series, heatmaps) or Recharts (simpler); React Router; TanStack Query | Standard, well-supported by coding agents. Skip Three.js initially |
-| Backend | **Python 3.11 + FastAPI**, Pydantic, SQLAlchemy 2, Alembic | Same language as ML, auto-generated API docs help the demo |
+| Frontend | **React + Vite + TypeScript**, custom CSS, ECharts, React Router, TanStack Query; Three.js/React Three Fiber/Drei for illustrative aircraft | Current browser implementation; quantitative evidence remains available through 2D controls and fallback states |
+| Backend | **Python 3.13 + FastAPI**, Pydantic, SQLAlchemy 2, Alembic | Shared installable package in `backend/src/fleet_maintenance/`; API and workers reuse application services |
 | Database | **PostgreSQL** (plain). **TimescaleDB not justified**: about a few million sensor rows is easy for indexed Postgres | Fewer moving parts. Mention Timescale as a scaling path |
 | Ingestion | REST endpoints plus a CLI loader. No Kafka/MQTT | Honest for batch post-flight downloads. Mention streaming as a future path |
 | ML | pandas, NumPy, scikit-learn, **LightGBM**, SHAP, lifelines (optional), joblib. **No PyTorch in MVP** | Explainable, quick to train on a laptop |
-| Model serving | Load joblib artifacts at FastAPI startup; batch scoring job plus an on-demand endpoint | Avoids a separate model server |
-| Scheduling | A CLI/cron-style script, or APScheduler | Enough for a demo |
+| Model serving | Registered, hashed model/transformation/calibration artifacts; shared prediction services and worker assessments | Fleet demonstration and supported engine research retain separate data/model boundaries |
+| Calculation jobs | Celery + RabbitMQ, PostgreSQL job state and transactional outbox | Implemented attempts, retries, cancellation and stale-result handling; not a cron-only proposal |
 | Alerts | Rule engine writing to `alerts`, shown in UI | MVP |
-| Auth | JWT, three roles (Commander, Planner, Technician), seeded demo users | Basic security story: role-based views, password hashing, input validation |
+| Auth | Server sessions, secure-cookie/CSRF policy and server-enforced permissions; four public workspace choices | Assigned production access is separate from explicitly enabled synthetic-demo workspace sessions; see permissions contract |
 | Logging/monitoring | Python structured logging, a `/health` endpoint, model-run logs in DB, simple data-drift check | Production-style without a full observability stack |
-| Packaging | **Docker Compose** (db + backend + frontend) | "Demonstrable locally" requirement |
-| CI | GitHub Actions: lint + tests + build | Optional but good |
+| Packaging / deployment | **Docker on Google Cloud with NGINX and HTTPS**; local Compose for development and rehearsals | Public deployment is the primary demonstration target; verify the actual release and its documented service topology |
+| CI | GitHub Actions: implemented frontend/backend checks | Inspect actual run results; badges and local passing checks do not establish full public acceptance |
 
-**Optional AI assistant (stretch):** an LLM chat that answers from your own API (never from free text) such as "Why is AC-017 flagged?". Add it only after everything else works. The MVP uses template-based natural-language explanations generated from the advisory fields, which are deterministic and cannot hallucinate.
+**Current AI assistant:** Qwen through Ollama supports conversation and authorized service-tool answers with evidence checks; bounded direct-record/help paths can bypass inference. It is implemented, not a future stretch goal. Verify cold/warm response time, final-answer correctness, permissions and failure handling on the deployed configuration. Neither templates nor grounding checks establish universal answer correctness. See [copilot operations](operations/ai_copilot.md).
 
 ## 9. User experience: screens
 
@@ -567,7 +644,7 @@ Seven screens, with others merged or cut.
 **7. Scenario Simulator**
 - *Purpose:* decision support. *Inputs:* scenario type and parameters. *Outputs:* baseline vs. scenario availability curves with bands, aircraft-days lost delta, stock-out probability. *Interaction:* save scenario, compare up to three.
 
-**Analytics** (MTBF, MTTR, failure rate, model-performance panel) is an optional eighth page; keep it to one scrollable page, and cut it if time runs short. **AI Assistant** is a stretch.
+**Analytics** (MTBF, MTTR, failure rate, model-performance panel) is an optional eighth page; keep it to one scrollable page, and cut it if time runs short. **AI Assistant** is implemented; measure its existing workflow rather than adding more screens.
 
 ---
 
@@ -662,8 +739,8 @@ Each phase has an independent, testable output. Do not let Antigravity skip ahea
 - *DoD:* all acceptance criteria in §17 are met and documented.
 
 **Phase 11: Demo and deployment**
-- *Objective:* one-command local demo plus a recorded backup. *Create:* seed-and-run script, Docker Compose finalisation, a demo script document, README, architecture diagrams, screenshots, and optional cloud deploy.
-- *DoD:* a clean machine can run `docker compose up` and the seed script and reproduce the demo.
+- *Objective:* a verified public Google Cloud demonstration plus reproducible local setup and a recorded presentation fallback. Maintain the existing runbooks, README, architecture diagrams, screenshots and redacted verification summary.
+- *DoD:* execute and retain the current release gates above against the identified deployed revision; rehearse recovery in an isolated environment. A clean local run and a recording supplement public verification rather than replacing it.
 
 ## 12. Antigravity execution strategy
 
@@ -873,11 +950,13 @@ Do not add features. Report results. STOP.
 **Prompt: Phase 11 (Demo and deployment)**
 ```
 You are implementing PHASE 11 (Demo & Deployment). Read AGENTS.md.
-OBJECTIVE: One-command reproducible local demo and documentation.
-CREATE: `make demo` (compose up, migrate, generate data seed 42, train models, run engine, start app);
-docs/demo-script.md (the 11 steps with exact clicks and expected values); README with architecture diagram (mermaid),
-setup, screenshots placeholders; docs/limitations.md (synthetic data, model scope, what real data would change).
-Do not change functionality. Verify from a clean clone. Report. STOP.
+OBJECTIVE: Verify the existing public deployment and its reproducible local/recovery workflow.
+READ: Current release direction in this plan, README, GCE runbook, deployment validation and acceptance ledger.
+USE: Implemented commands only; do not assume make demo or the original sample repository tree exists.
+RETAIN: Revision/environment-linked checks of entry, permissions, maintenance journey, Ask AI,
+recovery rehearsal and scientific provenance. Report failures and pending gates; redact secrets.
+UPDATE: Public evidence links, current screenshots and walkthrough only where actually verified.
+Fix demonstrated reliability defects before feature expansion. Report executed checks and remaining gaps. STOP.
 ```
 
 ## 13. Repository structure
@@ -1058,7 +1137,7 @@ I deliberately don't commit to specific numeric thresholds for model metrics. Se
 
 1. **Architecture:** §8 diagram (Python FastAPI + PostgreSQL + batch ML + React).
 2. **Tech stack:** React/Vite/TS/Tailwind/ECharts; FastAPI/SQLAlchemy/Alembic; PostgreSQL (no Timescale); pandas/scikit-learn/LightGBM/SHAP; Docker Compose; GitHub Actions.
-3. **Modules:** §2 (9 essential, analytics optional, LLM assistant stretch).
+3. **Modules:** §2 retains the original scope; the current assistant is implemented. Prioritize the release gates above over additional functionality.
 4. **Data architecture:** §3: 40 generic aircraft, 3 years, latent-health simulation, hero aircraft, hidden truth table.
 5. **ML architecture:** §4 and §16: anomaly (residual + Isolation Forest), failure risk (LightGBM), RUL (quantile LightGBM), rule-based priority, simulation-based availability forecasting.
 6. **Database schema:** §3 and §15.
@@ -1069,7 +1148,7 @@ I deliberately don't commit to specific numeric thresholds for model metrics. Se
 11. **Antigravity prompts:** §12.
 12. **Testing strategy:** §17.
 13. **Demo flow:** §10.
-14. **Deployment:** local Docker Compose (`make demo`) is the primary target; optional cloud deploy is a bonus; keep a recorded backup of the demo.
+14. **Deployment:** the existing Google Cloud HTTPS installation is the primary public demonstration target. Local Docker supports development and isolated verification/recovery rehearsals. Use implemented runbook commands; retain a recorded presentation fallback and current revision-linked public proof.
 15. **Definition of Done:**
 - `make demo` on a clean clone reproduces the full demo with no manual edits;
 - all tests, lint and build pass in CI;
