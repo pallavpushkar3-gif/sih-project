@@ -202,6 +202,38 @@ These are historical, inspected benchmark results for this engine-life model. Th
 
 Read the [scientific evaluation](docs/research/release_evaluation.md), [dataset protocol](docs/research/dataset_protocol.md), [retained reproduction record](docs/research/reproduction_log.md) and [additional C-MAPSS subset research](docs/research/multidataset-demo-protocol.md). Additional subset results belong to their own protocols and do not extend the selected FD001 model's qualification automatically.
 
+### Dataset coverage and provenance
+
+**NASA C-MAPSS FD001–FD004 is simulated turbofan degradation data.** It is separate from
+AeroCare's generated aircraft, logistics and maintenance demonstration records. FD001 supplies
+the selected engine-research/trial model; FD002–FD004 have separately evaluated research models.
+
+| Dataset / track | Training / official test engines | Evaluated / withheld test engines | Capped MAE / RMSE (cycles) |
+|---|---|---|---|
+| **FD001 — historical selected model** | 100 / 100 | 100 / 0 | **8.722 / 11.710** |
+| **FD002 — research v1** | 260 / 259 | 253 / 6 | **9.760 / 13.417** |
+| **FD003 — research v1** | 100 / 100 | 100 / 0 | **8.539 / 11.975** |
+| **FD004 — research v1** | 249 / 248 | 237 / 11 | **9.687 / 14.083** |
+
+These are retained results, not a new training run. The target cap is 125 cycles; histories
+shorter than 30 cycles are withheld. Training-column counts describe each supplied source
+partition, not the number used for fitting alone: fitting, validation and calibration use
+separate engine groups. FD001 uses a different historical model/protocol; the rows are not a
+controlled model ranking. FD004 counts follow the actual pinned files, whose train/test counts
+are reversed relative to the source readme listing. Coverage, interval width, exact splits,
+baselines and reproduction details are in the [multi-subset protocol](docs/research/multidataset-demo-protocol.md).
+
+- **Source and integrity:** [dataset registry](data/sources.yaml) records acquisition URLs,
+  outer/nested archive SHA-256 and individual file hashes. The NASA portal's licence is recorded
+  as unspecified; public access is not presented as a blanket redistribution licence.
+- **Demonstration data:** fleet identities, logistics and availability projections are synthetic;
+  replayed telemetry transports archived simulated FD001 rows rather than live aircraft sensors.
+- **Not evaluated here:** N-CMAPSS was assessed as a possible separate dataset; no N-CMAPSS
+  training, accuracy or operational-aircraft result is claimed.
+- **Reproduction:** dataset acquisition/evaluation scripts and frozen configuration are tracked.
+  Bulk datasets, trained weights and generated reports stay outside Git; a fresh clone needs
+  the documented acquisition, evaluation and installation steps.
+
 ## Run locally
 
 ### Requirements

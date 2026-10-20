@@ -854,3 +854,15 @@ Only reviewed documentation is intended for publication. Ignored raw artifacts/b
 the isolated contrast preview and competitor checkouts remain excluded. Local document links
 and diff whitespace were checked; application/scientific suites were not rerun for these
 documentation-only changes. No application deployment is required or claimed.
+
+## Dataset visibility audit — 21 October 2026
+
+Confirmed the dataset registry, FD001 protocol and separate multi-subset protocol are already
+tracked/published. Checked the four retained reproduced report hashes against their catalogue,
+ten multi-subset source-file hashes against `data/sources.yaml`, and the displayed engine
+counts, withholding and capped metrics against retained JSON. Added the explicit FD001–FD004
+coverage table and dataset-role/provenance boundaries to the README; replaced the old plan's
+description of NASA research as an optional side script. No datasets, weights or ignored reports
+were added to Git; no scientific experiment was rerun or serving model promoted. The table
+retains the distinction between historical FD001 and separate research v1 models, actual
+FD004 file counts, synthetic operational data and unevaluated N-CMAPSS.

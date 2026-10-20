@@ -376,7 +376,13 @@ Ask Antigravity to produce the full DDL from this.
 **Demo seeding.** Reserve 3–4 "hero" aircraft with scripted degradation so your live demo has guaranteed, interesting storylines (Section 10). Use a fixed random seed for reproducibility. Disclose that these are scripted.
 
 ### Validation against public data
-Run your RUL and anomaly pipeline once on NASA's public **C-MAPSS** turbofan degradation dataset as a sanity check. That shows the ML code works on non-self-generated data. Keep it as a side script. It is a credibility add-on, not core.
+**Current implementation supersedes this original sanity-check proposal:** NASA C-MAPSS is the
+supported engine-research evidence track, not an optional side script. FD001 has the selected
+historically evaluated model and guided trial; separate FD002–FD004 research models retain their
+own splits, calibration, withheld histories and reproduced reports. All four subsets contain
+simulated engines. They do not validate the generated fleet/logistics models or arbitrary aircraft.
+See the [README dataset summary](../README.md#dataset-coverage-and-provenance),
+[source hashes](../data/sources.yaml) and [multi-subset protocol](research/multidataset-demo-protocol.md).
 
 ---
 
