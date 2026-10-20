@@ -866,3 +866,12 @@ description of NASA research as an optional side script. No datasets, weights or
 were added to Git; no scientific experiment was rerun or serving model promoted. The table
 retains the distinction between historical FD001 and separate research v1 models, actual
 FD004 file counts, synthetic operational data and unevaluated N-CMAPSS.
+
+## Ask AI evidence-scope and publication correction — 21 October 2026
+
+Corrected the verification summary/gallery's obsolete pre-publication wording: presentation
+assets were pushed in `0765bdb`. README, gallery, evidence index and verification summary now
+distinguish the owner's report of fixed/responsive public generative Ask AI from the separate
+local model outage shown in the recording. Historical measurements remain scoped evidence,
+not a present deployed performance verdict. No new live-model benchmark, runtime parity check,
+application change or deployment is claimed. Documentation links and whitespace checked.

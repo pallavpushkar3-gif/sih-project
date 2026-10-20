@@ -47,6 +47,15 @@ disclosure, interval width/coverage and an unpromoted candidate. The
 withheld histories and matching reproduction hashes. Neither is observed operational downtime
 reduction. Runtime research views need installed evidence bundles rather than Git-tracked weights.
 
+## Current deployed Ask AI versus historical local checks
+
+On 21 October the owner reported that generative Ask AI is fixed and responsive on the public
+installation. The recorded local model outage and historical cold-start timings concern their
+specific environments and dates; they are not evidence that today's deployed assistant is slow
+or unavailable. The code and capability descriptions are published; the local recording is
+explicitly a direct-record demonstration. A new deployed generative recording, timed workload
+and exact runtime revision/model/configuration comparison remain separate verification work.
+
 ## Current release priorities
 
 Use the [release gates](../plan.md#current-release-direction--21-october-2026) to verify the

@@ -159,7 +159,11 @@ The [retained local product audit](docs/team/product_audit_two_pass_2026-10-20.m
 record answers against the authoritative API across four roles and observed a completed, cited
 answer in the signed-in UI. Its generative model service was unavailable during that audit; later
 bounded real-Qwen checks are recorded separately in the copilot guide. Neither establishes current
-public cold/warm latency. We do not claim the fastest assistant or universal superiority over other
+public cold/warm latency. **Deployment status update (21 October 2026):** the project owner reports
+that generative Ask AI is fixed and responsive on the public site. The published local recording
+does not measure that service; its model-unavailable banner must not be read as a current public
+outage. Fresh deployed timings and code/model/configuration parity remain independently unverified.
+We do not claim the fastest assistant or universal superiority over other
 projects; the release priority is repeatable correctness and measured response time on the deployed host.
 
 ## Architecture

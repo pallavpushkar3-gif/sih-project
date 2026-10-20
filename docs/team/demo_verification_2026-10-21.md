@@ -1,6 +1,7 @@
 # Dashboard presentation verification — 21 October 2026
 
-**Prepared locally for owner review. Not pushed or deployed.** Source baseline: `fd81d73`.
+**Published documentation and captures:** introduced in commit `0765bdb`. Capture source baseline: `fd81d73`.
+Publishing these assets did not change the deployed application.
 Current captures use the running localhost:8080 application with existing synthetic supervisor
 credentials. The running image's source identity was not independently matched to HEAD.
 
@@ -26,7 +27,16 @@ credentials. The running image's source identity was not independently matched t
 ## Remaining proof gaps
 
 A fresh full maintenance walkthrough requires a configured isolated trial installation.
-Generative Ask AI recording requires a working model service and explicit correctness/timing checks.
+A fresh generative Ask AI recording must use the deployed service and include explicit correctness/timing checks; the local model outage does not establish a deployed outage.
 Team responsibilities need owner-supplied assignments. These limitations prevent calling every
 requested proof item freshly verified. Do not replace an unavailable model or disabled trial with
 scripted answers, altered screenshots or historical captures labelled as current.
+
+## Deployment clarification — 21 October 2026
+
+The project owner reports that generative Ask AI is fixed and responsive on the public deployment.
+That report concerns the deployed service, whereas the recording above concerns a separate local
+installation. Do not describe the deployed assistant as broken or slow on the basis of this local
+capture or earlier cold-start measurements. Current deployed response-time distributions, answer
+quality and exact code/model/configuration parity have not been independently measured in this
+follow-up. The owner's comparative “10 times better” assessment is not a verified benchmark.

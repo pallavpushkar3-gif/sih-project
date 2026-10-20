@@ -1,6 +1,6 @@
 # AeroCare product gallery
 
-Prepared 21 October 2026 for review before publication. Current captures come from the real
+Published in commit `0765bdb`, with captures prepared 21 October 2026. These captures come from the real
 local application at `http://localhost:8080`, with a synthetic supervisor account, at source
 revision `fd81d73`. They are not mockups or new public-deployment verification. The API's
 runtime image revision was not independently matched to that source revision.
@@ -36,7 +36,8 @@ Research availability depends on installed evidence; a screenshot is not model q
 ![Completed record answers with citations](screenshots/product/ask-ai.png)
 
 The visible model-unavailable notice is retained. These are service-backed record answers,
-not a demonstration of generative Qwen inference. The short recording and exact measurement
+not a demonstration of generative Qwen inference. The owner reports that the separate deployed
+generative assistant is fixed and responsive; the local notice does not describe its current state. The short recording and exact measurement
 scope are linked in the [verification summary](../team/demo_verification_2026-10-21.md).
 
 ## Dark theme and mobile
