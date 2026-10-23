@@ -1,18 +1,31 @@
 # AeroCare — SIH26249 Aircraft Predictive Maintenance & Fleet Availability
 
-**Connect aircraft health evidence to maintenance decisions, spare parts and fleet availability.**
+**From aircraft health evidence to approved maintenance, spare-part coordination and traceable work completion.**
 
 [![Web checks](https://github.com/pallavpushkar3-gif/sih-project/actions/workflows/web-checks.yml/badge.svg?branch=main)](https://github.com/pallavpushkar3-gif/sih-project/actions/workflows/web-checks.yml)
 [![Backend checks](https://github.com/pallavpushkar3-gif/sih-project/actions/workflows/backend-checks.yml/badge.svg?branch=main)](https://github.com/pallavpushkar3-gif/sih-project/actions/workflows/backend-checks.yml)
 [![Problem statement SIH26249](https://img.shields.io/badge/Smart_India_Hackathon-SIH26249-21634c)](docs/product/problem_statement.md)
 
-**[Live application](https://sih-34-56-39-7.sslip.io/)** · **[Video demonstration](https://www.youtube.com/watch?v=HlYxblGJHEs)** · **[Capability and verification index](docs/product/capability_evidence.md)** · **[Evaluation evidence](docs/research/release_evaluation.md)** · **[Local setup](docs/operations/local_setup.md)**
+**[Live application](https://sih-34-56-39-7.sslip.io/)** · **[Video demonstration](https://www.youtube.com/watch?v=HlYxblGJHEs)** · **[Evaluator guide](docs/product/evaluator-guide.md)** · **[Capability and verification index](docs/product/capability_evidence.md)** · **[Evaluation evidence](docs/research/release_evaluation.md)** · **[Local setup](docs/operations/local_setup.md)**
 
 Maintained by **[Team Null Paradox](docs/team/team_null_paradox.md)**.
 
-AeroCare is a working prototype for **Smart India Hackathon SIH26249 / PS26249 — Air Power: Predictive Maintenance & Fleet Availability**. It brings aircraft records, findings, maintenance cases, spares and decision history into one workspace. A separate engine-research workflow estimates remaining useful life, checks resource-constrained schedules and compares simulated outcomes.
+AeroCare is a working prototype for **Smart India Hackathon SIH26249 / PS26249 — Air Power: Predictive Maintenance & Fleet Availability**. It addresses fragmented maintenance information through four coordinated workspaces: engineering, supervision, logistics and fleet management. Users can inspect evidence, review maintenance needs, coordinate parts and follow work through completion. A separate research workflow provides engine-life estimates, resource-constrained scheduling and simulated availability comparisons.
 
 The demonstration uses **synthetic fleet and logistics records** and **public simulated engine data**. Benchmark results apply to their stated datasets. AeroCare supports engineering judgement and human approval; it does not provide airworthiness or dispatch clearance.
+
+## What evaluators can verify
+
+| Capability | Evidence and demonstration path |
+|---|---|
+| **Connected engineering, maintenance and logistics** | Follow linked evidence, maintenance cases and supply dependencies across the four workspaces. See the [capability index](docs/product/capability_evidence.md). |
+| **Checked approval and reservations** | Inspect current-input checks, transactional stock/resource reservations and stale-plan handling in the [implementation and verification map](docs/product/capability_evidence.md). |
+| **Input to completed and verified work** | The [guided trial](docs/product/customer_trial.md) connects supported history, assessment, scheduling, receipt/replanning, approval, execution and verification. It requires an enabled isolated trial installation and installed model/data artifacts; it is not available on every deployment. See the [retained walkthrough](docs/design/maintenance_walkthrough.md). |
+| **Availability-oriented scheduling** | The [availability study](docs/research/availability_study.md) compares constrained aircraft-grounding schedules against FIFO on matched synthetic inputs, with saved assumptions and event traces. Results are simulated projections. |
+| **Context-aware maintenance assistance** | The [Qwen copilot](docs/operations/ai_copilot.md) uses permitted application records and services, with source links and answer checks. Its availability depends on the installed service and configuration. |
+
+Use the [one-page evaluator guide](docs/product/evaluator-guide.md) for a short review route,
+the distinction between public and installation-dependent paths, and measured versus simulated results.
 
 ## Explore the product
 
